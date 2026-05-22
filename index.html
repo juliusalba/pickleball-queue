@@ -2547,6 +2547,107 @@ body {
 }
 .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
 .empty-state-text { font-size: 14px; }
+
+/* ──────────────────────────────────────────────────────
+   PLAYER PROFILE MODAL
+────────────────────────────────────────────────────── */
+.player-profile { max-width: 500px; }
+.pp-header { text-align: center; padding: 24px; border-bottom: 1px solid var(--border); }
+.pp-avatar { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 12px; }
+.pp-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.pp-rating { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--gold); font-weight: 700; }
+.pp-member { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.pp-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 20px; border-bottom: 1px solid var(--border); }
+.pp-stat { text-align: center; }
+.pp-stat-val { font-size: 20px; font-weight: 800; }
+.pp-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+.pp-section { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.pp-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 12px; }
+.pp-activity-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 13px; }
+.pp-activity-date { font-size: 11px; color: var(--text-muted); min-width: 60px; }
+.pp-activity-name { flex: 1; font-weight: 600; }
+.pp-activity-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+.pp-chart { display: flex; align-items: flex-end; gap: 8px; height: 80px; padding: 12px 0; }
+.pp-bar { flex: 1; border-radius: 4px 4px 0 0; background: var(--teal); min-height: 4px; }
+.pp-bar-label { font-size: 9px; color: var(--text-muted); text-align: center; margin-top: 4px; }
+.pp-notes textarea {
+  width: 100%; min-height: 60px; padding: 10px; background: var(--bg-input);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary);
+  font-family: inherit; font-size: 13px; resize: vertical;
+}
+.pp-notes textarea:focus { border-color: var(--teal); outline: none; }
+.pp-close { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
+.pp-close:hover { color: var(--text-primary); }
+
+/* ──────────────────────────────────────────────────────
+   PAYMENT MODAL
+────────────────────────────────────────────────────── */
+.payment-modal { max-width: 400px; }
+.payment-summary { background: rgba(255,255,255,0.03); border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px; }
+.payment-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+.payment-row.total { font-size: 18px; font-weight: 800; color: var(--green); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+.payment-methods { display: flex; gap: 8px; margin-bottom: 16px; }
+.payment-method { flex: 1; padding: 12px; background: var(--bg-surface); border: 2px solid var(--border); border-radius: var(--radius-md); text-align: center; cursor: pointer; transition: all 0.2s; }
+.payment-method.active { border-color: var(--teal); background: rgba(20,184,166,0.05); }
+.payment-method:hover { border-color: var(--border-hover); }
+.payment-method-icon { font-size: 24px; margin-bottom: 4px; }
+.payment-method-label { font-size: 11px; font-weight: 600; }
+.card-inputs { display: grid; gap: 8px; margin-bottom: 16px; }
+.card-inputs input {
+  width: 100%; padding: 10px 12px; background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary); font-size: 14px; font-family: inherit;
+}
+.card-inputs input:focus { border-color: var(--teal); outline: none; }
+.card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pay-btn { width: 100%; padding: 16px; background: var(--teal); color: white; border: none; border-radius: var(--radius-md); font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.pay-btn:hover { background: var(--teal-hover); }
+.pay-btn.processing { opacity: 0.7; cursor: not-allowed; }
+.payment-success { text-align: center; padding: 32px; }
+.payment-success .checkmark { font-size: 64px; }
+.receipt { background: var(--bg-surface); border-radius: var(--radius-md); padding: 16px; margin-top: 16px; text-align: left; }
+.receipt-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+.receipt-header { text-align: center; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+.payment-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.payment-badge.paid { background: var(--green-subtle); color: var(--green); }
+.payment-badge.pending { background: rgba(245,158,11,0.15); color: var(--amber); }
+.payment-badge.refunded { background: var(--red-subtle); color: var(--red); }
+
+/* ──────────────────────────────────────────────────────
+   RECURRING BOOKINGS
+────────────────────────────────────────────────────── */
+.recurring-options { display: none; margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+.recurring-options.visible { display: block; }
+.days-of-week { display: flex; gap: 6px; margin-top: 8px; }
+.day-checkbox { display: none; }
+.day-label { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-surface); border: 1px solid var(--border); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.day-checkbox:checked + .day-label { background: var(--teal); border-color: var(--teal); color: white; }
+.recurring-rule-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 8px; }
+.recurring-rule-info { flex: 1; }
+.recurring-rule-name { font-size: 14px; font-weight: 600; }
+.recurring-rule-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.recurring-rule-actions { display: flex; gap: 6px; }
+
+/* ──────────────────────────────────────────────────────
+   STAFF MANAGEMENT
+────────────────────────────────────────────────────── */
+.staff-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 8px; }
+.staff-avatar { width: 40px; height: 40px; border-radius: 50%; }
+.staff-info { flex: 1; }
+.staff-name { font-size: 14px; font-weight: 600; }
+.staff-email { font-size: 11px; color: var(--text-muted); }
+.staff-role-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+.staff-role-badge.owner { background: var(--gold-subtle); color: var(--gold); }
+.staff-role-badge.manager { background: var(--teal-subtle); color: var(--teal); }
+.staff-role-badge.front_desk { background: var(--blue-subtle); color: var(--blue); }
+.staff-role-badge.coach { background: rgba(168,85,247,0.15); color: #a855f7; }
+.staff-actions { display: flex; gap: 6px; }
+.staff-btn { background: none; border: 1px solid var(--border); color: var(--text-secondary); padding: 4px 10px; border-radius: var(--radius-sm); font-size: 11px; cursor: pointer; transition: all 0.2s; }
+.staff-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.staff-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+/* Clickable player names */
+.player-name-click { cursor: pointer; transition: color 0.15s; }
+.player-name-click:hover { color: var(--teal); text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -2697,7 +2798,10 @@ let state = {
   selectedSessionId: null,
   currentDate: new Date().toISOString().split('T')[0],
   bookingDate: new Date().toISOString().split('T')[0],
-  bookingFilter: 'all'
+  bookingFilter: 'all',
+  recurringRules: [],
+  transactions: [],
+  staff: []
 };
 
 // ══════════════════════════════════════════════════════
@@ -3712,6 +3816,16 @@ function updateDuprDisplay(val) {
 // ══════════════════════════════════════════════════════
 function openModal(mode, refId = null) {
   modalMode = mode;
+  // Ensure standard modal structure exists (may have been replaced by player profile/payment)
+  const overlay = document.getElementById('modalOverlay');
+  let standardModal = overlay.querySelector('.modal');
+  if (!standardModal || !standardModal.querySelector('#modalTitle')) {
+    if (standardModal) standardModal.remove();
+    standardModal = document.createElement('div');
+    standardModal.className = 'modal';
+    standardModal.innerHTML = '<div class="modal-header"><div class="modal-title" id="modalTitle"></div><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" id="modalSubmit" onclick="submitModal()">Save</button></div>';
+    overlay.appendChild(standardModal);
+  }
   const title = document.getElementById('modalTitle');
   const body  = document.getElementById('modalBody');
 
@@ -3797,12 +3911,31 @@ function openModal(mode, refId = null) {
       </div>
       <div class="fg">
         <label>Recurring</label>
-        <select id="fRecurring">
+        <select id="fRecurring" onchange="toggleRecurringOptions()">
           <option value="none">One-time</option>
           <option value="daily">Daily</option>
           <option value="weekly">Weekly</option>
           <option value="biweekly">Bi-weekly</option>
         </select>
+        <div class="recurring-options" id="recurringOptions">
+          <div class="fg" style="margin-bottom:8px;">
+            <label>Start Date</label>
+            <input type="date" id="fRecurStart" value="${state.currentDate}">
+          </div>
+          <div class="fg" style="margin-bottom:8px;">
+            <label>End Date <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+            <input type="date" id="fRecurEnd" placeholder="No end date">
+          </div>
+          <div class="fg">
+            <label>Days of Week</label>
+            <div class="days-of-week">
+              ${['S','M','T','W','T','F','S'].map((d, i) => `
+                <input type="checkbox" class="day-checkbox" id="dow${i}" value="${i}">
+                <label class="day-label" for="dow${i}">${d}</label>
+              `).join('')}
+            </div>
+          </div>
+        </div>
       </div>
     `;
   } else if (mode === 'queue') {
@@ -4038,7 +4171,7 @@ function openModal(mode, refId = null) {
         <div class="queue-entry-row">
           <span class="qe-pos">#${i + 1}</span>
           <div class="qe-avatar">${getInitials(entry.playerName)}</div>
-          <span class="qe-name">${escHtml(entry.playerName)}</span>
+          <span class="qe-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(entry.playerName)}')">${escHtml(entry.playerName)}</span></span>
           <span class="qe-size">${entry.groupSize}p</span>
           <span class="qe-wait">${waitTime(entry.joinedAt)}</span>
           <button class="qe-call" onclick="callNextFromDetail('${s.id}','${entry.id}')">⚡ Call</button>
@@ -4136,7 +4269,7 @@ function openModal(mode, refId = null) {
             <img class="player-avatar" src="${avatarUrl(p.name, 128, '14B8A6')}"
                  alt="${escHtml(p.name)}">
             <div class="player-info">
-              <div class="player-name">${escHtml(p.name)}</div>
+              <div class="player-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(p.name)}')">${escHtml(p.name)}</span></div>
               <div class="player-rating">${duprDisplay(p.rating || 3.0)}</div>
               <div class="player-position">${p.position || ('Player ' + (i+1))}</div>
             </div>
@@ -4163,7 +4296,7 @@ function openModal(mode, refId = null) {
             <img class="player-avatar" src="${avatarUrl(p.name, 128, 'F87171')}"
                  alt="${escHtml(p.name)}">
             <div class="player-info">
-              <div class="player-name">${escHtml(p.name)}</div>
+              <div class="player-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(p.name)}')">${escHtml(p.name)}</span></div>
               <div class="player-rating">${duprDisplay(p.rating || 3.0)}</div>
               <div class="player-position">${p.position || ('Player ' + (i+1))}</div>
             </div>
@@ -4196,7 +4329,7 @@ function openModal(mode, refId = null) {
                  alt="${escHtml(p.name)}">
             <div class="wr-info">
               <div class="wr-name-row">
-                <span class="wr-name">${escHtml(p.name)}</span>
+                <span class="wr-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(p.name)}')">${escHtml(p.name)}</span></span>
                 ${i === 0 ? '<span class="wr-next-badge">NEXT UP</span>' : ''}
               </div>
               <div class="wr-rating">${duprDisplay(p.rating || 3.0)}</div>
@@ -4225,7 +4358,7 @@ function openModal(mode, refId = null) {
           <span class="qe-pos">#${i + 1}</span>
           <img class="qe-avatar-img" src="${avatarUrl(entry.playerName, 64, 'F5A623')}"
                alt="${escHtml(entry.playerName)}">
-          <span class="qe-name">${escHtml(entry.playerName)}</span>
+          <span class="qe-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(entry.playerName)}')">${escHtml(entry.playerName)}</span></span>
           <span style="font-size:10px;">${duprDisplay(entry.rating || 3.0)}</span>
           <span class="qe-size">${entry.groupSize}p</span>
           <span class="qe-wait">${waitTime(entry.joinedAt)}</span>
@@ -4266,10 +4399,13 @@ function openModal(mode, refId = null) {
 function closeModal() {
   const overlay = document.getElementById('modalOverlay');
   overlay.classList.remove('open');
-  // If session-detail-modal is showing, remove it and restore .modal
+  // Remove any custom modals (session-detail-modal) and restore standard modal
   const sdm = overlay.querySelector('.session-detail-modal');
-  if (sdm) {
-    sdm.remove();
+  if (sdm) sdm.remove();
+  // Always ensure a standard .modal exists with proper structure
+  let standardModal = overlay.querySelector('.modal');
+  if (!standardModal || !standardModal.querySelector('#modalTitle')) {
+    if (standardModal) standardModal.remove();
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.innerHTML = '<div class="modal-header"><div class="modal-title" id="modalTitle"></div><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" id="modalSubmit" onclick="submitModal()">Save</button></div>';
@@ -4303,8 +4439,28 @@ function submitModal() {
     const recurring = document.getElementById('fRecurring')?.value || 'none';
     if (!courtId || !startTime || !endTime) { showToast('Fill all required fields', 'error'); return; }
     const sessionName = name || generateSessionName(type, startTime);
-    state.sessions.push({ id: genId(), name: sessionName, courtId, date, startTime, endTime, type, sport, maxPlayers, pricePerPlayer, skillLevel, instructor, description, recurring });
-    showToast('Session added ✓', 'success');
+    if (recurring !== 'none') {
+      // Create a recurring rule instead of a single session
+      const startDate = document.getElementById('fRecurStart')?.value || state.currentDate;
+      const endDate = document.getElementById('fRecurEnd')?.value || null;
+      const daysOfWeek = [];
+      for (let i = 0; i < 7; i++) {
+        const cb = document.getElementById('dow' + i);
+        if (cb && cb.checked) daysOfWeek.push(i);
+      }
+      if (daysOfWeek.length === 0 && (recurring === 'weekly' || recurring === 'biweekly')) {
+        showToast('Please select at least one day of the week', 'error'); return;
+      }
+      createRecurringRule(
+        { name: sessionName, courtId, startTime, endTime, type, sport, maxPlayers, pricePerPlayer, skillLevel, instructor, description },
+        recurring, startDate, endDate, daysOfWeek
+      );
+      generateRecurringSessions();
+      showToast('Recurring sessions created ✓', 'success');
+    } else {
+      state.sessions.push({ id: genId(), name: sessionName, courtId, date, startTime, endTime, type, sport, maxPlayers, pricePerPlayer, skillLevel, instructor, description, recurring });
+      showToast('Session added ✓', 'success');
+    }
   } else if (modalMode === 'queue') {
     const sessionId  = document.getElementById('fQSession').value;
     const playerName = document.getElementById('fQName').value.trim();
@@ -4364,7 +4520,9 @@ function confirmBooking(sessionId) {
     bookedAt: new Date().toISOString(), rating, notes
   });
   save();
-  showBookingConfirmation(s, playerName, groupSize, status);
+  const booking = state.bookings[state.bookings.length - 1];
+  // Show payment modal instead of immediate confirmation
+  showPaymentModal(booking.id, s, playerName, groupSize);
 }
 
 function showBookingConfirmation(session, playerName, groupSize, status) {
@@ -4583,10 +4741,11 @@ function renderBookingsView() {
       myBookingsHTML += `
       <div class="my-booking-card">
         <div class="my-booking-info">
-          <div class="my-booking-name">${escHtml(b.playerName)}</div>
+          <div class="my-booking-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(b.playerName)}')">${escHtml(b.playerName)}</span></div>
           <div class="my-booking-detail">${s ? fmtRange(s.startTime, s.endTime) : ''} · ${escHtml(court?.name || '')} · ${colorInfo.label} · ${b.groupSize}p</div>
         </div>
         <span class="booking-status ${b.status}" style="font-size:10px;padding:2px 8px;">${b.status.replace('_', ' ')}</span>
+        ${b.payment ? `<span class="payment-badge paid" style="font-size:9px;">PAID</span>` : ''}
         <div class="my-booking-actions">
           ${isLive && b.status === 'confirmed' ? `<button class="btn-checkin" onclick="checkInBooking('${b.id}')">✓ Check In</button>` : ''}
           ${b.status === 'confirmed' || b.status === 'waitlisted' ? `<button class="btn-cancel-booking" onclick="cancelBooking('${b.id}')">✕ Cancel</button>` : ''}
@@ -4696,7 +4855,7 @@ function renderPlayersView(searchTerm) {
   
   players.forEach(p => {
     html += `
-    <div class="player-list-card">
+    <div class="player-list-card" onclick="openPlayerProfile('${escHtml(p.name)}')" style="cursor:pointer;">
       <img class="player-list-avatar" src="${avatarUrl(p.name, 80)}" alt="${escHtml(p.name)}">
       <div class="player-list-info">
         <div class="player-list-name">${escHtml(p.name)}</div>
@@ -4818,6 +4977,8 @@ function renderSettingsView() {
         <button style="background:var(--gold-subtle);color:var(--gold);border:none;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;" onclick="if(confirm('Reset all data?')){localStorage.removeItem('${STORAGE_KEY}');location.reload();}">Reset</button>
       </div>
     </div>
+    ${renderRecurringRulesSection()}
+    ${renderStaffSection()}
   </div>`;
 }
 
@@ -4864,12 +5025,16 @@ function renderAnalyticsView() {
   
   // Calculate revenue
   let totalRevenue = 0;
-  todayBookings.forEach(b => {
-    const s = state.sessions.find(sess => sess.id === b.sessionId);
-    if (!s) return;
-    const pricePerPlayer = v.pricing?.[s.type] || 15;
-    totalRevenue += pricePerPlayer * b.groupSize;
-  });
+  if (state.transactions && state.transactions.length > 0) {
+    totalRevenue = state.transactions.filter(t => t.status === 'paid').reduce((sum, t) => sum + t.total, 0);
+  } else {
+    todayBookings.forEach(b => {
+      const s = state.sessions.find(sess => sess.id === b.sessionId);
+      if (!s) return;
+      const pricePerPlayer = v.pricing?.[s.type] || 15;
+      totalRevenue += pricePerPlayer * b.groupSize;
+    });
+  }
   
   // Utilization per court
   const courtUtil = state.courts.map(court => {
@@ -5025,10 +5190,12 @@ function renderDashboardView() {
   });
 
   // Stats
-  const totalRevenue = todayBookings.reduce((sum, b) => {
-    const s = state.sessions.find(sess => sess.id === b.sessionId);
-    return sum + (s ? getSessionPrice(s) * b.groupSize : 0);
-  }, 0);
+  const totalRevenue = (state.transactions && state.transactions.length > 0)
+    ? state.transactions.filter(t => t.status === 'paid').reduce((sum, t) => sum + t.total, 0)
+    : todayBookings.reduce((sum, b) => {
+        const s = state.sessions.find(sess => sess.id === b.sessionId);
+        return sum + (s ? getSessionPrice(s) * b.groupSize : 0);
+      }, 0);
   const activeSessions = todaySessions.filter(s => isSessionLive(s)).length;
   const uniquePlayers = new Set(todayBookings.map(b => b.playerName)).size;
   const v = state.venue || DEFAULT_VENUE;
@@ -5664,9 +5831,608 @@ function renderTVMode() {
 }
 
 // ══════════════════════════════════════════════════════
+// PLAYER PROFILE
+// ══════════════════════════════════════════════════════
+function openPlayerProfile(playerName) {
+  const dir = state.playerDirectory || {};
+  const p = dir[playerName];
+  if (!p) { showToast('Player not found', 'error'); return; }
+
+  // Gather bookings for this player
+  const playerBookings = state.bookings
+    .filter(b => b.playerName === playerName)
+    .sort((a, b) => new Date(b.bookedAt) - new Date(a.bookedAt));
+
+  const upcoming = playerBookings.filter(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    return s && s.date >= state.currentDate && b.status !== 'cancelled';
+  }).slice(0, 5);
+
+  const recent = playerBookings.slice(0, 10);
+
+  // Stats
+  const totalPlayed = p.sessionsPlayed || 0;
+  const wins = p.wins || 0;
+  const losses = p.losses || 0;
+  const winRate = totalPlayed > 0 ? Math.round((wins / (wins + losses || 1)) * 100) : 0;
+  const avgRating = p.rating ? parseFloat(p.rating).toFixed(1) : 'N/A';
+
+  // Recent activity HTML
+  let activityHTML = '';
+  recent.forEach(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    const court = state.courts.find(c => c.id === s?.courtId);
+    const statusColors = {
+      confirmed: 'background:var(--green-subtle);color:var(--green)',
+      checked_in: 'background:var(--blue-subtle);color:var(--blue)',
+      cancelled: 'background:var(--red-subtle);color:var(--red)',
+      waitlisted: 'background:rgba(245,158,11,0.15);color:var(--amber)',
+      no_show: 'background:var(--red-subtle);color:var(--red)'
+    };
+    const statusStyle = statusColors[b.status] || statusColors.confirmed;
+    const dateStr = s ? formatDate(s.date) : 'N/A';
+    activityHTML += `
+      <div class="pp-activity-row">
+        <span class="pp-activity-date">${escHtml(dateStr)}</span>
+        <span class="pp-activity-name">${escHtml(s?.name || 'Session')}</span>
+        <span style="font-size:11px;color:var(--text-muted)">${escHtml(court?.name || '')}</span>
+        <span class="pp-activity-status" style="${statusStyle}">${b.status.replace('_',' ')}</span>
+      </div>`;
+  });
+  if (!activityHTML) activityHTML = '<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No recent activity</div>';
+
+  // Upcoming bookings HTML
+  let upcomingHTML = '';
+  upcoming.forEach(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    const court = state.courts.find(c => c.id === s?.courtId);
+    upcomingHTML += `
+      <div class="pp-activity-row">
+        <span class="pp-activity-date">${s ? formatDate(s.date) : 'N/A'}</span>
+        <span class="pp-activity-name">${escHtml(s?.name || 'Session')}</span>
+        <span style="font-size:11px;color:var(--text-muted)">${s ? fmtRange(s.startTime, s.endTime) : ''} · ${escHtml(court?.name || '')}</span>
+        <button class="staff-btn danger" style="padding:2px 8px;font-size:10px;" onclick="event.stopPropagation();cancelBooking('${b.id}');openPlayerProfile('${escHtml(playerName)}');">Cancel</button>
+      </div>`;
+  });
+  if (!upcomingHTML) upcomingHTML = '<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No upcoming bookings</div>';
+
+  // Performance chart (sessions per month, last 6 months)
+  const now = new Date();
+  const monthNames = [];
+  const monthCounts = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const monthKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    monthNames.push(d.toLocaleDateString('en-US', { month: 'short' }));
+    // Count bookings in that month
+    const count = playerBookings.filter(b => {
+      const bd = new Date(b.bookedAt);
+      return bd.getFullYear() === d.getFullYear() && bd.getMonth() === d.getMonth();
+    }).length;
+    monthCounts.push(count);
+  }
+  const maxCount = Math.max(1, ...monthCounts);
+  let chartHTML = '<div class="pp-chart">';
+  monthCounts.forEach((count, i) => {
+    const h = Math.max(4, Math.round((count / maxCount) * 76));
+    chartHTML += `<div style="flex:1;text-align:center;"><div class="pp-bar" style="height:${h}px;"></div><div class="pp-bar-label">${monthNames[i]}</div></div>`;
+  });
+  chartHTML += '</div>';
+
+  // Staff notes
+  const notes = p.notes || '';
+  const notesHTML = `
+    <div class="pp-notes">
+      <textarea id="ppNotes" placeholder="Staff-only notes about this player..." onchange="updatePlayerNotes('${escHtml(playerName)}', this.value)">${escHtml(notes)}</textarea>
+    </div>`;
+
+  // Build modal
+  const overlay = document.getElementById('modalOverlay');
+  let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    overlay.appendChild(modal);
+  }
+  modal.className = 'modal player-profile';
+  modal.style.maxWidth = '500px';
+  modal.style.position = 'relative';
+  modal.innerHTML = `
+    <button class="pp-close" onclick="closeModal()">✕</button>
+    <div class="pp-header">
+      <img class="pp-avatar" src="${avatarUrl(playerName, 160)}" alt="${escHtml(playerName)}">
+      <div class="pp-name">${escHtml(playerName)}</div>
+      <div class="pp-rating">⭐ ${avgRating} DUPR</div>
+      <div class="pp-member">Member since ${p.memberSince || 'N/A'}</div>
+    </div>
+    <div class="pp-stats">
+      <div class="pp-stat"><div class="pp-stat-val">${totalPlayed}</div><div class="pp-stat-label">Sessions</div></div>
+      <div class="pp-stat"><div class="pp-stat-val">${wins}</div><div class="pp-stat-label">Wins</div></div>
+      <div class="pp-stat"><div class="pp-stat-val">${winRate}%</div><div class="pp-stat-label">Win Rate</div></div>
+      <div class="pp-stat"><div class="pp-stat-val">${avgRating}</div><div class="pp-stat-label">Avg Rating</div></div>
+    </div>
+    <div class="pp-section">
+      <div class="pp-section-title">Upcoming Bookings</div>
+      ${upcomingHTML}
+    </div>
+    <div class="pp-section">
+      <div class="pp-section-title">Recent Activity</div>
+      ${activityHTML}
+    </div>
+    <div class="pp-section">
+      <div class="pp-section-title">Performance (Last 6 Months)</div>
+      ${chartHTML}
+    </div>
+    <div class="pp-section">
+      <div class="pp-section-title">Staff Notes</div>
+      ${notesHTML}
+    </div>
+  `;
+  overlay.classList.add('open');
+}
+
+function updatePlayerNotes(playerName, notes) {
+  const dir = state.playerDirectory || {};
+  if (dir[playerName]) {
+    dir[playerName].notes = notes;
+    save();
+  }
+}
+
+function playerLink(playerName) {
+  return `<span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(playerName)}')">${escHtml(playerName)}</span>`;
+}
+
+// ══════════════════════════════════════════════════════
+// PAYMENT FLOW
+// ══════════════════════════════════════════════════════
+let paymentMethod = 'card';
+
+function showPaymentModal(bookingId, session, playerName, groupSize) {
+  const price = getSessionPrice(session);
+  const subtotal = price * groupSize;
+  const tax = +(subtotal * 0.08).toFixed(2);
+  const total = +(subtotal + tax).toFixed(2);
+  const receiptId = 'RCP-' + genId().slice(0, 8).toUpperCase();
+
+  const overlay = document.getElementById('modalOverlay');
+  let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    overlay.appendChild(modal);
+  }
+  modal.className = 'modal payment-modal';
+  modal.style.maxWidth = '400px';
+  paymentMethod = 'card';
+  modal.innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title">Payment</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="payment-summary">
+        <div style="font-weight:700;font-size:15px;margin-bottom:8px;">${escHtml(session.name || 'Session')}</div>
+        <div class="payment-row"><span>${groupSize} player${groupSize > 1 ? 's' : ''} × $${price.toFixed(2)}</span><span>$${subtotal.toFixed(2)}</span></div>
+        <div class="payment-row"><span style="color:var(--text-muted)">Tax (8%)</span><span style="color:var(--text-muted)">$${tax.toFixed(2)}</span></div>
+        <div class="payment-row total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">PAYMENT METHOD</div>
+      <div class="payment-methods">
+        <div class="payment-method active" onclick="selectPayMethod('card', this)">
+          <div class="payment-method-icon">💳</div>
+          <div class="payment-method-label">Card</div>
+        </div>
+        <div class="payment-method" onclick="selectPayMethod('cash', this)">
+          <div class="payment-method-icon">💵</div>
+          <div class="payment-method-label">Cash</div>
+        </div>
+        <div class="payment-method" onclick="selectPayMethod('credit', this)">
+          <div class="payment-method-icon">🏷️</div>
+          <div class="payment-method-label">Member Credit</div>
+        </div>
+      </div>
+      <div id="cardInputsSection">
+        <div class="card-inputs">
+          <input type="text" id="payCardNum" placeholder="Card Number" value="4242 4242 4242 4242" maxlength="19">
+          <div class="card-row">
+            <input type="text" id="payExpiry" placeholder="MM/YY" value="12/28" maxlength="5">
+            <input type="text" id="payCVC" placeholder="CVC" value="123" maxlength="4">
+          </div>
+        </div>
+      </div>
+      <button class="pay-btn" id="payBtn" onclick="processPayment('${bookingId}', '${escHtml(playerName)}', ${subtotal}, ${tax}, ${total}, '${receiptId}', '${escHtml(session.id)}')">
+        Pay $${total.toFixed(2)}
+      </button>
+    </div>
+  `;
+  overlay.classList.add('open');
+}
+
+function selectPayMethod(method, el) {
+  paymentMethod = method;
+  document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+  el.classList.add('active');
+  const cardSection = document.getElementById('cardInputsSection');
+  if (cardSection) cardSection.style.display = method === 'card' ? '' : 'none';
+}
+
+function processPayment(bookingId, playerName, subtotal, tax, total, receiptId, sessionId) {
+  const btn = document.getElementById('payBtn');
+  if (!btn) return;
+  btn.classList.add('processing');
+  btn.textContent = 'Processing...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    // Record transaction
+    const txn = {
+      id: genId(),
+      bookingId,
+      playerName,
+      sessionId,
+      amount: subtotal,
+      tax,
+      total,
+      method: paymentMethod,
+      status: 'paid',
+      createdAt: new Date().toISOString(),
+      receiptId
+    };
+    if (!state.transactions) state.transactions = [];
+    state.transactions.push(txn);
+
+    // Update booking with payment info
+    const booking = state.bookings.find(b => b.id === bookingId);
+    if (booking) {
+      booking.payment = {
+        method: paymentMethod,
+        amount: subtotal,
+        tax,
+        total,
+        status: 'paid',
+        paidAt: new Date().toISOString(),
+        receiptId
+      };
+    }
+    save();
+
+    // Show success
+    const session = state.sessions.find(s => s.id === sessionId);
+    showPaymentSuccess(txn, session, playerName);
+  }, 1500);
+}
+
+function showPaymentSuccess(txn, session, playerName) {
+  const overlay = document.getElementById('modalOverlay');
+  let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    overlay.appendChild(modal);
+  }
+  modal.className = 'modal payment-modal';
+  modal.style.maxWidth = '400px';
+  const methodLabels = { card: '💳 Card', cash: '💵 Cash', credit: '🏷️ Member Credit' };
+  modal.innerHTML = `
+    <div class="payment-success">
+      <div class="checkmark">✅</div>
+      <h2 style="margin:12px 0 4px;">Payment Successful!</h2>
+      <div style="color:var(--text-muted);font-size:13px;">${escHtml(playerName)}</div>
+      <div class="receipt">
+        <div class="receipt-header">
+          <div style="font-weight:700;font-size:14px;">${escHtml(state.venue?.name || 'Ace Pickleball Club')}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Receipt</div>
+        </div>
+        <div class="receipt-row"><span>Receipt ID</span><span style="font-weight:600;">${txn.receiptId}</span></div>
+        <div class="receipt-row"><span>Session</span><span>${escHtml(session?.name || 'Session')}</span></div>
+        <div class="receipt-row"><span>Amount</span><span>$${txn.amount.toFixed(2)}</span></div>
+        <div class="receipt-row"><span>Tax</span><span>$${txn.tax.toFixed(2)}</span></div>
+        <div class="receipt-row" style="font-weight:700;font-size:15px;padding-top:8px;border-top:1px solid var(--border);margin-top:4px;"><span>Total</span><span style="color:var(--green)">$${txn.total.toFixed(2)}</span></div>
+        <div class="receipt-row"><span>Method</span><span>${methodLabels[txn.method] || txn.method}</span></div>
+        <div class="receipt-row"><span>Date</span><span>${new Date(txn.createdAt).toLocaleString()}</span></div>
+        <div class="receipt-row"><span>Status</span><span class="payment-badge paid">PAID</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="confirm-booking-btn" style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);" onclick="closeModal();switchView('bookings');">View Bookings</button>
+        <button class="confirm-booking-btn" style="flex:1;" onclick="closeModal();">Done</button>
+      </div>
+    </div>
+  `;
+}
+
+function getTransactionTotal() {
+  if (!state.transactions) return 0;
+  return state.transactions.filter(t => t.status === 'paid').reduce((sum, t) => sum + t.total, 0);
+}
+
+// ══════════════════════════════════════════════════════
+// RECURRING BOOKINGS
+// ══════════════════════════════════════════════════════
+function toggleRecurringOptions() {
+  const sel = document.getElementById('fRecurring');
+  const opts = document.getElementById('recurringOptions');
+  if (!sel || !opts) return;
+  opts.classList.toggle('visible', sel.value !== 'none');
+}
+
+function createRecurringRule(template, frequency, startDate, endDate, daysOfWeek) {
+  const rule = {
+    id: genId(),
+    sessionTemplate: template,
+    frequency,
+    startDate,
+    endDate: endDate || null,
+    daysOfWeek: daysOfWeek || [],
+    lastGenerated: startDate
+  };
+  if (!state.recurringRules) state.recurringRules = [];
+  state.recurringRules.push(rule);
+  save();
+  return rule;
+}
+
+function generateRecurringSessions() {
+  if (!state.recurringRules || state.recurringRules.length === 0) return;
+  const today = state.currentDate;
+  const v = state.venue || DEFAULT_VENUE;
+
+  state.recurringRules.forEach(rule => {
+    if (!rule.startDate || !rule.sessionTemplate) return;
+    const endDate = rule.endDate || '2099-12-31';
+    let cursor = rule.lastGenerated || rule.startDate;
+
+    // Generate up to 14 days ahead
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 14);
+    const maxDateStr = maxDate.toISOString().split('T')[0];
+
+    let d = new Date(cursor + 'T12:00:00');
+    d.setDate(d.getDate() + 1); // start from day after lastGenerated
+
+    while (formatDateStr(d) <= endDate && formatDateStr(d) <= maxDateStr) {
+      const dateStr = formatDateStr(d);
+      const dayOfWeek = d.getDay();
+
+      let shouldGenerate = false;
+      if (rule.frequency === 'daily') {
+        shouldGenerate = true;
+      } else if (rule.frequency === 'weekly' || rule.frequency === 'biweekly') {
+        if (rule.daysOfWeek && rule.daysOfWeek.includes(dayOfWeek)) {
+          if (rule.frequency === 'biweekly') {
+            const startD = new Date(rule.startDate + 'T12:00:00');
+            const weeksDiff = Math.floor((d - startD) / (7 * 86400000));
+            shouldGenerate = weeksDiff % 2 === 0;
+          } else {
+            shouldGenerate = true;
+          }
+        }
+      }
+
+      if (shouldGenerate) {
+        // Check if session already exists for this rule+date
+        const exists = state.sessions.some(s =>
+          s.date === dateStr &&
+          s.courtId === rule.sessionTemplate.courtId &&
+          s.startTime === rule.sessionTemplate.startTime &&
+          s.name === rule.sessionTemplate.name
+        );
+        if (!exists) {
+          state.sessions.push({
+            ...rule.sessionTemplate,
+            id: genId(),
+            date: dateStr,
+            recurring: rule.frequency
+          });
+        }
+      }
+      d.setDate(d.getDate() + 1);
+    }
+    rule.lastGenerated = formatDateStr(new Date(maxDate.getTime() - 86400000));
+  });
+  save();
+}
+
+function deleteRecurringRule(ruleId) {
+  if (!confirm('Delete this recurring rule?')) return;
+  state.recurringRules = (state.recurringRules || []).filter(r => r.id !== ruleId);
+  save();
+  renderSettingsView();
+  showToast('Recurring rule deleted', 'warning');
+}
+
+function renderRecurringRulesSection() {
+  const rules = state.recurringRules || [];
+  const freqLabels = { daily: 'Daily', weekly: 'Weekly', biweekly: 'Bi-weekly' };
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  let rulesHTML = rules.map(r => {
+    const days = (r.daysOfWeek || []).map(d => dayNames[d]).join(', ');
+    return `
+      <div class="recurring-rule-card">
+        <div class="recurring-rule-info">
+          <div class="recurring-rule-name">${escHtml(r.sessionTemplate?.name || 'Recurring Session')}</div>
+          <div class="recurring-rule-meta">${freqLabels[r.frequency] || r.frequency}${days ? ' · ' + days : ''} · ${r.startDate || 'N/A'}${r.endDate ? ' to ' + r.endDate : ''}</div>
+        </div>
+        <div class="recurring-rule-actions">
+          <button class="staff-btn danger" onclick="deleteRecurringRule('${r.id}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="settings-section">
+      <div class="settings-section-title">🔄 Recurring Rules (${rules.length})</div>
+      ${rulesHTML || '<div style="color:var(--text-muted);font-size:13px;padding:12px 0;">No recurring rules. Set up recurring when creating a session.</div>'}
+    </div>
+  `;
+}
+
+function seedRecurringRules() {
+  if (state.recurringRules && state.recurringRules.length > 0) return;
+  const v = state.venue || DEFAULT_VENUE;
+  const today = state.currentDate;
+  state.recurringRules = [
+    createRecurringRule(
+      { name: 'Weekly Open Play', courtId: 'c1', startTime: '09:00', endTime: '10:00', type: 'open', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.openPlay, instructor: '', description: 'All skill levels welcome.', skillLevel: 'all' },
+      'weekly', today, null, [1, 3, 5] // Mon, Wed, Fri
+    ),
+    createRecurringRule(
+      { name: 'Friday Night League', courtId: 'c1', startTime: '18:00', endTime: '19:30', type: 'league', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.league, instructor: 'Coach Mike', description: 'Competitive league play. DUPR 3.0+ required.', skillLevel: 'intermediate' },
+      'weekly', today, null, [5] // Friday
+    ),
+    createRecurringRule(
+      { name: 'Weekend Clinic', courtId: 'c2', startTime: '10:00', endTime: '11:00', type: 'clinic', sport: v.sport, maxPlayers: 6, pricePerPlayer: v.pricing.clinic, instructor: 'Coach Sarah', description: 'Beginner clinic. Paddles provided.', skillLevel: 'beginner' },
+      'weekly', today, null, [6, 0] // Sat, Sun
+    )
+  ];
+}
+
+// ══════════════════════════════════════════════════════
+// STAFF MANAGEMENT
+// ══════════════════════════════════════════════════════
+function seedStaff() {
+  if (state.staff && state.staff.length > 0) return;
+  state.staff = [
+    { id: genId(), name: 'Alex Morgan', role: 'owner', email: 'alex@acepickleball.com', phone: '(555) 100-0001', avatar: '', active: true, createdAt: '2024-01-15' },
+    { id: genId(), name: 'Jordan Lee', role: 'manager', email: 'jordan@acepickleball.com', phone: '(555) 100-0002', avatar: '', active: true, createdAt: '2024-03-01' },
+    { id: genId(), name: 'Sam Rivera', role: 'front_desk', email: 'sam@acepickleball.com', phone: '(555) 100-0003', avatar: '', active: true, createdAt: '2024-06-10' }
+  ];
+  save();
+}
+
+function renderStaffSection() {
+  const staff = state.staff || [];
+  const roleLabels = { owner: 'Owner', manager: 'Manager', front_desk: 'Front Desk', coach: 'Coach' };
+  const roleDescriptions = {
+    owner: 'Full access to all features',
+    manager: 'Manage sessions, bookings, and staff',
+    front_desk: 'Check-in, walk-ins, and bookings',
+    coach: 'View sessions and manage players'
+  };
+
+  let staffHTML = staff.map(s => `
+    <div class="staff-card">
+      <img class="staff-avatar" src="${avatarUrl(s.name, 80)}" alt="${escHtml(s.name)}">
+      <div class="staff-info">
+        <div class="staff-name">${escHtml(s.name)}</div>
+        <div class="staff-email">${escHtml(s.email || '')}</div>
+      </div>
+      <span class="staff-role-badge ${s.role}">${roleLabels[s.role] || s.role}</span>
+      <div class="staff-actions">
+        <button class="staff-btn" onclick="editStaff('${s.id}')">Edit</button>
+        <button class="staff-btn danger" onclick="removeStaff('${s.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="settings-section">
+      <div class="settings-section-title">👥 Staff Members (${staff.length})</div>
+      ${staffHTML || '<div style="color:var(--text-muted);font-size:13px;padding:12px 0;">No staff members</div>'}
+      <button class="add-court-card" style="margin-top:8px;padding:16px;" onclick="openAddStaffModal()">+ Add Staff Member</button>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Role Permissions</div>
+      ${Object.entries(roleDescriptions).map(([role, desc]) => `
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;">
+          <span class="staff-role-badge ${role}" style="min-width:80px;text-align:center;">${roleLabels[role]}</span>
+          <span style="color:var(--text-muted)">${desc}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function openAddStaffModal(staffId) {
+  const existing = staffId ? (state.staff || []).find(s => s.id === staffId) : null;
+  const overlay = document.getElementById('modalOverlay');
+  let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    overlay.appendChild(modal);
+  }
+  modal.className = 'modal';
+  modal.style.maxWidth = '400px';
+  modal.innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title">${existing ? 'Edit Staff' : 'Add Staff Member'}</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Full Name</label>
+        <input type="text" id="fStaffName" value="${escHtml(existing?.name || '')}" placeholder="e.g., Alex Morgan" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Role</label>
+        <select id="fStaffRole">
+          <option value="owner" ${existing?.role === 'owner' ? 'selected' : ''}>Owner — Full access</option>
+          <option value="manager" ${existing?.role === 'manager' ? 'selected' : ''}>Manager — Manage sessions, bookings, staff</option>
+          <option value="front_desk" ${existing?.role === 'front_desk' ? 'selected' : ''}>Front Desk — Check-in, walk-ins, bookings</option>
+          <option value="coach" ${existing?.role === 'coach' ? 'selected' : ''}>Coach — View sessions, manage players</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Email</label>
+        <input type="email" id="fStaffEmail" value="${escHtml(existing?.email || '')}" placeholder="email@example.com" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Phone</label>
+        <input type="tel" id="fStaffPhone" value="${escHtml(existing?.phone || '')}" placeholder="(555) 000-0000" autocomplete="off">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveStaff('${staffId || ''}')">${existing ? 'Update' : 'Add Staff'}</button>
+    </div>
+  `;
+  overlay.classList.add('open');
+}
+
+function editStaff(staffId) {
+  openAddStaffModal(staffId);
+}
+
+function saveStaff(staffId) {
+  const name = document.getElementById('fStaffName')?.value.trim();
+  const role = document.getElementById('fStaffRole')?.value;
+  const email = document.getElementById('fStaffEmail')?.value.trim();
+  const phone = document.getElementById('fStaffPhone')?.value.trim();
+  if (!name) { showToast('Please enter a name', 'error'); return; }
+
+  if (staffId) {
+    const staff = (state.staff || []).find(s => s.id === staffId);
+    if (staff) {
+      staff.name = name;
+      staff.role = role;
+      staff.email = email;
+      staff.phone = phone;
+    }
+    showToast('Staff updated ✓', 'success');
+  } else {
+    if (!state.staff) state.staff = [];
+    state.staff.push({ id: genId(), name, role, email, phone, avatar: '', active: true, createdAt: state.currentDate });
+    showToast('Staff added ✓', 'success');
+  }
+  save();
+  closeModal();
+  renderSettingsView();
+}
+
+function removeStaff(staffId) {
+  if (!confirm('Remove this staff member?')) return;
+  state.staff = (state.staff || []).filter(s => s.id !== staffId);
+  save();
+  renderSettingsView();
+  showToast('Staff removed', 'warning');
+}
+
+// ══════════════════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════════════════
 load();
+seedStaff();
+seedRecurringRules();
+generateRecurringSessions();
 render();
 // Update brand from venue config
 const brandText = document.getElementById('brandText');
