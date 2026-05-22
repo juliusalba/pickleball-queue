@@ -403,6 +403,8 @@ body {
 .pill-reserved  { background: rgba(59,130,246,0.2); color: #93c5fd; border-color: rgba(59,130,246,0.4); }
 .pill-league    { background: rgba(245,166,35,0.2); color: #fcd34d; border-color: rgba(245,166,35,0.4); }
 .pill-tournament{ background: rgba(239,68,68,0.2); color: #fca5a5; border-color: rgba(239,68,68,0.4); }
+.pill-clinic    { background: rgba(139,92,246,0.2); color: #c4b5fd; border-color: rgba(139,92,246,0.4); }
+.pill-lesson    { background: rgba(236,72,153,0.2); color: #f9a8d4; border-color: rgba(236,72,153,0.4); }
 
 /* ──────────────────────────────────────────────────────
    DAY GRID
@@ -1959,6 +1961,296 @@ body {
   transition: width 0.4s ease;
 }
 .utilization-pct { font-size: 12px; font-weight: 700; min-width: 36px; text-align: right; }
+
+/* ══════════════════════════════════════════════════════
+   BOOKING SYSTEM — AIRBNB STYLE
+   ══════════════════════════════════════════════════════ */
+.booking-browse { max-width: 700px; margin: 0 auto; padding: 20px 16px; }
+.date-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.date-pills::-webkit-scrollbar { display: none; }
+.date-pill {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  min-width: 70px;
+}
+.date-pill .day { font-size: 16px; font-weight: 800; display: block; margin-bottom: 2px; }
+.date-pill .day-name { font-size: 10px; display: block; }
+.date-pill.active { background: var(--teal); color: white; border-color: var(--teal); }
+.date-pill:hover:not(.active) { border-color: var(--border-hover); }
+
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; }
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-chip.active { background: var(--teal-subtle); color: var(--teal); border-color: var(--teal); }
+.filter-chip:hover:not(.active) { border-color: var(--border-hover); }
+
+/* Session Cards */
+.session-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.session-card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+.session-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.session-card-title { font-size: 16px; font-weight: 700; }
+.session-card-price { font-size: 18px; font-weight: 800; color: var(--green); }
+.session-card-price span { font-size: 11px; font-weight: 500; color: var(--text-muted); display: block; }
+.session-card-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.session-card-meta .meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.session-card-description { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.spots-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.spots-track { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+.spots-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.spots-text { font-size: 11px; font-weight: 600; min-width: 80px; text-align: right; }
+.book-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.book-btn.available { background: var(--teal); color: white; }
+.book-btn.available:hover { background: var(--teal-hover); }
+.book-btn.full { background: var(--amber); color: #000; }
+.book-btn.full:hover { background: #d97706; }
+
+/* Booking Detail Modal */
+.booking-detail { padding: 0; }
+.booking-detail-hero { padding: 24px; border-bottom: 1px solid var(--border); }
+.booking-detail-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.booking-detail-subtitle { font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.booking-detail-body { padding: 24px; }
+.booking-detail-section { margin-bottom: 20px; }
+.booking-detail-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px; }
+.booking-detail-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+.price-breakdown {
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.price-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
+.price-row.total { font-size: 18px; font-weight: 800; color: var(--green); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+.booking-form-group { margin-bottom: 16px; }
+.booking-form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.booking-form-group input, .booking-form-group textarea, .booking-form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+}
+.booking-form-group input:focus, .booking-form-group textarea:focus, .booking-form-group select:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+.booking-form-group textarea { resize: vertical; min-height: 60px; }
+.confirm-booking-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.confirm-booking-btn:hover { background: var(--teal-hover); }
+.cancellation-policy { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 12px; }
+
+/* Booking Confirmation */
+.booking-confirmation { text-align: center; padding: 40px 24px; }
+.booking-confirmation .checkmark {
+  font-size: 64px; margin-bottom: 16px;
+  animation: checkBounce 0.6s ease;
+}
+@keyframes checkBounce {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.booking-confirmation h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; color: var(--green); }
+.booking-confirmation .booking-ref { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+.booking-summary { text-align: left; background: var(--bg-surface); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px; }
+.booking-summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+.booking-summary-row:last-child { border: none; }
+
+/* My Bookings */
+.my-bookings { margin-bottom: 24px; }
+.my-bookings-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+.my-booking-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  border-left: 3px solid var(--teal);
+}
+.my-booking-info { flex: 1; }
+.my-booking-name { font-size: 14px; font-weight: 600; }
+.my-booking-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.my-booking-actions { display: flex; gap: 6px; }
+.my-booking-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.my-booking-actions button:hover { opacity: 0.8; }
+.btn-checkin { background: var(--green-subtle); color: var(--green); }
+.btn-cancel-booking { background: var(--red-subtle); color: var(--red); }
+
+/* Instructor badge */
+.instructor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Enhanced session form */
+.form-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 16px 0 8px 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.form-section-title:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+
+/* Skill level badges */
+.skill-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.skill-badge.all { background: rgba(255,255,255,0.06); color: var(--text-secondary); }
+.skill-badge.beginner { background: var(--green-subtle); color: var(--green); }
+.skill-badge.intermediate { background: var(--blue-subtle); color: var(--blue); }
+.skill-badge.advanced { background: var(--red-subtle); color: var(--red); }
+
+/* Session detail meta */
+.sdm-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.sdm-meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+.sdm-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 12px 0;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-sm);
+}
+.sdm-price-tag {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* Player count selector */
+.player-count-selector {
+  display: flex;
+  gap: 8px;
+}
+.player-count-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.player-count-btn.active {
+  background: var(--teal);
+  color: white;
+  border-color: var(--teal);
+}
+.player-count-btn:hover:not(.active) {
+  border-color: var(--border-hover);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+.empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state-text { font-size: 14px; }
 </style>
 </head>
 <body>
@@ -1984,7 +2276,7 @@ body {
 
   <div class="header-actions">
     <button class="header-btn" onclick="openModal('queue')">⚡ Queue</button>
-    <button class="header-btn" onclick="openModal('booking')">+ Book</button>
+    <button class="header-btn" onclick="switchView('bookings')">+ Book</button>
   </div>
 </header>
 
@@ -2080,7 +2372,9 @@ const SESSION_COLORS = {
   open:       { pill: 'pill-open',       hex: '#14B8A6', label: 'Open Play' },
   reserved:   { pill: 'pill-reserved',   hex: '#3B82F6', label: 'Reserved' },
   league:     { pill: 'pill-league',     hex: '#F5A623', label: 'League' },
-  tournament: { pill: 'pill-tournament', hex: '#EF4444', label: 'Tournament' }
+  tournament: { pill: 'pill-tournament', hex: '#EF4444', label: 'Tournament' },
+  clinic:     { pill: 'pill-clinic',     hex: '#8B5CF6', label: 'Clinic' },
+  lesson:     { pill: 'pill-lesson',     hex: '#EC4899', label: 'Lesson' }
 };
 const ROW_H = 72; // must match --hour-h in CSS
 
@@ -2096,7 +2390,9 @@ let state = {
   bookings: [],
   queue: [],
   selectedSessionId: null,
-  currentDate: new Date().toISOString().split('T')[0]
+  currentDate: new Date().toISOString().split('T')[0],
+  bookingDate: new Date().toISOString().split('T')[0],
+  bookingFilter: 'all'
 };
 
 // ══════════════════════════════════════════════════════
@@ -2115,7 +2411,9 @@ const DEFAULT_VENUE = {
     openPlay: 15,
     reserved: 40,
     league: 25,
-    tournament: 30
+    tournament: 30,
+    clinic: 35,
+    lesson: 50
   }
 };
 
@@ -2273,19 +2571,20 @@ function load() {
 
 function seedSampleData() {
   const today = state.currentDate;
+  const v = state.venue || DEFAULT_VENUE;
   state.sessions = [
-    { id: genId(), courtId: 'c1', date: today, startTime: '08:00', endTime: '09:00', type: 'open' },
-    { id: genId(), courtId: 'c1', date: today, startTime: '09:00', endTime: '10:00', type: 'reserved' },
-    { id: genId(), courtId: 'c1', date: today, startTime: '10:00', endTime: '11:00', type: 'open' },
-    { id: genId(), courtId: 'c1', date: today, startTime: '11:00', endTime: '12:00', type: 'open' },
-    { id: genId(), courtId: 'c1', date: today, startTime: '12:00', endTime: '13:00', type: 'open' },
-    { id: genId(), courtId: 'c1', date: today, startTime: '14:00', endTime: '15:00', type: 'league' },
-    { id: genId(), courtId: 'c1', date: today, startTime: '15:00', endTime: '16:00', type: 'open' },
-    { id: genId(), courtId: 'c2', date: today, startTime: '08:00', endTime: '09:00', type: 'reserved' },
-    { id: genId(), courtId: 'c2', date: today, startTime: '09:00', endTime: '10:00', type: 'open' },
-    { id: genId(), courtId: 'c2', date: today, startTime: '10:00', endTime: '11:00', type: 'open' },
-    { id: genId(), courtId: 'c2', date: today, startTime: '13:00', endTime: '14:00', type: 'tournament' },
-    { id: genId(), courtId: 'c2', date: today, startTime: '14:00', endTime: '15:00', type: 'open' },
+    { id: genId(), name: 'Morning Open Play', courtId: 'c1', date: today, startTime: '08:00', endTime: '09:00', type: 'open', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.openPlay, instructor: '', description: 'All skill levels welcome. Bring your own paddle.', skillLevel: 'all', recurring: 'none' },
+    { id: genId(), name: 'Marcus & Sophie Booking', courtId: 'c1', date: today, startTime: '09:00', endTime: '10:00', type: 'reserved', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.reserved, instructor: '', description: 'Private court reservation.', skillLevel: 'all', recurring: 'none' },
+    { id: genId(), name: 'Drop-In Doubles', courtId: 'c1', date: today, startTime: '10:00', endTime: '11:00', type: 'open', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.openPlay, instructor: '', description: 'Come join for casual doubles. Paddle rotation every game.', skillLevel: 'all', recurring: 'none' },
+    { id: genId(), name: 'Lunchtime Rally', courtId: 'c1', date: today, startTime: '11:00', endTime: '12:00', type: 'open', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.openPlay, instructor: '', description: 'Quick games during lunch break.', skillLevel: 'all', recurring: 'none' },
+    { id: genId(), name: 'Afternoon Open Play', courtId: 'c1', date: today, startTime: '12:00', endTime: '13:00', type: 'open', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.openPlay, instructor: '', description: 'Open play for all levels. Games rotate every 15 minutes.', skillLevel: 'all', recurring: 'none' },
+    { id: genId(), name: 'Friday Night League', courtId: 'c1', date: today, startTime: '14:00', endTime: '15:00', type: 'league', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.league, instructor: 'Coach Mike', description: 'Competitive league play. Must be DUPR 3.0+ to register.', skillLevel: 'intermediate', recurring: 'weekly' },
+    { id: genId(), name: 'Evening Open Play', courtId: 'c1', date: today, startTime: '15:00', endTime: '16:00', type: 'open', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.openPlay, instructor: '', description: 'Wind down with some casual games.', skillLevel: 'all', recurring: 'none' },
+    { id: genId(), name: 'Advanced Training', courtId: 'c2', date: today, startTime: '08:00', endTime: '09:00', type: 'reserved', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.reserved, instructor: 'Coach Sarah', description: 'Intensive training session for advanced players. DUPR 4.5+ required.', skillLevel: 'advanced', recurring: 'none' },
+    { id: genId(), name: 'Beginner Clinic', courtId: 'c2', date: today, startTime: '09:00', endTime: '10:00', type: 'clinic', sport: v.sport, maxPlayers: 6, pricePerPlayer: v.pricing.clinic, instructor: 'Coach Sarah', description: 'Learn the basics! Paddles provided. Perfect for first-timers.', skillLevel: 'beginner', recurring: 'weekly' },
+    { id: genId(), name: 'Mid-Morning Mix', courtId: 'c2', date: today, startTime: '10:00', endTime: '11:00', type: 'open', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.openPlay, instructor: '', description: 'Mixed skill level open play. Great for meeting new players!', skillLevel: 'all', recurring: 'none' },
+    { id: genId(), name: 'Summer Tournament', courtId: 'c2', date: today, startTime: '13:00', endTime: '14:00', type: 'tournament', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.tournament, instructor: '', description: 'Single elimination bracket. Prizes for top 3 teams!', skillLevel: 'intermediate', recurring: 'none' },
+    { id: genId(), name: 'Afternoon Open Play', courtId: 'c2', date: today, startTime: '14:00', endTime: '15:00', type: 'open', sport: v.sport, maxPlayers: 4, pricePerPlayer: v.pricing.openPlay, instructor: '', description: 'Casual afternoon games. All welcome!', skillLevel: 'all', recurring: 'none' },
   ];
   const ss = state.sessions; // shorthand
 
@@ -2416,6 +2715,24 @@ function duprDisplay(rating) {
 
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function generateSessionName(type, startTime) {
+  const [h] = startTime.split(':').map(Number);
+  const timeLabel = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
+  const typeLabels = { open: 'Open Play', reserved: 'Reserved Session', league: 'League Match', tournament: 'Tournament', clinic: 'Clinic', lesson: 'Private Lesson' };
+  return `${timeLabel} ${typeLabels[type] || 'Session'}`;
+}
+
+function getSessionPrice(s) {
+  if (s.pricePerPlayer != null) return s.pricePerPlayer;
+  const v = state.venue || DEFAULT_VENUE;
+  const map = { open: v.pricing.openPlay, reserved: v.pricing.reserved, league: v.pricing.league, tournament: v.pricing.tournament, clinic: v.pricing.clinic, lesson: v.pricing.lesson };
+  return map[s.type] || v.pricing.openPlay;
+}
+
+function getSessionMaxPlayers(s) {
+  return s.maxPlayers || 4;
 }
 
 // ─── Matchup Algorithm ───────────────────────────────────
@@ -3020,7 +3337,7 @@ function renderQuickPanel() {
     </button>`;
   }
   actionsHTML += `
-    <button class="qp-btn" onclick="openModal('booking','${s.id}')">+ Book</button>
+    <button class="qp-btn" onclick="openModal('bookingDetail','${s.id}')">+ Book</button>
     <button class="qp-btn danger" onclick="openModal('noShow','${s.id}')">No-show</button>
   `;
   document.getElementById('qpActions').innerHTML = actionsHTML;
@@ -3091,13 +3408,45 @@ function openModal(mode, refId = null) {
   const body  = document.getElementById('modalBody');
 
   if (mode === 'session') {
-    title.textContent = 'Add Session';
+    const v = state.venue || DEFAULT_VENUE;
+    title.textContent = 'New Session';
     body.innerHTML = `
+      <div class="form-section-title">Basic Info</div>
       <div class="fg">
-        <label>Court</label>
-        <select id="fCourt">
-          ${state.courts.map(c => `<option value="${c.id}" ${c.id === refId ? 'selected' : ''}>${c.name}</option>`).join('')}
+        <label>Session Name</label>
+        <input type="text" id="fName" placeholder="e.g., Morning Open Play, Friday Night League" autocomplete="off" autofocus>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Court</label>
+          <select id="fCourt">
+            ${state.courts.map(c => `<option value="${c.id}" ${c.id === refId ? 'selected' : ''}>${c.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="fg">
+          <label>Sport</label>
+          <select id="fSport">
+            ${['pickleball','tennis','padel','badminton','basketball','futsal'].map(sp =>
+              `<option value="${sp}" ${sp === v.sport ? 'selected' : ''}>${sp.charAt(0).toUpperCase()+sp.slice(1)}</option>`
+            ).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Session Type</label>
+        <select id="fType" onchange="updateSessionPrice()">
+          <option value="open">🏓 Open Play (queue)</option>
+          <option value="reserved">🔒 Reserved (booked)</option>
+          <option value="league">🏆 League</option>
+          <option value="tournament">🎯 Tournament</option>
+          <option value="clinic">📚 Clinic</option>
+          <option value="lesson">🎓 Lesson</option>
         </select>
+      </div>
+      <div class="form-section-title">Schedule</div>
+      <div class="fg">
+        <label>Date</label>
+        <input type="date" id="fDate" value="${state.currentDate}">
       </div>
       <div class="fg-row">
         <div class="fg">
@@ -3109,13 +3458,42 @@ function openModal(mode, refId = null) {
           <input type="time" id="fEnd" value="10:00" step="3600">
         </div>
       </div>
+      <div class="form-section-title">Capacity & Pricing</div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Max Players</label>
+          <input type="number" id="fMaxPlayers" value="4" min="1" max="20">
+        </div>
+        <div class="fg">
+          <label>Price Per Player ($)</label>
+          <input type="number" id="fPrice" value="${v.pricing.openPlay}" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="form-section-title">Details</div>
       <div class="fg">
-        <label>Type</label>
-        <select id="fType">
-          <option value="open">🏓 Open Play (queue)</option>
-          <option value="reserved">🔒 Reserved (booked)</option>
-          <option value="league">🏆 League</option>
-          <option value="tournament">🎯 Tournament</option>
+        <label>Skill Level</label>
+        <select id="fSkill">
+          <option value="all">All Levels</option>
+          <option value="beginner">Beginner (2.0–3.0)</option>
+          <option value="intermediate">Intermediate (3.0–4.5)</option>
+          <option value="advanced">Advanced (4.5+)</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Instructor / Coach <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+        <input type="text" id="fInstructor" placeholder="e.g., Coach Sarah" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label>Description <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+        <textarea id="fDescription" placeholder="e.g., All skill levels welcome. Bring your own paddle."></textarea>
+      </div>
+      <div class="fg">
+        <label>Recurring</label>
+        <select id="fRecurring">
+          <option value="none">One-time</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Bi-weekly</option>
         </select>
       </div>
     `;
@@ -3204,6 +3582,101 @@ function openModal(mode, refId = null) {
           </select>
         </div>
         <p style="font-size:12px;color:var(--text-muted);">The booking will be marked as a no-show.</p>`;
+  } else if (mode === 'bookingDetail') {
+    const s = state.sessions.find(x => x.id === refId);
+    if (!s) { closeModal(); return; }
+    const court = state.courts.find(c => c.id === s.courtId);
+    const colorInfo = SESSION_COLORS[s.type] || SESSION_COLORS.open;
+    const price = getSessionPrice(s);
+    const maxP = getSessionMaxPlayers(s);
+    const booked = totalPlayers(s.id);
+    const spotsLeft = Math.max(0, maxP - booked);
+    const skillLabels = { all: 'All Levels', beginner: 'Beginner (2.0–3.0)', intermediate: 'Intermediate (3.0–4.5)', advanced: 'Advanced (4.5+)' };
+    const skillClass = s.skillLevel || 'all';
+
+    // Use full modal with custom content
+    const overlay = document.getElementById('modalOverlay');
+    let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.style.maxWidth = '600px';
+      overlay.appendChild(modal);
+    }
+    modal.className = 'modal';
+    modal.style.maxWidth = '600px';
+    modal.innerHTML = `
+      <div class="booking-detail">
+        <div class="booking-detail-hero">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div class="booking-detail-title">${escHtml(s.name || 'Session')}</div>
+              <div class="booking-detail-subtitle">
+                <span class="session-type-pill ${colorInfo.pill}">${colorInfo.label}</span>
+                <span>🏟️ ${escHtml(court?.name || '')}</span>
+                <span>🕐 ${fmtRange(s.startTime, s.endTime)}</span>
+              </div>
+            </div>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+          </div>
+        </div>
+        <div class="booking-detail-body">
+          ${s.description ? `
+          <div class="booking-detail-section">
+            <div class="booking-detail-section-title">About</div>
+            <div class="booking-detail-desc">${escHtml(s.description)}</div>
+          </div>` : ''}
+          <div class="booking-detail-section">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+              <span class="sdm-meta-tag">🎯 ${(s.sport || 'pickleball').charAt(0).toUpperCase() + (s.sport || 'pickleball').slice(1)}</span>
+              <span class="skill-badge ${skillClass}">${skillLabels[skillClass] || 'All Levels'}</span>
+              ${s.instructor ? `<span class="instructor-badge">👤 ${escHtml(s.instructor)}</span>` : ''}
+              <span class="sdm-meta-tag">📅 ${formatDate(s.date)}</span>
+            </div>
+          </div>
+          <div class="booking-detail-section">
+            <div class="booking-detail-section-title">Price Breakdown</div>
+            <div class="price-breakdown" id="priceBreakdown">
+              <div class="price-row"><span>$${price.toFixed(2)} per player</span><span id="priceCalcPlayers">× 2 players</span></div>
+              <div class="price-row total"><span>Total</span><span id="priceCalcTotal">$${(price * 2).toFixed(2)}</span></div>
+            </div>
+          </div>
+          <div class="booking-detail-section">
+            <div class="booking-detail-section-title">Your Booking</div>
+            <div class="booking-form-group">
+              <label>Number of Players</label>
+              <div class="player-count-selector" id="playerCountSelector">
+                ${[1,2,3,4].map(n => `<button class="player-count-btn ${n===2?'active':''}" onclick="selectPlayerCount(${n},${price})" ${n > spotsLeft ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''}>${n}</button>`).join('')}
+              </div>
+              ${spotsLeft < maxP ? `<div style="font-size:11px;color:var(--amber);margin-top:6px;">⚠ ${spotsLeft} of ${maxP} spots remaining</div>` : ''}
+            </div>
+            <div class="booking-form-group">
+              <label>Player / Group Name</label>
+              <input type="text" id="fBDName" placeholder="e.g., Alex & Jordan" autocomplete="off">
+            </div>
+            <div class="booking-form-group">
+              <label>DUPR Rating (2.0–9.0)</label>
+              <div style="display:flex;align-items:center;gap:12px;padding:6px 0;">
+                <span style="font-size:10px;color:var(--text-muted);min-width:28px;">2.0</span>
+                <input type="range" id="fBDRating" min="2.0" max="9.0" step="0.1" value="3.5"
+                       style="flex:1;accent-color:#F5A623;" oninput="document.getElementById('fBDRatingValue').textContent=parseFloat(this.value).toFixed(1)">
+                <span style="font-size:10px;color:var(--text-muted);min-width:28px;">9.0</span>
+                <span id="fBDRatingValue" style="font-size:13px;font-weight:800;color:#F5A623;min-width:36px;text-align:right;">3.5</span>
+              </div>
+            </div>
+            <div class="booking-form-group">
+              <label>Special Notes <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+              <textarea id="fBDNotes" placeholder="Any special requests or notes..."></textarea>
+            </div>
+          </div>
+          <button class="confirm-booking-btn" onclick="confirmBooking('${s.id}')">
+            ${spotsLeft > 0 ? '✓ Confirm Booking' : '⏳ Join Waitlist'}
+          </button>
+          <div class="cancellation-policy">Free cancellation up to 2 hours before start time.</div>
+        </div>
+      </div>
+    `;
+    overlay.classList.add('open');
+    return;
   } else if (mode === 'sessionDetail') {
     const s = state.sessions.find(x => x.id === refId);
     if (!s) { closeModal(); return; }
@@ -3277,9 +3750,18 @@ function openModal(mode, refId = null) {
     <div class="sdm-header">
       <div class="sdm-title">
         <span class="session-type-pill ${colorInfo.pill}">${colorInfo.label}</span>
-        <span class="sdm-court-time">${escHtml(court?.name || '')} · ${fmtRange(s.startTime, s.endTime)}</span>
+        <span style="font-size:16px;font-weight:800;margin-left:4px;">${escHtml(s.name || 'Session')}</span>
         ${isLive ? '<span class="sdm-live-badge">● LIVE NOW</span>' : ''}
       </div>
+      <div class="sdm-court-time">${escHtml(court?.name || '')} · ${fmtRange(s.startTime, s.endTime)} · ${formatDate(s.date)}</div>
+      <div class="sdm-meta-row">
+        <span class="sdm-meta-tag">🎯 ${(s.sport || 'pickleball').charAt(0).toUpperCase() + (s.sport || 'pickleball').slice(1)}</span>
+        ${s.skillLevel && s.skillLevel !== 'all' ? `<span class="skill-badge ${s.skillLevel}">${({all:'All Levels',beginner:'Beginner',intermediate:'Intermediate',advanced:'Advanced'})[s.skillLevel] || 'All Levels'}</span>` : ''}
+        ${s.instructor ? `<span class="sdm-meta-tag">👤 ${escHtml(s.instructor)}</span>` : ''}
+        <span class="sdm-price-tag">$${getSessionPrice(s).toFixed(2)}/player</span>
+        <span class="sdm-meta-tag">👥 ${totalPlayers(s.id)}/${getSessionMaxPlayers(s)} players</span>
+      </div>
+      ${s.description ? `<div class="sdm-description">${escHtml(s.description)}</div>` : ''}
       <button class="sdm-close" onclick="closeModal()">✕</button>
     </div>
     <div class="sdm-body">
@@ -3445,7 +3927,7 @@ function openModal(mode, refId = null) {
     </div>
     <div class="sdm-actions">
       ${s.type === 'open' ? `<button class="sdm-btn primary" onclick="openModal('queue');">⚡ Add to Queue</button>` : ''}
-      <button class="sdm-btn" onclick="openModal('booking','${s.id}')">+ Book Player</button>
+      <button class="sdm-btn" onclick="openModal('bookingDetail','${s.id}')">+ Book Player</button>
       <button class="sdm-btn danger" onclick="openModal('noShow','${s.id}')">No-Show</button>
       <button class="sdm-btn" onclick="closeModal()">Close</button>
     </div>`;
@@ -3487,14 +3969,33 @@ function closeModal() {
   }
 }
 
+function updateSessionPrice() {
+  const v = state.venue || DEFAULT_VENUE;
+  const type = document.getElementById('fType')?.value;
+  const priceEl = document.getElementById('fPrice');
+  if (!priceEl || !type) return;
+  const priceMap = { open: v.pricing.openPlay, reserved: v.pricing.reserved, league: v.pricing.league, tournament: v.pricing.tournament, clinic: v.pricing.clinic, lesson: v.pricing.lesson };
+  priceEl.value = priceMap[type] || v.pricing.openPlay;
+}
+
 function submitModal() {
   if (modalMode === 'session') {
+    const name = document.getElementById('fName')?.value.trim() || '';
     const courtId = document.getElementById('fCourt').value;
+    const sport = document.getElementById('fSport')?.value || (state.venue?.sport || 'pickleball');
+    const type = document.getElementById('fType').value;
+    const date = document.getElementById('fDate')?.value || state.currentDate;
     const startTime = document.getElementById('fStart').value;
-    const endTime   = document.getElementById('fEnd').value;
-    const type      = document.getElementById('fType').value;
-    if (!courtId || !startTime || !endTime) { showToast('Fill all fields', 'error'); return; }
-    state.sessions.push({ id: genId(), courtId, date: state.currentDate, startTime, endTime, type });
+    const endTime = document.getElementById('fEnd').value;
+    const maxPlayers = parseInt(document.getElementById('fMaxPlayers')?.value || '4');
+    const pricePerPlayer = parseFloat(document.getElementById('fPrice')?.value || '0');
+    const skillLevel = document.getElementById('fSkill')?.value || 'all';
+    const instructor = document.getElementById('fInstructor')?.value.trim() || '';
+    const description = document.getElementById('fDescription')?.value.trim() || '';
+    const recurring = document.getElementById('fRecurring')?.value || 'none';
+    if (!courtId || !startTime || !endTime) { showToast('Fill all required fields', 'error'); return; }
+    const sessionName = name || generateSessionName(type, startTime);
+    state.sessions.push({ id: genId(), name: sessionName, courtId, date, startTime, endTime, type, sport, maxPlayers, pricePerPlayer, skillLevel, instructor, description, recurring });
     showToast('Session added ✓', 'success');
   } else if (modalMode === 'queue') {
     const sessionId  = document.getElementById('fQSession').value;
@@ -3520,6 +4021,127 @@ function submitModal() {
   }
   closeModal();
   render();
+}
+
+// ══════════════════════════════════════════════════════
+// BOOKING FLOW HELPERS
+// ══════════════════════════════════════════════════════
+let bookingPlayerCount = 2;
+
+function selectPlayerCount(n, price) {
+  bookingPlayerCount = n;
+  document.querySelectorAll('#playerCountSelector .player-count-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.textContent) === n);
+  });
+  const calcPlayers = document.getElementById('priceCalcPlayers');
+  const calcTotal = document.getElementById('priceCalcTotal');
+  if (calcPlayers) calcPlayers.textContent = `× ${n} player${n > 1 ? 's' : ''}`;
+  if (calcTotal) calcTotal.textContent = `$${(price * n).toFixed(2)}`;
+}
+
+function confirmBooking(sessionId) {
+  const s = state.sessions.find(x => x.id === sessionId);
+  if (!s) return;
+  const playerName = document.getElementById('fBDName')?.value.trim();
+  const rating = parseFloat(document.getElementById('fBDRating')?.value || '3.5');
+  const notes = document.getElementById('fBDNotes')?.value.trim() || '';
+  if (!playerName) { showToast('Please enter a player name', 'error'); return; }
+  const maxP = getSessionMaxPlayers(s);
+  const booked = totalPlayers(s.id);
+  const spotsLeft = Math.max(0, maxP - booked);
+  const groupSize = Math.min(bookingPlayerCount, spotsLeft > 0 ? spotsLeft : bookingPlayerCount);
+  const status = spotsLeft > 0 ? 'confirmed' : 'waitlisted';
+  state.bookings.push({
+    id: genId(), sessionId, playerName, groupSize, status,
+    bookedAt: new Date().toISOString(), rating, notes
+  });
+  save();
+  showBookingConfirmation(s, playerName, groupSize, status);
+}
+
+function showBookingConfirmation(session, playerName, groupSize, status) {
+  const court = state.courts.find(c => c.id === session.courtId);
+  const colorInfo = SESSION_COLORS[session.type] || SESSION_COLORS.open;
+  const price = getSessionPrice(session);
+  const booking = state.bookings[state.bookings.length - 1];
+  const refNum = booking ? booking.id.slice(0, 8).toUpperCase() : 'N/A';
+
+  const overlay = document.getElementById('modalOverlay');
+  let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.style.maxWidth = '500px';
+    overlay.appendChild(modal);
+  }
+  modal.className = 'modal';
+  modal.style.maxWidth = '500px';
+  modal.innerHTML = `
+    <div class="booking-confirmation">
+      <div class="checkmark">✅</div>
+      <h2>${status === 'waitlisted' ? 'Added to Waitlist!' : 'Booking Confirmed!'}</h2>
+      <div class="booking-ref">Reference #${refNum}</div>
+      <div class="booking-summary">
+        <div class="booking-summary-row">
+          <span style="color:var(--text-muted)">Session</span>
+          <span style="font-weight:600">${escHtml(session.name || 'Session')}</span>
+        </div>
+        <div class="booking-summary-row">
+          <span style="color:var(--text-muted)">Type</span>
+          <span><span class="session-type-pill ${colorInfo.pill}" style="font-size:10px;">${colorInfo.label}</span></span>
+        </div>
+        <div class="booking-summary-row">
+          <span style="color:var(--text-muted)">Court</span>
+          <span>${escHtml(court?.name || '')}</span>
+        </div>
+        <div class="booking-summary-row">
+          <span style="color:var(--text-muted)">Time</span>
+          <span>${fmtRange(session.startTime, session.endTime)}</span>
+        </div>
+        <div class="booking-summary-row">
+          <span style="color:var(--text-muted)">Date</span>
+          <span>${formatDate(session.date)}</span>
+        </div>
+        <div class="booking-summary-row">
+          <span style="color:var(--text-muted)">Player</span>
+          <span style="font-weight:600">${escHtml(playerName)}</span>
+        </div>
+        <div class="booking-summary-row">
+          <span style="color:var(--text-muted)">Players</span>
+          <span>${groupSize}</span>
+        </div>
+        <div class="booking-summary-row">
+          <span style="color:var(--text-muted)">Total</span>
+          <span style="font-weight:800;color:var(--green);">$${(price * groupSize).toFixed(2)}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="confirm-booking-btn" style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);" onclick="closeModal()">📅 Add to Calendar</button>
+        <button class="confirm-booking-btn" style="flex:1;" onclick="closeModal(); switchView('bookings');">View My Bookings</button>
+      </div>
+    </div>
+  `;
+  overlay.classList.add('open');
+}
+
+function cancelBooking(bookingId) {
+  if (!confirm('Are you sure you want to cancel this booking?')) return;
+  const b = state.bookings.find(x => x.id === bookingId);
+  if (b) {
+    b.status = 'cancelled';
+    save();
+    showToast('Booking cancelled', 'info');
+    renderBookingsView();
+  }
+}
+
+function checkInBooking(bookingId) {
+  const b = state.bookings.find(x => x.id === bookingId);
+  if (b) {
+    b.status = 'checked_in';
+    save();
+    showToast(`${b.playerName} checked in ✓`, 'success');
+    renderBookingsView();
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -3587,15 +4209,54 @@ function addNewCourt() {
 }
 
 // ══════════════════════════════════════════════════════
-// BOOKINGS VIEW
+// BOOKINGS VIEW — AIRBNB STYLE
 // ══════════════════════════════════════════════════════
 function renderBookingsView() {
   const container = document.getElementById('view-bookings');
   const today = state.currentDate;
-  const todayBookings = state.bookings
+  const selectedDate = state.bookingDate || today;
+  const filterType = state.bookingFilter || 'all';
+  const now = new Date();
+  const curMin = now.getHours() * 60 + now.getMinutes();
+  const isToday = selectedDate === today;
+
+  // ─── Date pills (next 7 days) ───
+  let datePillsHTML = '<div class="date-pills">';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    const dateStr = d.toISOString().split('T')[0];
+    const dayNum = d.getDate();
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+    const isActive = dateStr === selectedDate;
+    datePillsHTML += `<button class="date-pill ${isActive ? 'active' : ''}" onclick="setBookingDate('${dateStr}')">
+      <span class="day">${dayNum}</span>
+      <span class="day-name">${i === 0 ? 'Today' : i === 1 ? 'Tmrw' : dayName}</span>
+    </button>`;
+  }
+  datePillsHTML += '</div>';
+
+  // ─── Filter bar ───
+  const filterTypes = [
+    { key: 'all', label: 'All' },
+    { key: 'open', label: '🏓 Open Play' },
+    { key: 'reserved', label: '🔒 Reserved' },
+    { key: 'league', label: '🏆 League' },
+    { key: 'tournament', label: '🎯 Tournament' },
+    { key: 'clinic', label: '📚 Clinic' },
+    { key: 'lesson', label: '🎓 Lesson' }
+  ];
+  let filterBarHTML = '<div class="filter-bar">';
+  filterTypes.forEach(f => {
+    filterBarHTML += `<button class="filter-chip ${filterType === f.key ? 'active' : ''}" onclick="setBookingFilter('${f.key}')">${f.label}</button>`;
+  });
+  filterBarHTML += '</div>';
+
+  // ─── My Bookings (today only) ───
+  const myBookings = state.bookings
     .filter(b => {
       const s = state.sessions.find(sess => sess.id === b.sessionId);
-      return s && s.date === today;
+      return s && s.date === today && b.status !== 'cancelled';
     })
     .sort((a, b) => {
       const sa = state.sessions.find(s => s.id === a.sessionId);
@@ -3603,30 +4264,107 @@ function renderBookingsView() {
       return (sa?.startTime || '').localeCompare(sb?.startTime || '');
     });
 
-  let html = '<div class="bookings-view"><h2 style="font-size:20px;font-weight:800;margin-bottom:20px;">📋 Bookings</h2>';
-  html += `<div class="booking-date-header">${formatDate(today)}</div>`;
-  
-  if (todayBookings.length === 0) {
-    html += '<div style="text-align:center;padding:40px 0;color:var(--text-muted);font-size:14px;">No bookings for this day</div>';
+  let myBookingsHTML = '';
+  if (myBookings.length > 0) {
+    myBookingsHTML = '<div class="my-bookings"><div class="my-bookings-title">My Bookings Today</div>';
+    myBookings.forEach(b => {
+      const s = state.sessions.find(sess => sess.id === b.sessionId);
+      const court = state.courts.find(c => c.id === s?.courtId);
+      const colorInfo = SESSION_COLORS[s?.type] || SESSION_COLORS.open;
+      const isLive = s && isToday && isSessionLive(s);
+      myBookingsHTML += `
+      <div class="my-booking-card">
+        <div class="my-booking-info">
+          <div class="my-booking-name">${escHtml(b.playerName)}</div>
+          <div class="my-booking-detail">${s ? fmtRange(s.startTime, s.endTime) : ''} · ${escHtml(court?.name || '')} · ${colorInfo.label} · ${b.groupSize}p</div>
+        </div>
+        <span class="booking-status ${b.status}" style="font-size:10px;padding:2px 8px;">${b.status.replace('_', ' ')}</span>
+        <div class="my-booking-actions">
+          ${isLive && b.status === 'confirmed' ? `<button class="btn-checkin" onclick="checkInBooking('${b.id}')">✓ Check In</button>` : ''}
+          ${b.status === 'confirmed' || b.status === 'waitlisted' ? `<button class="btn-cancel-booking" onclick="cancelBooking('${b.id}')">✕ Cancel</button>` : ''}
+        </div>
+      </div>`;
+    });
+    myBookingsHTML += '</div>';
   }
-  
-  todayBookings.forEach(b => {
-    const s = state.sessions.find(sess => sess.id === b.sessionId);
-    const court = state.courts.find(c => c.id === s?.courtId);
-    const colorInfo = SESSION_COLORS[s?.type] || SESSION_COLORS.open;
-    html += `
-    <div class="booking-card">
-      <div class="booking-time-badge">${s ? fmtRange(s.startTime, s.endTime) : '—'}</div>
-      <div class="booking-info">
-        <div class="booking-player">${escHtml(b.playerName)}</div>
-        <div class="booking-detail">${court?.name || ''} · ${colorInfo.label} · ${b.groupSize}p · DUPR ${parseFloat(b.rating || 3).toFixed(1)}</div>
-      </div>
-      <span class="booking-status ${b.status}">${b.status.replace('_', ' ')}</span>
+
+  // ─── Available Sessions ───
+  let sessions = state.sessions
+    .filter(s => s.date === selectedDate)
+    .filter(s => filterType === 'all' || s.type === filterType)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+  let sessionsHTML = '';
+  if (sessions.length === 0) {
+    sessionsHTML = `
+    <div class="empty-state">
+      <div class="empty-state-icon">📅</div>
+      <div class="empty-state-text">No sessions available for ${formatDate(selectedDate)}</div>
     </div>`;
-  });
-  
-  html += '</div>';
-  container.innerHTML = html;
+  } else {
+    sessions.forEach(s => {
+      const court = state.courts.find(c => c.id === s.courtId);
+      const colorInfo = SESSION_COLORS[s.type] || SESSION_COLORS.open;
+      const price = getSessionPrice(s);
+      const maxP = getSessionMaxPlayers(s);
+      const booked = totalPlayers(s.id);
+      const spotsLeft = Math.max(0, maxP - booked);
+      const fillPct = Math.min(100, Math.round((booked / maxP) * 100));
+      const isFull = spotsLeft === 0;
+      const skillLabels = { all: 'All Levels', beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' };
+      const skillClass = s.skillLevel || 'all';
+      const fillBarColor = fillPct >= 100 ? 'var(--red)' : fillPct >= 75 ? 'var(--amber)' : 'var(--teal)';
+
+      sessionsHTML += `
+      <div class="session-card" onclick="openModal('bookingDetail','${s.id}')">
+        <div class="session-card-header">
+          <div>
+            <div class="session-card-title">${escHtml(s.name || 'Session')}</div>
+          </div>
+          <div class="session-card-price">$${price.toFixed(2)} <span>/ player</span></div>
+        </div>
+        <div class="session-card-meta">
+          <span class="meta-tag">🕐 ${fmtRange(s.startTime, s.endTime)}</span>
+          <span class="meta-tag">🏟️ ${escHtml(court?.name || '')}</span>
+          <span class="session-type-pill ${colorInfo.pill}" style="font-size:10px;">${colorInfo.label}</span>
+          <span class="skill-badge ${skillClass}">${skillLabels[skillClass] || 'All Levels'}</span>
+          ${s.instructor ? `<span class="meta-tag">👤 ${escHtml(s.instructor)}</span>` : ''}
+        </div>
+        ${s.description ? `<div class="session-card-description">${escHtml(s.description)}</div>` : ''}
+        <div class="spots-bar">
+          <div class="spots-track">
+            <div class="spots-fill" style="width:${fillPct}%;background:${fillBarColor};"></div>
+          </div>
+          <div class="spots-text" style="color:${isFull ? 'var(--red)' : 'var(--text-secondary)'};">${isFull ? 'Full' : spotsLeft + ' of ' + maxP + ' spots left'}</div>
+        </div>
+        <button class="book-btn ${isFull ? 'full' : 'available'}" onclick="event.stopPropagation(); openModal('bookingDetail','${s.id}')">
+          ${isFull ? '⏳ Join Waitlist' : '✓ Book Now'}
+        </button>
+      </div>`;
+    });
+  }
+
+  container.innerHTML = `
+    <div class="booking-browse">
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:16px;">📋 Browse & Book</h2>
+      ${datePillsHTML}
+      ${filterBarHTML}
+      ${myBookingsHTML}
+      ${sessionsHTML}
+    </div>
+  `;
+}
+
+function setBookingDate(dateStr) {
+  state.bookingDate = dateStr;
+  save();
+  renderBookingsView();
+}
+
+function setBookingFilter(type) {
+  state.bookingFilter = type;
+  save();
+  renderBookingsView();
 }
 
 // ══════════════════════════════════════════════════════
