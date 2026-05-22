@@ -1665,6 +1665,302 @@ body {
 }
 
 /* ──────────────────────────────────────────────────────
+   DASHBOARD VIEW
+────────────────────────────────────────────────────── */
+.dashboard-view { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+.dash-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.dash-stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+}
+.dash-stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+.dash-stat-value { font-size: 24px; font-weight: 900; color: var(--text-primary); }
+.dash-stat-card.teal .dash-stat-value { color: var(--teal); }
+.dash-stat-card.green .dash-stat-value { color: var(--green); }
+.dash-stat-card.gold .dash-stat-value { color: var(--gold); }
+.dash-stat-card.blue .dash-stat-value { color: var(--blue); }
+.dash-stat-sub { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+/* Dashboard Timeline */
+.dash-section { margin-bottom: 24px; }
+.dash-section-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+.dash-timeline { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow-x: auto; }
+.dash-timeline-inner { min-width: 700px; padding: 12px; position: relative; }
+.dash-timeline-header { display: flex; margin-left: 80px; margin-bottom: 8px; position: relative; }
+.dash-timeline-hour { flex: 1; font-size: 10px; color: var(--text-muted); text-align: center; }
+.dash-timeline-row { display: flex; align-items: center; height: 40px; margin-bottom: 4px; }
+.dash-timeline-court { width: 80px; font-size: 12px; font-weight: 700; color: var(--text-secondary); flex-shrink: 0; }
+.dash-timeline-track { flex: 1; position: relative; height: 32px; background: rgba(255,255,255,0.02); border-radius: 4px; }
+.dash-timeline-bar { position: absolute; height: 100%; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; font-size: 10px; font-weight: 600; overflow: hidden; white-space: nowrap; cursor: pointer; transition: opacity 0.2s; }
+.dash-timeline-bar:hover { opacity: 0.85; }
+.dash-timeline-bar.open { background: var(--teal-subtle); color: var(--teal); border-left: 2px solid var(--teal); }
+.dash-timeline-bar.reserved { background: var(--blue-subtle); color: var(--blue); border-left: 2px solid var(--blue); }
+.dash-timeline-bar.league { background: var(--gold-subtle); color: var(--gold); border-left: 2px solid var(--gold); }
+.dash-timeline-bar.tournament { background: var(--red-subtle); color: var(--red); border-left: 2px solid var(--red); }
+.dash-timeline-bar.clinic { background: rgba(168,85,247,0.15); color: #a855f7; border-left: 2px solid #a855f7; }
+.dash-timeline-bar.lesson { background: rgba(236,72,153,0.15); color: #ec4899; border-left: 2px solid #ec4899; }
+.dash-now-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--red); z-index: 5; }
+.dash-now-line::before { content: 'NOW'; position: absolute; top: -16px; left: -14px; font-size: 8px; font-weight: 800; color: var(--red); }
+
+/* Quick Actions */
+.dash-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+.dash-action-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  color: var(--text-primary);
+  font-family: inherit;
+}
+.dash-action-btn:hover { border-color: var(--teal); background: rgba(20,184,166,0.05); }
+.dash-action-icon { font-size: 24px; margin-bottom: 6px; }
+.dash-action-label { font-size: 11px; font-weight: 700; }
+
+/* Activity Feed */
+.dash-feed { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-height: 300px; overflow-y: auto; }
+.dash-feed-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.dash-feed-item:last-child { border-bottom: none; }
+.dash-feed-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+.dash-feed-text { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+.dash-feed-text strong { color: var(--text-primary); font-weight: 600; }
+.dash-feed-time { font-size: 10px; color: var(--text-muted); margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+
+/* Upcoming */
+.dash-upcoming { display: flex; flex-direction: column; gap: 10px; }
+.dash-upcoming-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.dash-upcoming-info { flex: 1; }
+.dash-upcoming-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.dash-upcoming-meta { font-size: 12px; color: var(--text-muted); }
+.dash-upcoming-spots { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.dash-upcoming-btn {
+  padding: 8px 16px;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.dash-upcoming-btn:hover { background: var(--teal-hover); }
+
+/* ──────────────────────────────────────────────────────
+   CALENDAR VIEW
+────────────────────────────────────────────────────── */
+.calendar-view { padding: 16px; max-width: 900px; margin: 0 auto; }
+.calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.calendar-nav { display: flex; align-items: center; gap: 8px; }
+.calendar-nav button { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary); padding: 6px 10px; cursor: pointer; font-size: 14px; font-family: inherit; transition: all 0.15s; }
+.calendar-nav button:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.calendar-title { font-size: 18px; font-weight: 800; }
+.calendar-view-toggle { display: flex; gap: 4px; }
+.calendar-view-toggle button { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); padding: 6px 12px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: inherit; transition: all 0.15s; }
+.calendar-view-toggle button.active { background: var(--teal-subtle); color: var(--teal); border-color: var(--border-teal); }
+.calendar-view-toggle button:hover { border-color: var(--border-hover); }
+
+/* Week View */
+.week-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.week-header { background: var(--bg-surface); padding: 12px 8px; text-align: center; font-size: 12px; font-weight: 700; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+.week-header.today { color: var(--teal); }
+.week-time-label { padding: 4px 8px; font-size: 10px; color: var(--text-muted); text-align: right; border-right: 1px solid var(--border); background: var(--bg-surface); display: flex; align-items: flex-start; justify-content: flex-end; min-height: 48px; }
+.week-cell { min-height: 48px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); position: relative; cursor: pointer; }
+.week-cell:hover { background: rgba(255,255,255,0.02); }
+.week-session { position: absolute; left: 2px; right: 2px; padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; overflow: hidden; cursor: pointer; z-index: 1; }
+.week-session.open { background: var(--teal-subtle); color: var(--teal); border-left: 2px solid var(--teal); }
+.week-session.reserved { background: var(--blue-subtle); color: var(--blue); border-left: 2px solid var(--blue); }
+.week-session.league { background: var(--gold-subtle); color: var(--gold); border-left: 2px solid var(--gold); }
+.week-session.tournament { background: var(--red-subtle); color: var(--red); border-left: 2px solid var(--red); }
+.week-session.clinic { background: rgba(168,85,247,0.15); color: #a855f7; border-left: 2px solid #a855f7; }
+.week-session.lesson { background: rgba(236,72,153,0.15); color: #ec4899; border-left: 2px solid #ec4899; }
+.now-indicator { position: absolute; left: 0; right: 0; height: 2px; background: var(--red); z-index: 2; pointer-events: none; }
+.now-indicator::before { content: ''; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; }
+
+/* Month View */
+.month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.month-day-header { text-align: center; font-size: 11px; font-weight: 700; color: var(--text-muted); padding: 8px; }
+.month-day { min-height: 80px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; cursor: pointer; transition: border-color 0.2s; }
+.month-day:hover { border-color: var(--border-hover); }
+.month-day.today { border-color: var(--teal); background: rgba(20,184,166,0.05); }
+.month-day.other-month { opacity: 0.3; }
+.month-day-num { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.month-day-sessions { font-size: 10px; color: var(--text-muted); }
+.month-day-dots { display: flex; gap: 3px; margin-top: 4px; flex-wrap: wrap; }
+.month-day-dots .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ──────────────────────────────────────────────────────
+   KIOSK VIEW
+────────────────────────────────────────────────────── */
+.kiosk-view { padding: 24px; max-width: 800px; margin: 0 auto; }
+.kiosk-title { font-size: 28px; font-weight: 800; text-align: center; margin-bottom: 24px; }
+.kiosk-session-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.kiosk-session-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.kiosk-session-card:hover { border-color: var(--teal); transform: scale(1.02); }
+.kiosk-session-card.active { border-color: var(--teal); background: rgba(20,184,166,0.05); }
+.kiosk-session-name { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.kiosk-session-time { font-size: 14px; color: var(--text-secondary); margin-bottom: 4px; }
+.kiosk-session-court { font-size: 12px; color: var(--text-muted); }
+.kiosk-session-players { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+.kiosk-player-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.kiosk-player-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.kiosk-player-card:hover { border-color: var(--teal); }
+.kiosk-player-card.checked-in { border-color: var(--green); background: rgba(34,197,94,0.05); }
+.kiosk-player-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+.kiosk-player-name { font-size: 16px; font-weight: 700; }
+.kiosk-player-status { font-size: 12px; margin-top: 4px; }
+.kiosk-player-status.confirmed { color: var(--amber); }
+.kiosk-player-status.checked-in { color: var(--green); }
+.kiosk-checkin-btn {
+  width: 100%;
+  padding: 20px;
+  font-size: 20px;
+  font-weight: 800;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 16px;
+  font-family: inherit;
+}
+.kiosk-checkin-btn.ready { background: var(--green); color: white; }
+.kiosk-checkin-btn.ready:hover { background: #16a34a; }
+.kiosk-checkin-btn.done { background: var(--teal); color: white; }
+.kiosk-walkin-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  background: var(--amber);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  margin-top: 12px;
+  font-family: inherit;
+}
+.kiosk-walkin-btn:hover { background: #d97706; }
+.kiosk-back { font-size: 14px; color: var(--text-muted); cursor: pointer; margin-bottom: 16px; display: inline-block; }
+.kiosk-back:hover { color: var(--text-secondary); }
+.kiosk-checkin-animation { animation: kioskPop 0.4s ease-out; }
+@keyframes kioskPop { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+/* ──────────────────────────────────────────────────────
+   TV DISPLAY MODE
+────────────────────────────────────────────────────── */
+.tv-mode {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg-base);
+  z-index: 9999;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.tv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+.tv-venue-name { font-size: 32px; font-weight: 900; }
+.tv-live { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--green); }
+.tv-live .dot { width: 10px; height: 10px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.tv-time { font-size: 48px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.tv-courts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; flex: 1; }
+.tv-court-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.tv-court-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.tv-court-name { font-size: 24px; font-weight: 800; }
+.tv-court-status { font-size: 14px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+.tv-court-status.live { background: var(--green-subtle); color: var(--green); }
+.tv-court-status.available { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+.tv-session-name { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.tv-session-time { font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; }
+.tv-session-type-pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
+.tv-score { text-align: center; font-size: 64px; font-weight: 900; margin: 16px 0; }
+.tv-score .team-a { color: var(--teal); }
+.tv-score .vs { font-size: 24px; color: var(--text-muted); margin: 0 16px; }
+.tv-score .team-b { color: var(--red); }
+.tv-players { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.tv-player { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.tv-player img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.tv-queue-info { font-size: 13px; color: var(--text-muted); margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+.tv-ticker {
+  margin-top: auto;
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.tv-ticker-content {
+  display: inline-block;
+  animation: scroll-ticker 30s linear infinite;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+@keyframes scroll-ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+.tv-exit { position: fixed; top: 16px; right: 16px; z-index: 10000; }
+.tv-exit button { padding: 8px 16px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; color: var(--text-secondary); cursor: pointer; font-size: 12px; font-family: inherit; }
+.tv-exit button:hover { background: rgba(0,0,0,0.7); color: var(--text-primary); }
+.tv-court-available-msg { color: var(--text-muted); font-size: 14px; text-align: center; padding: 20px 0; }
+.tv-next-session { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+.tv-court-card.live { border-color: var(--green); }
+
+/* Responsive for Dashboard */
+@media (max-width: 700px) {
+  .dash-stats { grid-template-columns: repeat(2, 1fr); }
+  .dash-actions { grid-template-columns: repeat(2, 1fr); }
+  .dash-timeline { overflow-x: auto; }
+  .kiosk-player-list { grid-template-columns: 1fr; }
+  .kiosk-session-grid { grid-template-columns: 1fr; }
+  .calendar-view { padding: 12px 8px; }
+  .week-grid { font-size: 10px; }
+  .tv-venue-name { font-size: 24px; }
+  .tv-time { font-size: 32px; }
+  .tv-courts { grid-template-columns: 1fr; }
+}
+
+/* ──────────────────────────────────────────────────────
    BOTTOM TAB BAR
 ────────────────────────────────────────────────────── */
 .tab-bar {
@@ -2306,6 +2602,15 @@ body {
 
 </div><!-- /schedule view -->
 
+<!-- DASHBOARD VIEW -->
+<div class="view-container" id="view-dashboard"></div>
+
+<!-- CALENDAR VIEW -->
+<div class="view-container" id="view-calendar"></div>
+
+<!-- KIOSK VIEW -->
+<div class="view-container" id="view-kiosk"></div>
+
 <!-- COURTS VIEW -->
 <div class="view-container" id="view-courts"></div>
 
@@ -2345,9 +2650,9 @@ body {
     <span class="tab-icon">📅</span>
     <span>Schedule</span>
   </button>
-  <button class="tab-item" data-view="courts" onclick="switchView('courts')">
-    <span class="tab-icon">🏟️</span>
-    <span>Courts</span>
+  <button class="tab-item" data-view="dashboard" onclick="switchView('dashboard')">
+    <span class="tab-icon">📊</span>
+    <span>Dashboard</span>
   </button>
   <button class="tab-item" data-view="bookings" onclick="switchView('bookings')">
     <span class="tab-icon">📋</span>
@@ -2480,6 +2785,9 @@ function switchView(viewName) {
   if (headerActions) headerActions.style.display = isSchedule ? '' : 'none';
   // Render the active view
   if (viewName === 'schedule') render();
+  else if (viewName === 'dashboard') renderDashboardView();
+  else if (viewName === 'calendar') renderCalendarView();
+  else if (viewName === 'kiosk') renderKioskView();
   else if (viewName === 'courts') renderCourtsView();
   else if (viewName === 'bookings') renderBookingsView();
   else if (viewName === 'players') renderPlayersView();
@@ -4660,6 +4968,697 @@ function renderAnalyticsView() {
           <span class="utilization-pct">${count}</span>
         </div>`;
       }).join('')}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// CALENDAR STATE
+// ══════════════════════════════════════════════════════
+let calendarMode = 'week'; // 'week' or 'month'
+let calendarDate = new Date();
+
+function getWeekStart(d) {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = day === 0 ? -6 : 1 - day; // Monday as start
+  date.setDate(date.getDate() + diff);
+  return date;
+}
+
+function formatDateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// ══════════════════════════════════════════════════════
+// KIOSK STATE
+// ══════════════════════════════════════════════════════
+let kioskSessionId = null;
+let kioskWalkinMode = false;
+
+// ══════════════════════════════════════════════════════
+// ACTIVITY FEED (seeded demo data)
+// ══════════════════════════════════════════════════════
+const ACTIVITY_FEED = [
+  { icon: '✅', text: '<strong>Jamie Torres</strong> checked in for Morning Open Play', time: '2 min ago' },
+  { icon: '🎯', text: '<strong>Beginner Clinic</strong> started on Court 2', time: '15 min ago' },
+  { icon: '🏓', text: '<strong>Cameron Price</strong> scored for Team A', time: '18 min ago' },
+  { icon: '✅', text: '<strong>Jordan West</strong> checked in for Advanced Training', time: '22 min ago' },
+  { icon: '📋', text: '<strong>Marcus Hayes</strong> booked Marcus & Sophie Booking', time: '35 min ago' },
+  { icon: '⚡', text: '<strong>Drew Parker</strong> joined queue for Morning Open Play', time: '40 min ago' },
+  { icon: '✅', text: '<strong>Peyton Reed</strong> checked in for Drop-In Doubles', time: '45 min ago' },
+  { icon: '📋', text: '<strong>Emery Clark</strong> booked Mid-Morning Mix', time: '52 min ago' },
+  { icon: '🏆', text: '<strong>Summer Tournament</strong> bracket announced', time: '1 hr ago' },
+  { icon: '✅', text: '<strong>Finley Scott</strong> checked in for Afternoon Open Play', time: '1 hr ago' },
+];
+
+// ══════════════════════════════════════════════════════
+// DASHBOARD VIEW
+// ══════════════════════════════════════════════════════
+function renderDashboardView() {
+  const container = document.getElementById('view-dashboard');
+  const today = state.currentDate;
+  const todaySessions = state.sessions.filter(s => s.date === today);
+  const todayBookings = state.bookings.filter(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    return s && s.date === today && b.status !== 'cancelled';
+  });
+
+  // Stats
+  const totalRevenue = todayBookings.reduce((sum, b) => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    return sum + (s ? getSessionPrice(s) * b.groupSize : 0);
+  }, 0);
+  const activeSessions = todaySessions.filter(s => isSessionLive(s)).length;
+  const uniquePlayers = new Set(todayBookings.map(b => b.playerName)).size;
+  const v = state.venue || DEFAULT_VENUE;
+  const totalCourtHours = state.courts.length * (v.closeHour - v.openHour);
+  const usedHours = todaySessions.reduce((sum, s) => {
+    const [sh, sm] = s.startTime.split(':').map(Number);
+    const [eh, em] = s.endTime.split(':').map(Number);
+    return sum + (eh * 60 + em - sh * 60 - sm) / 60;
+  }, 0);
+  const utilization = totalCourtHours > 0 ? Math.round((usedHours / totalCourtHours) * 100) : 0;
+
+  // Timeline
+  const openH = v.openHour || 7;
+  const closeH = v.closeHour || 21;
+  const hours = [];
+  for (let h = openH; h < closeH; h++) hours.push(h);
+  const totalMinutes = (closeH - openH) * 60;
+
+  let timelineHTML = '';
+  state.courts.forEach(court => {
+    const courtSessions = todaySessions.filter(s => s.courtId === court.id);
+    let barsHTML = courtSessions.map(s => {
+      const [sh, sm] = s.startTime.split(':').map(Number);
+      const [eh, em] = s.endTime.split(':').map(Number);
+      const startPct = ((sh * 60 + sm - openH * 60) / totalMinutes) * 100;
+      const widthPct = ((eh * 60 + em - sh * 60 - sm) / totalMinutes) * 100;
+      const pCount = totalPlayers(s.id);
+      return `<div class="dash-timeline-bar ${s.type}" style="left:${startPct}%;width:${widthPct}%;" onclick="state.selectedSessionId='${s.id}';switchView('schedule');" title="${escHtml(s.name)} (${pCount} players)">${escHtml(s.name)} · ${pCount}p</div>`;
+    }).join('');
+    // Now line
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    let nowLine = '';
+    if (nowMin >= openH * 60 && nowMin < closeH * 60) {
+      const nowPct = ((nowMin - openH * 60) / totalMinutes) * 100;
+      nowLine = `<div class="dash-now-line" style="left:${nowPct}%"></div>`;
+    }
+    timelineHTML += `<div class="dash-timeline-row">
+      <div class="dash-timeline-court">${escHtml(court.name)}</div>
+      <div class="dash-timeline-track">${barsHTML}${nowLine}</div>
+    </div>`;
+  });
+
+  const timelineHoursHTML = hours.map(h => {
+    const label = timeFormat === '24h' ? `${String(h).padStart(2,'0')}:00` : `${h > 12 ? h - 12 : h}${h < 12 ? 'a' : 'p'}`;
+    return `<div class="dash-timeline-hour">${label}</div>`;
+  }).join('');
+
+  // Quick Actions
+  const actionsHTML = `
+    <button class="dash-action-btn" onclick="openModal('session')">
+      <div class="dash-action-icon">＋</div>
+      <div class="dash-action-label">New Session</div>
+    </button>
+    <button class="dash-action-btn" onclick="callNextPlayer()">
+      <div class="dash-action-icon">⚡</div>
+      <div class="dash-action-label">Call Next</div>
+    </button>
+    <button class="dash-action-btn" onclick="kioskSessionId=null;kioskWalkinMode=true;switchView('kiosk');">
+      <div class="dash-action-icon">＋</div>
+      <div class="dash-action-label">Walk-In</div>
+    </button>
+    <button class="dash-action-btn" onclick="openTVMode()">
+      <div class="dash-action-icon">📺</div>
+      <div class="dash-action-label">TV Display</div>
+    </button>`;
+
+  // Activity Feed
+  const feedHTML = ACTIVITY_FEED.map(item =>
+    `<div class="dash-feed-item">
+      <div class="dash-feed-icon">${item.icon}</div>
+      <div class="dash-feed-text">${item.text}</div>
+      <div class="dash-feed-time">${item.time}</div>
+    </div>`
+  ).join('');
+
+  // Upcoming (next 3 sessions)
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const upcomingSessions = todaySessions
+    .filter(s => {
+      const [sh] = s.startTime.split(':').map(Number);
+      const [sm2] = s.startTime.split(':').map(Number);
+      return sh * 60 + sm2 > nowMin;
+    })
+    .sort((a, b) => a.startTime.localeCompare(b.startTime))
+    .slice(0, 3);
+
+  const upcomingHTML = upcomingSessions.length > 0 ? upcomingSessions.map(s => {
+    const court = state.courts.find(c => c.id === s.courtId);
+    const pCount = totalPlayers(s.id);
+    const maxP = getSessionMaxPlayers(s);
+    const [sh, sm] = s.startTime.split(':').map(Number);
+    const sMin = sh * 60 + sm;
+    const canStart = sMin - nowMin <= 15 && sMin - nowMin >= -5;
+    return `<div class="dash-upcoming-card">
+      <div class="dash-upcoming-info">
+        <div class="dash-upcoming-name">${escHtml(s.name)}</div>
+        <div class="dash-upcoming-meta">${fmtTimeDisplay(sh, sm)} · ${court ? escHtml(court.name) : 'TBD'}</div>
+        <div class="dash-upcoming-spots">${pCount} / ${maxP} players</div>
+      </div>
+      ${canStart ? `<button class="dash-upcoming-btn" onclick="state.selectedSessionId='${s.id}';switchView('schedule');">Start</button>` : ''}
+    </div>`;
+  }).join('') : '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">No more sessions today</div>';
+
+  // Courts access link
+  const courtsLink = `<div style="text-align:center;margin-top:12px;"><a href="#" onclick="switchView('courts');return false;" style="color:var(--teal);font-size:12px;font-weight:600;">🏟️ Manage Courts</a></div>`;
+
+  container.innerHTML = `
+  <div class="dashboard-view">
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:20px;">📊 Today's Overview</h2>
+
+    <div class="dash-stats">
+      <div class="dash-stat-card green">
+        <div class="dash-stat-label">Revenue Today</div>
+        <div class="dash-stat-value">$${totalRevenue.toLocaleString()}</div>
+        <div class="dash-stat-sub">${todayBookings.length} bookings</div>
+      </div>
+      <div class="dash-stat-card teal">
+        <div class="dash-stat-label">Active Sessions</div>
+        <div class="dash-stat-value">${activeSessions}</div>
+        <div class="dash-stat-sub">of ${todaySessions.length} total</div>
+      </div>
+      <div class="dash-stat-card gold">
+        <div class="dash-stat-label">Players Today</div>
+        <div class="dash-stat-value">${uniquePlayers}</div>
+        <div class="dash-stat-sub">unique players</div>
+      </div>
+      <div class="dash-stat-card blue">
+        <div class="dash-stat-label">Court Utilization</div>
+        <div class="dash-stat-value">${utilization}%</div>
+        <div class="dash-stat-sub">${Math.round(usedHours)}h used</div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-title">Session Timeline</div>
+      <div class="dash-timeline">
+        <div class="dash-timeline-inner">
+          <div class="dash-timeline-header">${timelineHoursHTML}</div>
+          ${timelineHTML}
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-title">Quick Actions</div>
+      <div class="dash-actions">${actionsHTML}</div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-title">Live Activity</div>
+      <div class="dash-feed">${feedHTML}</div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-title">Upcoming Today</div>
+      <div class="dash-upcoming">${upcomingHTML}</div>
+      ${courtsLink}
+    </div>
+  </div>`;
+}
+
+function callNextPlayer() {
+  // Find first open session with a queue
+  const today = state.currentDate;
+  const todaySessions = state.sessions.filter(s => s.date === today && s.type === 'open');
+  for (const s of todaySessions) {
+    const queue = sessQueue(s.id);
+    if (queue.length > 0) {
+      const next = queue[0];
+      // Move from queue to bookings
+      state.queue = state.queue.filter(q => q.id !== next.id);
+      state.bookings.push({
+        id: genId(),
+        sessionId: s.id,
+        playerName: next.playerName,
+        groupSize: next.groupSize,
+        status: 'confirmed',
+        bookedAt: new Date().toISOString(),
+        rating: next.rating
+      });
+      save();
+      showToast(`${next.playerName} called from queue for ${s.name}`);
+      renderDashboardView();
+      return;
+    }
+  }
+  showToast('No players in queue', 'info');
+}
+
+// ══════════════════════════════════════════════════════
+// CALENDAR VIEW
+// ══════════════════════════════════════════════════════
+function renderCalendarView() {
+  const container = document.getElementById('view-calendar');
+  const v = state.venue || DEFAULT_VENUE;
+  const openH = v.openHour || 7;
+  const closeH = v.closeHour || 21;
+
+  // Navigation title
+  let navTitle = '';
+  if (calendarMode === 'week') {
+    const ws = getWeekStart(calendarDate);
+    const we = new Date(ws);
+    we.setDate(we.getDate() + 6);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    if (ws.getMonth() === we.getMonth()) {
+      navTitle = `${months[ws.getMonth()]} ${ws.getDate()} – ${we.getDate()}, ${ws.getFullYear()}`;
+    } else {
+      navTitle = `${months[ws.getMonth()]} ${ws.getDate()} – ${months[we.getMonth()]} ${we.getDate()}, ${we.getFullYear()}`;
+    }
+  } else {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    navTitle = `${months[calendarDate.getMonth()]} ${calendarDate.getFullYear()}`;
+  }
+
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  let gridHTML = '';
+  if (calendarMode === 'week') {
+    gridHTML = renderWeekGrid(openH, closeH, todayStr);
+  } else {
+    gridHTML = renderMonthGrid(todayStr);
+  }
+
+  container.innerHTML = `
+  <div class="calendar-view">
+    <div class="calendar-header">
+      <div class="calendar-nav">
+        <button onclick="calNav(-1)">‹</button>
+        <span class="calendar-title">${navTitle}</span>
+        <button onclick="calNav(1)">›</button>
+        <button onclick="calToday()" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;">Today</button>
+      </div>
+      <div class="calendar-view-toggle">
+        <button class="${calendarMode === 'week' ? 'active' : ''}" onclick="calendarMode='week';renderCalendarView();">Week</button>
+        <button class="${calendarMode === 'month' ? 'active' : ''}" onclick="calendarMode='month';renderCalendarView();">Month</button>
+      </div>
+    </div>
+    ${gridHTML}
+  </div>`;
+}
+
+function renderWeekGrid(openH, closeH, todayStr) {
+  const ws = getWeekStart(calendarDate);
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const dayDates = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(ws);
+    d.setDate(d.getDate() + i);
+    dayDates.push(d);
+  }
+
+  // Header row
+  let headerHTML = '<div class="week-header" style="background:var(--bg-surface);"></div>';
+  dayDates.forEach((d, i) => {
+    const ds = formatDateStr(d);
+    const isToday = ds === todayStr;
+    headerHTML += `<div class="week-header ${isToday ? 'today' : ''}">${days[i]}<br><span style="font-size:16px;font-weight:800;${isToday ? 'color:var(--teal);' : ''}">${d.getDate()}</span></div>`;
+  });
+
+  // Time rows
+  let rowsHTML = '';
+  for (let h = openH; h < closeH; h++) {
+    const label = timeFormat === '24h' ? `${String(h).padStart(2,'0')}:00` : `${h > 12 ? h - 12 : h}${h < 12 ? 'a' : 'p'}`;
+    rowsHTML += `<div class="week-time-label">${label}</div>`;
+    dayDates.forEach(d => {
+      const ds = formatDateStr(d);
+      const cellSessions = state.sessions.filter(s => s.date === ds && parseInt(s.startTime) === h);
+      let sessionBlocks = cellSessions.map(s => {
+        const [sh, sm] = s.startTime.split(':').map(Number);
+        const [eh, em] = s.endTime.split(':').map(Number);
+        const heightPx = ((eh * 60 + em - sh * 60 - sm) / 60) * 48;
+        const pCount = totalPlayers(s.id);
+        return `<div class="week-session ${s.type}" style="height:${heightPx - 4}px;top:2px;" onclick="state.selectedSessionId='${s.id}';switchView('schedule');" title="${escHtml(s.name)}">${escHtml(s.name)} (${pCount}p)</div>`;
+      }).join('');
+      rowsHTML += `<div class="week-cell" onclick="openModal('session');">${sessionBlocks}</div>`;
+    });
+  }
+
+  return `<div class="week-grid">${headerHTML}${rowsHTML}</div>`;
+}
+
+function renderMonthGrid(todayStr) {
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  let startOffset = firstDay.getDay() - 1; // Monday start
+  if (startOffset < 0) startOffset = 6;
+
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  let headerHTML = days.map(d => `<div class="month-day-header">${d}</div>`).join('');
+
+  let cellsHTML = '';
+  const totalCells = Math.ceil((startOffset + lastDay.getDate()) / 7) * 7;
+
+  for (let i = 0; i < totalCells; i++) {
+    const dayNum = i - startOffset + 1;
+    const d = new Date(year, month, dayNum);
+    const ds = formatDateStr(d);
+    const isCurrentMonth = dayNum >= 1 && dayNum <= lastDay.getDate();
+    const isToday = ds === todayStr;
+    const daySessions = state.sessions.filter(s => s.date === ds);
+    const totalP = daySessions.reduce((sum, s) => sum + totalPlayers(s.id), 0);
+
+    const dotsHTML = daySessions.slice(0, 5).map(s => {
+      const color = SESSION_COLORS[s.type]?.hex || '#64748B';
+      return `<span class="dot" style="background:${color}"></span>`;
+    }).join('');
+
+    cellsHTML += `<div class="month-day ${isToday ? 'today' : ''} ${!isCurrentMonth ? 'other-month' : ''}" onclick="calendarDate=new Date('${ds}T12:00:00');calendarMode='week';renderCalendarView();">
+      <div class="month-day-num">${d.getDate()}</div>
+      ${daySessions.length > 0 ? `<div class="month-day-sessions">${daySessions.length} sessions · ${totalP} players</div>` : ''}
+      <div class="month-day-dots">${dotsHTML}</div>
+    </div>`;
+  }
+
+  return `<div class="month-grid">${headerHTML}${cellsHTML}</div>`;
+}
+
+function calNav(dir) {
+  if (calendarMode === 'week') {
+    calendarDate.setDate(calendarDate.getDate() + dir * 7);
+  } else {
+    calendarDate.setMonth(calendarDate.getMonth() + dir);
+  }
+  renderCalendarView();
+}
+
+function calToday() {
+  calendarDate = new Date();
+  renderCalendarView();
+}
+
+// ══════════════════════════════════════════════════════
+// KIOSK VIEW
+// ══════════════════════════════════════════════════════
+function renderKioskView() {
+  const container = document.getElementById('view-kiosk');
+  const today = state.currentDate;
+  const todaySessions = state.sessions.filter(s => s.date === today);
+
+  if (kioskWalkinMode) {
+    renderKioskWalkin(container, todaySessions);
+    return;
+  }
+
+  if (!kioskSessionId) {
+    // Session selection grid
+    const sessionCards = todaySessions.map(s => {
+      const court = state.courts.find(c => c.id === s.courtId);
+      const pCount = totalPlayers(s.id);
+      const maxP = getSessionMaxPlayers(s);
+      const bookedCount = sessBookings(s.id).length;
+      return `<div class="kiosk-session-card" onclick="kioskSessionId='${s.id}';renderKioskView();">
+        <div class="kiosk-session-name">${escHtml(s.name)}</div>
+        <div class="kiosk-session-time">${fmtRange(s.startTime, s.endTime)}</div>
+        <div class="kiosk-session-court">${court ? escHtml(court.name) : 'TBD'}</div>
+        <div class="kiosk-session-players">${bookedCount} booked · ${pCount}/${maxP} players</div>
+      </div>`;
+    }).join('');
+
+    container.innerHTML = `
+    <div class="kiosk-view">
+      <div class="kiosk-title">🏓 Check-In Kiosk</div>
+      <div class="kiosk-session-grid">${sessionCards || '<div style="text-align:center;color:var(--text-muted);padding:40px;">No sessions today</div>'}</div>
+      <button class="kiosk-walkin-btn" onclick="kioskWalkinMode=true;renderKioskView();">＋ Walk-In Player</button>
+      <div style="text-align:center;margin-top:16px;">
+        <span class="kiosk-back" onclick="switchView('dashboard');">← Back to Dashboard</span>
+      </div>
+    </div>`;
+  } else {
+    // Player check-in for selected session
+    const session = state.sessions.find(s => s.id === kioskSessionId);
+    if (!session) { kioskSessionId = null; renderKioskView(); return; }
+    const court = state.courts.find(c => c.id === session.courtId);
+    const bookings = sessBookings(session.id);
+
+    const playerCards = bookings.map(b => {
+      const isCI = b.status === 'checked_in';
+      return `<div class="kiosk-player-card ${isCI ? 'checked-in' : ''}" onclick="kioskCheckIn('${b.id}', this);">
+        <img class="kiosk-player-avatar" src="${avatarUrl(b.playerName, 96)}" alt="">
+        <div>
+          <div class="kiosk-player-name">${escHtml(b.playerName)}</div>
+          <div class="kiosk-player-status ${isCI ? 'checked-in' : 'confirmed'}">${isCI ? '✅ Checked In' : '⏳ Confirmed'}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const allCheckedIn = bookings.length > 0 && bookings.every(b => b.status === 'checked_in');
+
+    container.innerHTML = `
+    <div class="kiosk-view">
+      <span class="kiosk-back" onclick="kioskSessionId=null;renderKioskView();">← Back to Sessions</span>
+      <div class="kiosk-title">${escHtml(session.name)}</div>
+      <div style="text-align:center;color:var(--text-secondary);margin-bottom:20px;font-size:14px;">
+        ${fmtRange(session.startTime, session.endTime)} · ${court ? escHtml(court.name) : 'TBD'}
+      </div>
+      <div class="kiosk-player-list">${playerCards || '<div style="text-align:center;color:var(--text-muted);padding:40px;">No bookings yet</div>'}</div>
+      ${allCheckedIn ? `<button class="kiosk-checkin-btn done">✅ All Players Checked In</button>` : ''}
+      <button class="kiosk-walkin-btn" onclick="kioskWalkinMode=true;renderKioskView();">＋ Add Walk-In</button>
+    </div>`;
+  }
+}
+
+function kioskCheckIn(bookingId, el) {
+  const booking = state.bookings.find(b => b.id === bookingId);
+  if (!booking) return;
+  if (booking.status === 'checked_in') {
+    showToast(`${booking.playerName} is already checked in`, 'info');
+    return;
+  }
+  booking.status = 'checked_in';
+  save();
+  // Animate
+  if (el) {
+    el.classList.add('checked-in', 'kiosk-checkin-animation');
+    const statusEl = el.querySelector('.kiosk-player-status');
+    if (statusEl) {
+      statusEl.className = 'kiosk-player-status checked-in';
+      statusEl.textContent = '✅ Checked In';
+    }
+  }
+  showToast(`${booking.playerName} checked in! ✅`);
+  // Re-render after animation
+  setTimeout(() => renderKioskView(), 600);
+}
+
+function renderKioskWalkin(container, todaySessions) {
+  const availableSessions = todaySessions.filter(s => {
+    const pCount = totalPlayers(s.id);
+    const maxP = getSessionMaxPlayers(s);
+    return pCount < maxP;
+  });
+
+  const sessionOptions = availableSessions.map(s => {
+    const court = state.courts.find(c => c.id === s.courtId);
+    const pCount = totalPlayers(s.id);
+    const maxP = getSessionMaxPlayers(s);
+    return `<div class="kiosk-session-card" onclick="kioskSelectWalkinSession('${s.id}');" id="kioskWalkin-${s.id}">
+      <div class="kiosk-session-name">${escHtml(s.name)}</div>
+      <div class="kiosk-session-time">${fmtRange(s.startTime, s.endTime)}</div>
+      <div class="kiosk-session-court">${court ? escHtml(court.name) : 'TBD'}</div>
+      <div class="kiosk-session-players">${maxP - pCount} spots left</div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML = `
+  <div class="kiosk-view">
+    <span class="kiosk-back" onclick="kioskWalkinMode=false;kioskSessionId=null;renderKioskView();">← Back</span>
+    <div class="kiosk-title">＋ Walk-In Player</div>
+    <div style="text-align:center;color:var(--text-secondary);margin-bottom:20px;font-size:14px;">Select a session, then enter the player's name</div>
+    <div class="kiosk-session-grid">${sessionOptions || '<div style="text-align:center;color:var(--text-muted);padding:40px;">No sessions with available spots</div>'}</div>
+    <div id="kioskWalkinForm" style="display:none;max-width:400px;margin:0 auto;">
+      <input type="text" id="kioskWalkinName" placeholder="Player Name" style="width:100%;padding:16px;font-size:18px;background:var(--bg-input);border:2px solid var(--border);border-radius:var(--radius-lg);color:var(--text-primary);font-family:inherit;margin-bottom:12px;">
+      <button class="kiosk-checkin-btn ready" onclick="kioskSubmitWalkin();">Book + Check In</button>
+    </div>
+  </div>`;
+}
+
+let kioskWalkinSessionId = null;
+
+function kioskSelectWalkinSession(sid) {
+  kioskWalkinSessionId = sid;
+  // Highlight selected
+  document.querySelectorAll('.kiosk-session-card').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('kioskWalkin-' + sid);
+  if (el) el.classList.add('active');
+  const form = document.getElementById('kioskWalkinForm');
+  if (form) {
+    form.style.display = 'block';
+    document.getElementById('kioskWalkinName').focus();
+  }
+}
+
+function kioskSubmitWalkin() {
+  const nameInput = document.getElementById('kioskWalkinName');
+  const name = nameInput ? nameInput.value.trim() : '';
+  if (!name) { showToast('Enter a player name', 'error'); return; }
+  if (!kioskWalkinSessionId) { showToast('Select a session first', 'error'); return; }
+
+  const session = state.sessions.find(s => s.id === kioskWalkinSessionId);
+  if (!session) return;
+
+  // Create booking + check-in
+  state.bookings.push({
+    id: genId(),
+    sessionId: session.id,
+    playerName: name,
+    groupSize: 1,
+    status: 'checked_in',
+    bookedAt: new Date().toISOString(),
+    rating: 3.0
+  });
+  save();
+  showToast(`${name} booked and checked in for ${session.name}! ✅`);
+  kioskWalkinMode = false;
+  kioskWalkinSessionId = null;
+  kioskSessionId = null;
+  renderKioskView();
+}
+
+// ══════════════════════════════════════════════════════
+// TV DISPLAY MODE
+// ══════════════════════════════════════════════════════
+let tvModeInterval = null;
+
+function openTVMode() {
+  // Create TV overlay if not exists
+  let overlay = document.getElementById('tvModeOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'tvModeOverlay';
+    document.body.appendChild(overlay);
+  }
+  renderTVMode();
+  tvModeInterval = setInterval(renderTVMode, 30000); // Update every 30s
+}
+
+function closeTVMode() {
+  const overlay = document.getElementById('tvModeOverlay');
+  if (overlay) overlay.remove();
+  if (tvModeInterval) { clearInterval(tvModeInterval); tvModeInterval = null; }
+}
+
+function renderTVMode() {
+  const overlay = document.getElementById('tvModeOverlay');
+  if (!overlay) return;
+  const v = state.venue || DEFAULT_VENUE;
+  const today = state.currentDate;
+  const todaySessions = state.sessions.filter(s => s.date === today);
+
+  // Time
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: timeFormat !== '24h' });
+
+  // Court cards
+  const courtCards = state.courts.map(court => {
+    const courtSessions = todaySessions.filter(s => s.courtId === court.id);
+    const liveSession = courtSessions.find(s => isSessionLive(s));
+    const bookings = liveSession ? sessBookings(liveSession.id) : [];
+    const queue = liveSession ? sessQueue(liveSession.id) : [];
+
+    // Next session
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const nextSession = courtSessions
+      .filter(s => {
+        const [sh, sm] = s.startTime.split(':').map(Number);
+        return sh * 60 + sm > nowMin;
+      })
+      .sort((a, b) => a.startTime.localeCompare(b.startTime))[0];
+
+    if (liveSession) {
+      const typeInfo = SESSION_COLORS[liveSession.type] || {};
+      const pNames = bookings.map(b => b.playerName);
+      // Show players in 2-column layout
+      const playersHTML = pNames.slice(0, 4).map(name =>
+        `<div class="tv-player"><img src="${avatarUrl(name, 64)}" alt="">${escHtml(name)}</div>`
+      ).join('');
+
+      // Score from matchup data
+      const matchup = liveSession._matchup;
+      let scoreHTML = '';
+      if (matchup && matchup.score) {
+        scoreHTML = `<div class="tv-score"><span class="team-a">${matchup.score.a || 0}</span><span class="vs">–</span><span class="team-b">${matchup.score.b || 0}</span></div>`;
+      }
+
+      const nextHTML = nextSession ? `<div class="tv-next-session">Next: ${escHtml(nextSession.name)} at ${fmtTimeDisplay(...nextSession.startTime.split(':').map(Number))}</div>` : '';
+
+      return `<div class="tv-court-card live">
+        <div class="tv-court-header">
+          <span class="tv-court-name">${escHtml(court.name)}</span>
+          <span class="tv-court-status live">● LIVE</span>
+        </div>
+        <div class="tv-session-type-pill" style="background:${typeInfo.hex || '#64748B'}22;color:${typeInfo.hex || '#64748B'};">${typeInfo.label || liveSession.type}</div>
+        <div class="tv-session-name">${escHtml(liveSession.name)}</div>
+        <div class="tv-session-time">${fmtRange(liveSession.startTime, liveSession.endTime)}</div>
+        ${scoreHTML}
+        <div class="tv-players">${playersHTML}</div>
+        ${queue.length > 0 ? `<div class="tv-queue-info">⚡ ${queue.length} waiting in queue</div>` : ''}
+        ${nextHTML}
+      </div>`;
+    } else {
+      // No live session
+      const nextHTML = nextSession ? `<div class="tv-next-session">Next: ${escHtml(nextSession.name)} at ${fmtTimeDisplay(...nextSession.startTime.split(':').map(Number))}</div>` : '';
+      return `<div class="tv-court-card">
+        <div class="tv-court-header">
+          <span class="tv-court-name">${escHtml(court.name)}</span>
+          <span class="tv-court-status available">Available</span>
+        </div>
+        <div class="tv-court-available-msg">No active session</div>
+        ${nextHTML}
+      </div>`;
+    }
+  }).join('');
+
+  // Ticker
+  const allQueue = state.queue.filter(q => q.status === 'waiting');
+  const tickerItems = allQueue.map(q => {
+    const s = state.sessions.find(sess => sess.id === q.sessionId);
+    return `${q.playerName} waiting for ${s ? s.name : 'session'}`;
+  });
+  // Also add upcoming sessions
+  const nowMin2 = now.getHours() * 60 + now.getMinutes();
+  const upcoming = todaySessions
+    .filter(s => {
+      const [sh, sm] = s.startTime.split(':').map(Number);
+      return sh * 60 + sm > nowMin2;
+    })
+    .sort((a, b) => a.startTime.localeCompare(b.startTime))
+    .slice(0, 3)
+    .map(s => `Coming up: ${s.name} at ${fmtTimeDisplay(...s.startTime.split(':').map(Number))}`);
+
+  const tickerText = [...tickerItems, ...upcoming].join('  •  ') || 'All courts running smoothly';
+
+  overlay.innerHTML = `
+  <div class="tv-mode">
+    <div class="tv-exit"><button onclick="closeTVMode()">✕ Exit TV Mode</button></div>
+    <div class="tv-header">
+      <div class="tv-venue-name">${escHtml(v.name)}</div>
+      <div style="display:flex;align-items:center;gap:24px;">
+        <div class="tv-live"><span class="dot"></span> LIVE</div>
+        <div class="tv-time">${timeStr}</div>
+      </div>
+    </div>
+    <div class="tv-courts">${courtCards}</div>
+    <div class="tv-ticker">
+      <div class="tv-ticker-content">${escHtml(tickerText)}</div>
     </div>
   </div>`;
 }
