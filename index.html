@@ -1,0 +1,3941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pickleball Queue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ──────────────────────────────────────────────────────
+   DESIGN TOKENS
+────────────────────────────────────────────────────── */
+:root {
+  --bg-base:      #0B0F1A;
+  --bg-surface:   #111827;
+  --bg-elevated:  #1E293B;
+  --bg-input:     #1a2233;
+  --navy:         #003B73;
+  --teal:         #14B8A6;
+  --teal-hover:   #0D9488;
+  --teal-subtle:  rgba(20, 184, 166, 0.1);
+  --gold:         #F5A623;
+  --gold-subtle:  rgba(245, 166, 35, 0.15);
+  --green:        #22C55E;
+  --green-subtle: rgba(34, 197, 94, 0.15);
+  --red:          #EF4444;
+  --red-subtle:   rgba(239, 68, 68, 0.18);
+  --blue:         #3B82F6;
+  --blue-subtle:  rgba(59, 130, 246, 0.15);
+  --amber:        #F59E0B;
+  --text-primary: #F8FAFC;
+  --text-secondary:#94A3B8;
+  --text-muted:   #64748B;
+  --border:       rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.14);
+  --border-teal:  rgba(20, 184, 166, 0.3);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.6);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --hour-h: 72px;
+  --time-col-w: 56px;
+  --court-hdr-h: 52px;
+  --DAY_START: 7;
+  --DAY_END: 21;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2d3a4f; border-radius: 3px; }
+
+/* ──────────────────────────────────────────────────────
+   HEADER
+────────────────────────────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(11, 15, 26, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  min-height: 48px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.brand-icon {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--teal), var(--navy));
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 0 10px rgba(20, 184, 166, 0.3);
+  flex-shrink: 0;
+}
+
+.brand-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.brand-text span { color: var(--teal); }
+
+/* Date navigation */
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.date-nav button {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.date-nav button:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+.current-date {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 88px;
+  text-align: center;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.current-date.today {
+  background: var(--teal-subtle);
+  color: var(--teal);
+  border: 1px solid var(--border-teal);
+}
+
+.date-today-btn {
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.date-today-btn:hover { background: var(--teal-subtle); color: var(--teal); }
+
+/* Time format toggle */
+.time-format-btn {
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.time-format-btn:hover { border-color: var(--border-hover); color: var(--text-secondary); }
+.time-format-btn.active { background: var(--teal-subtle); color: var(--teal); border-color: var(--border-teal); }
+
+/* Metrics strip */
+.metrics-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.metric-card {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px 10px;
+  font-size: 10px;
+  transition: border-color 0.2s;
+}
+
+.metric-card:hover { border-color: var(--border-hover); }
+.metric-card .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.metric-card .label { color: var(--text-muted); font-weight: 500; }
+.metric-card .value { font-weight: 800; font-variant-numeric: tabular-nums; }
+.metric-card .value.teal  { color: var(--teal); }
+.metric-card .value.gold  { color: var(--gold); }
+.metric-card .value.green { color: var(--green); }
+
+/* Header action buttons */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.header-btn {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.header-btn:hover { background: var(--teal-subtle); color: var(--teal); border-color: var(--border-teal); }
+
+/* ──────────────────────────────────────────────────────
+   QUICK PANEL — STICKY TOP BAR (always visible in viewport)
+────────────────────────────────────────────────────── */
+.quick-panel {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-hover);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 54px;
+  transition: all 0.2s;
+}
+
+.quick-panel.hidden {
+  display: none;
+}
+
+/* Selected session indicator strip on the left */
+.qp-indicator {
+  width: 3px;
+  height: 36px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  background: var(--teal);
+}
+
+.qp-court-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.qp-court-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.qp-time {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.qp-info { flex: 1; min-width: 0; }
+
+.qp-type-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.qp-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qp-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.qp-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.qp-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.qp-btn:hover { background: var(--bg-base); color: var(--text-primary); border-color: var(--border-hover); }
+.qp-btn.primary { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 700; padding: 0 16px; }
+.qp-btn.primary:hover { background: var(--teal-hover); border-color: var(--teal-hover); }
+.qp-btn.primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.qp-btn.danger:hover { background: var(--red-subtle); color: var(--red); border-color: rgba(239,68,68,0.4); }
+.qp-btn.info-btn { background: var(--bg-surface); border-color: var(--border); }
+.qp-btn.info-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+/* Session type pills */
+.session-type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid;
+  width: fit-content;
+}
+
+.pill-open      { background: rgba(20,184,166,0.2); color: #5eead4; border-color: rgba(20,184,166,0.4); }
+.pill-reserved  { background: rgba(59,130,246,0.2); color: #93c5fd; border-color: rgba(59,130,246,0.4); }
+.pill-league    { background: rgba(245,166,35,0.2); color: #fcd34d; border-color: rgba(245,166,35,0.4); }
+.pill-tournament{ background: rgba(239,68,68,0.2); color: #fca5a5; border-color: rgba(239,68,68,0.4); }
+
+/* ──────────────────────────────────────────────────────
+   DAY GRID
+────────────────────────────────────────────────────── */
+.day-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.day-grid {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+/* Time column */
+.time-col {
+  width: var(--time-col-w);
+  flex-shrink: 0;
+  position: relative;
+  background: var(--bg-base);
+  z-index: 5;
+  border-right: 1px solid var(--border);
+}
+
+.time-col-header {
+  height: var(--court-hdr-h);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  background: var(--bg-base);
+  z-index: 6;
+}
+
+.time-cell {
+  height: var(--hour-h);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 6px;
+  padding-top: 3px;
+}
+
+.time-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* Courts area */
+.courts-area {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.court-column {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+}
+
+.court-column:last-child { border-right: none; }
+
+/* Court column header */
+.court-col-header {
+  height: var(--court-hdr-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.court-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.court-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.court-status-dot.live {
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+  animation: pulse-dot 2s infinite;
+}
+
+.court-status-dot.available { background: var(--text-muted); }
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+  50% { box-shadow: 0 0 0 5px rgba(34,197,94,0.1); }
+}
+
+.court-number {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.court-live-label {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--green);
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 20px;
+  padding: 1px 6px;
+  animation: pulse-label 2s infinite;
+}
+
+@keyframes pulse-label {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.court-add-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.court-add-btn:hover { background: var(--teal-subtle); color: var(--teal); border-color: var(--border-teal); }
+
+/* Court body — scrollable area with hour grid */
+.court-body {
+  position: relative;
+  flex: 1;
+}
+
+.hour-grid {
+  position: relative;
+}
+
+.hour-row {
+  height: var(--hour-h);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Current time line */
+.current-time-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--red);
+  z-index: 8;
+  pointer-events: none;
+}
+
+.current-time-line::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+/* Now dot in time column */
+.now-dot {
+  position: absolute;
+  left: calc(var(--time-col-w) - 5px);
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.25);
+  z-index: 9;
+  transform: translateY(-50%);
+  animation: pulse-dot 2s infinite;
+}
+
+/* Now badge in court column header */
+.now-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--green);
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 20px;
+  padding: 1px 6px;
+  animation: pulse-label 2s infinite;
+  flex-shrink: 0;
+}
+
+/* ──────────────────────────────────────────────────────
+   SESSION BLOCKS
+────────────────────────────────────────────────────── */
+.session-block {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  border-top-width: 3px;
+  padding: 6px 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 30px;
+}
+
+.session-block:hover {
+  border-color: rgba(255,255,255,0.15);
+  z-index: 5;
+}
+
+.session-block.selected {
+  box-shadow: 0 0 0 2px var(--teal), 0 4px 16px rgba(0,0,0,0.6);
+  z-index: 7;
+  border-color: rgba(20,184,166,0.4) !important;
+}
+
+/* Type colors */
+.session-block.type-open      { background: rgba(20,184,166,0.22); border-top-color: var(--teal); }
+.session-block.type-reserved  { background: rgba(59,130,246,0.22); border-top-color: var(--blue); }
+.session-block.type-league    { background: rgba(245,166,35,0.22); border-top-color: var(--gold); }
+.session-block.type-tournament{ background: rgba(239,68,68,0.22);  border-top-color: var(--red); }
+
+/* Currently playing block — extra glow */
+.session-block.is-live {
+  box-shadow: 0 0 0 1px rgba(34,197,94,0.4), 0 4px 16px rgba(34,197,94,0.15);
+}
+
+.session-block.is-live.selected {
+  box-shadow: 0 0 0 2px var(--green), 0 0 0 4px rgba(34,197,94,0.2), 0 4px 16px rgba(0,0,0,0.6);
+}
+
+.sb-time {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sb-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.sb-players {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+}
+
+.sb-badge {
+  font-size: 9px;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sb-badge.queue { background: rgba(245,166,35,0.3); color: #fcd34d; border: 1px solid rgba(245,166,35,0.5); }
+.sb-badge.full  { background: rgba(239,68,68,0.25); color: #fca5a5; border: 1px solid rgba(239,68,68,0.45); }
+
+/* Click hint shown briefly after selecting a session */
+.click-hint {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--teal);
+  opacity: 0;
+  animation: fadeHint 2s ease-out forwards;
+}
+
+@keyframes fadeHint {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ──────────────────────────────────────────────────────
+   MODAL
+────────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-lg);
+  animation: modal-enter 0.25s cubic-bezier(0,0,0.2,1);
+  overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-elevated);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.modal-title { font-size: 14px; font-weight: 800; color: var(--text-primary); }
+
+.modal-close {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.modal-close:hover { background: var(--bg-base); color: var(--text-primary); }
+
+.modal-body { padding: var(--space-4) var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+
+.fg { display: flex; flex-direction: column; gap: 5px; }
+
+.fg label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.fg input, .fg select {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 13px;
+  padding: 9px 12px;
+  font-family: inherit;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.fg input:focus, .fg select:focus { outline: none; border-color: var(--teal); }
+.fg select option { background: var(--bg-surface); }
+
+.fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+.queue-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 7px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.queue-entry .pos {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-muted);
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.queue-entry .name { flex: 1; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.queue-entry .size { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+.queue-entry .time { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+.queue-entry .call-btn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-teal);
+  background: var(--teal-subtle);
+  color: var(--teal);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.queue-entry .call-btn:hover { background: var(--teal); color: #fff; }
+
+.modal-footer {
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  background: var(--bg-elevated);
+  position: sticky;
+  bottom: 0;
+}
+
+.btn-cancel {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.btn-cancel:hover { background: var(--bg-base); color: var(--text-primary); }
+
+.btn-save {
+  height: 34px;
+  padding: 0 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--teal);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btn-save:hover { background: var(--teal-hover); }
+
+/* ──────────────────────────────────────────────────────
+   TOAST
+────────────────────────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  top: 70px;
+  right: 12px;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  animation: toast-in 0.3s cubic-bezier(0,0,0.2,1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 270px;
+}
+
+.toast.exit { animation: toast-out 0.25s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+@keyframes toast-in  { from { opacity: 0; transform: translateX(120%); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toast-out { from { opacity: 1; transform: translateX(0); }     to { opacity: 0; transform: translateX(120%); } }
+
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error   { border-left: 3px solid var(--red); }
+.toast.info    { border-left: 3px solid var(--teal); }
+.toast.warning { border-left: 3px solid var(--amber); }
+
+.toast-icon { font-size: 13px; flex-shrink: 0; }
+
+/* ──────────────────────────────────────────────────────
+   RESPONSIVE
+────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .metrics-strip { display: none; }
+}
+
+@media (max-width: 640px) {
+  .court-column { min-width: 140px; }
+  :root { --time-col-w: 44px; --hour-h: 60px; }
+  .qp-time { font-size: 13px; }
+  .qp-btn { padding: 0 8px; font-size: 10px; }
+  .header { padding: var(--space-2); gap: var(--space-2); }
+}
+
+@media (max-width: 375px) {
+  .court-column { min-width: 120px; }
+  .qp-court-badge, .qp-indicator { display: none; }
+  .qp-time { font-size: 12px; }
+}
+
+/* ──────────────────────────────────────────────────────
+   SESSION DETAIL MODAL — MATCHUP VIEW
+────────────────────────────────────────────────────── */
+.modal-overlay.open { align-items: flex-end; justify-content: center; }
+
+.session-detail-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  width: 100%;
+  max-width: 900px;
+  max-height: 92vh;
+  box-shadow: var(--shadow-lg);
+  animation: modal-enter 0.3s cubic-bezier(0,0,0.2,1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+@keyframes modal-enter {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* Modal header */
+.sdm-header {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+
+.sdm-live-badge {
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--green);
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.35);
+  border-radius: 20px;
+  padding: 2px 8px;
+  animation: pulse-label 2s infinite;
+}
+
+@keyframes pulse-label {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.sdm-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.sdm-court-time {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sdm-close {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.sdm-close:hover { background: var(--bg-base); color: var(--text-primary); border-color: var(--border-hover); }
+
+/* Scrollable body */
+.sdm-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── SCOREBOARD ─── */
+.scoreboard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  min-width: 0;
+  width: 100%;
+}
+
+.team-score-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) var(--space-4);
+  gap: 4px;
+  min-width: 120px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.team-score-side.team-a { background: rgba(20,184,166,0.08); }
+.team-score-side.team-b { background: rgba(248,113,113,0.08); }
+
+.team-label {
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.team-a .team-label { color: var(--teal); }
+.team-b .team-label { color: #F87171; }
+
+.team-players-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.team-mini-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.team-a .team-mini-avatar { background: var(--teal); }
+.team-b .team-mini-avatar { background: #F87171; }
+
+.score-number {
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.15s;
+  max-width: 100%;
+  text-align: center;
+  padding: 2px 0;
+}
+
+.team-a .score-number { color: var(--teal); }
+.team-b .score-number { color: #F87171; }
+
+.score-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  color: var(--text-secondary);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.score-btn:hover { background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-hover); }
+.score-btn:active { transform: scale(0.92); background: var(--bg-elevated); }
+
+.score-btn-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  justify-content: center;
+  width: 100%;
+}
+
+.score-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--space-3) var(--space-3);
+  flex-shrink: 0;
+  min-width: 80px;
+  text-align: center;
+}
+
+.score-colon {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--text-muted);
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.game-history-pills {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ─── MATCHUP SECTION ─── */
+.matchup-section {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* Player cards column */
+.player-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.player-col-header {
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-col.team-a .player-col-header { color: var(--teal); border-color: rgba(20,184,166,0.3); }
+.player-col.team-b .player-col-header { color: #F87171; border-color: rgba(248,113,113,0.3); }
+
+.player-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  transition: border-color 0.15s;
+  min-height: 56px;
+}
+
+.player-card:hover { border-color: var(--border-hover); }
+.player-card.is-live { border-color: var(--green); box-shadow: 0 0 0 1px rgba(34,197,94,0.2); }
+
+.player-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.player-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  position: relative;
+  object-fit: cover;
+}
+
+.team-a .player-avatar { background: var(--teal); }
+.team-b .player-avatar { background: #F87171; }
+
+.avatar-placeholder {
+  background: rgba(255,255,255,0.12);
+}
+
+.player-info { flex: 1; min-width: 0; }
+
+.player-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-position {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 1px;
+  letter-spacing: 0.02em;
+}
+
+.player-status-badge {
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 20px;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.player-status-badge.playing {
+  background: rgba(34,197,94,0.15);
+  color: var(--green);
+  border-color: rgba(34,197,94,0.35);
+}
+
+.player-status-badge.waiting {
+  background: rgba(245,166,35,0.15);
+  color: var(--amber);
+  border-color: rgba(245,166,35,0.35);
+}
+
+.waiting-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: var(--space-2) var(--space-3);
+  text-align: center;
+}
+
+/* ─── COURT DIAGRAM ─── */
+.court-diagram-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  overflow: visible;
+  padding: var(--space-2) 0;
+}
+
+.court-svg {
+  width: 240px;
+  height: auto;
+  overflow: visible;
+}
+
+.court-area { fill: none; stroke: rgba(255,255,255,0.2); stroke-width: 2; }
+.court-net { stroke: rgba(255,255,255,0.5); stroke-width: 1.5; stroke-dasharray: 6 3; }
+.court-line { stroke: rgba(255,255,255,0.15); stroke-width: 1; }
+.court-label { font-size: 8px; fill: rgba(255,255,255,0.25); font-family: Inter, sans-serif; }
+
+.player-dot {
+  cursor: pointer;
+  transition: r 0.15s;
+}
+.player-dot:hover { r: 9; }
+
+.player-dot-label {
+  font-size: 8px;
+  font-weight: 800;
+  fill: #fff;
+  font-family: Inter, sans-serif;
+  pointer-events: none;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.court-hint {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ─── QUEUE SECTION ─── */
+.queue-section {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.queue-section-header {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.queue-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.queue-entry-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+.queue-entry-row:last-child { border-bottom: none; }
+.queue-entry-row:hover { background: rgba(255,255,255,0.02); }
+
+.qe-pos { font-size: 10px; font-weight: 800; color: var(--text-muted); width: 20px; flex-shrink: 0; }
+.qe-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(245,166,35,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+.qe-avatar-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.qe-name { flex: 1; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.qe-size { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+.qe-wait { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+.qe-call {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-teal);
+  background: var(--teal-subtle);
+  color: var(--teal);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.qe-call:hover { background: var(--teal); color: #fff; }
+
+.queue-empty {
+  padding: var(--space-4);
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ─── ACTION BAR ─── */
+.sdm-actions {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  align-items: center;
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.sdm-btn {
+  height: 34px;
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.sdm-btn:hover { background: var(--bg-base); color: var(--text-primary); border-color: var(--border-hover); }
+.sdm-btn.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+.sdm-btn.primary:hover { background: var(--teal-hover); border-color: var(--teal-hover); }
+.sdm-btn.primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.sdm-btn.danger:hover { background: var(--red-subtle); color: var(--red); border-color: rgba(239,68,68,0.4); }
+
+/* Rating display */
+.player-rating { margin: 2px 0; display: flex; align-items: center; gap: 4px; }
+.dupr-value { font-size: 12px; font-weight: 800; color: #F5A623; }
+.dupr-label { font-size: 9px; color: var(--text-muted); font-weight: 600; }
+
+/* Rotation buttons */
+.rotate-out-btn, .rotate-in-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--bg-base);
+  color: var(--text-secondary); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.rotate-out-btn:hover { background: rgba(245,166,35,0.15); border-color: var(--amber); color: var(--amber); }
+.rotate-in-btn:hover { background: rgba(20,184,166,0.15); border-color: var(--teal); color: var(--teal); }
+
+/* Waiting Room */
+.waiting-room-section {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.wr-header {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2);
+}
+.wr-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--amber); }
+.wr-controls { display: flex; align-items: center; gap: 8px; }
+.wr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-3); padding: var(--space-4); }
+.wr-card {
+  background: var(--bg-base); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: var(--space-3);
+  display: flex; align-items: center; gap: var(--space-3);
+  transition: border-color 0.15s;
+}
+.wr-card:hover { border-color: var(--amber); }
+.wr-avatar { flex-shrink: 0; object-fit: cover; border-radius: 50%; width: 44px; height: 44px; }
+.wr-info { flex: 1; min-width: 0; }
+.wr-name { font-size: 12px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wr-rating { margin: 2px 0; }
+.wr-wait { font-size: 10px; color: var(--text-muted); }
+.wr-team-badge {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid;
+  width: fit-content;
+}
+.wr-team-badge.team-a { background: rgba(20,184,166,0.15); color: #14B8A6; border-color: rgba(20,184,166,0.4); }
+.wr-team-badge.team-b { background: rgba(248,113,113,0.15); color: #F87171; border-color: rgba(248,113,113,0.4); }
+
+/* Waiting room position indicator */
+.wr-pos {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.wr-pos-next {
+  background: rgba(245,166,35,0.15);
+  color: var(--amber);
+  border-color: rgba(245,166,35,0.4);
+}
+
+/* Next up card highlight */
+.wr-next {
+  border-color: rgba(245,166,35,0.3);
+  background: rgba(245,166,35,0.04);
+}
+
+/* Name row with optional badge */
+.wr-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.wr-next-badge {
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amber);
+  background: rgba(245,166,35,0.15);
+  border: 1px solid rgba(245,166,35,0.3);
+  border-radius: 20px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.star-btn {
+  padding: 5px 10px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--bg-base);
+  color: rgba(255,255,255,0.2); font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.star-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+/* Scoreboard team mini avatars */
+.team-mini-avatar { border-radius: 50%; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 700px) {
+  .matchup-section {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: var(--space-3);
+  }
+  .court-diagram-wrap { order: -1; }
+  .court-svg { width: 200px; }
+  .score-number { font-size: 44px; }
+  .sdm-body { padding: var(--space-3); }
+  .scoreboard { flex-wrap: nowrap; }
+  .team-score-side { min-width: 100px; flex-shrink: 0; padding: var(--space-3); }
+  .score-divider { min-width: 70px; flex-shrink: 0; padding: var(--space-2); }
+  .score-colon { font-size: 28px; }
+  .sdm-btn { height: 32px; padding: 0 12px; font-size: 11px; }
+}
+
+@media (max-width: 375px) {
+  .score-number { font-size: 36px; }
+  .team-score-side { padding: var(--space-2); min-width: 90px; flex-shrink: 0; }
+  .sdm-header { padding: var(--space-3) var(--space-4); }
+  .sdm-actions { padding: var(--space-2) var(--space-3); gap: 6px; }
+  .sdm-btn { height: 30px; padding: 0 10px; font-size: 10px; }
+  .wr-grid { grid-template-columns: 1fr; padding: var(--space-3); }
+  .score-btn { width: 28px; height: 28px; font-size: 16px; }
+  .score-btn-row { gap: 4px; }
+  .court-svg { width: 160px; }
+}
+
+/* ──────────────────────────────────────────────────────
+   BOTTOM TAB BAR
+────────────────────────────────────────────────────── */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  background: rgba(11, 15, 26, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tab-item.active { color: var(--teal); }
+.tab-item .tab-icon { font-size: 20px; line-height: 1; }
+.tab-item:hover { color: var(--text-secondary); }
+.tab-item.active:hover { color: var(--teal); }
+
+/* View containers */
+.view-container { display: none; padding-bottom: 80px; }
+.view-container.active { display: block; }
+
+/* ──────────────────────────────────────────────────────
+   SETTINGS VIEW
+────────────────────────────────────────────────────── */
+.settings-view { max-width: 600px; margin: 0 auto; padding: 20px 16px; }
+.settings-section { margin-bottom: 24px; }
+.settings-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+.settings-row-label { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.settings-row-value { font-size: 13px; color: var(--text-secondary); text-align: right; }
+.settings-row input, .settings-row select {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  font-size: 13px;
+  width: 180px;
+  text-align: right;
+}
+.settings-row input:focus, .settings-row select:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+/* ──────────────────────────────────────────────────────
+   COURTS VIEW
+────────────────────────────────────────────────────── */
+.courts-view { max-width: 700px; margin: 0 auto; padding: 20px 16px; }
+.court-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.court-card:hover { border-color: var(--border-hover); }
+.court-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.court-card-name { font-size: 16px; font-weight: 700; }
+.court-card-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.court-card-status.available { background: var(--green-subtle); color: var(--green); }
+.court-card-status.occupied { background: var(--red-subtle); color: var(--red); }
+.court-card-status.maintenance { background: var(--gold-subtle); color: var(--gold); }
+.court-card-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.court-card-meta span { display: flex; align-items: center; gap: 4px; }
+.add-court-card {
+  border: 2px dashed var(--border);
+  background: transparent;
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 14px;
+  width: 100%;
+  transition: border-color 0.2s, color 0.2s;
+}
+.add-court-card:hover { border-color: var(--teal); color: var(--teal); }
+
+/* ──────────────────────────────────────────────────────
+   PLAYERS VIEW
+────────────────────────────────────────────────────── */
+.players-view { max-width: 700px; margin: 0 auto; padding: 20px 16px; }
+.players-search {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.players-search:focus { outline: none; border-color: var(--teal); }
+.player-list-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.player-list-card:hover { border-color: var(--border-hover); }
+.player-list-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.player-list-info { flex: 1; min-width: 0; }
+.player-list-name { font-size: 14px; font-weight: 600; }
+.player-list-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.player-list-stats {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.player-list-stats .stat { display: flex; flex-direction: column; align-items: center; }
+.player-list-stats .stat-val { font-weight: 700; font-size: 14px; color: var(--text-primary); }
+
+/* ──────────────────────────────────────────────────────
+   BOOKINGS VIEW
+────────────────────────────────────────────────────── */
+.bookings-view { max-width: 700px; margin: 0 auto; padding: 20px 16px; }
+.booking-date-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 16px 0 8px;
+}
+.booking-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+}
+.booking-time-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--teal);
+  min-width: 80px;
+}
+.booking-info { flex: 1; }
+.booking-player { font-size: 14px; font-weight: 600; }
+.booking-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.booking-status {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+.booking-status.confirmed { background: var(--green-subtle); color: var(--green); }
+.booking-status.checked_in { background: var(--blue-subtle); color: var(--blue); }
+.booking-status.no_show { background: var(--red-subtle); color: var(--red); }
+.booking-status.cancelled { background: rgba(100,116,139,0.15); color: var(--text-muted); }
+
+/* ──────────────────────────────────────────────────────
+   ANALYTICS VIEW
+────────────────────────────────────────────────────── */
+.analytics-view { max-width: 700px; margin: 0 auto; padding: 20px 16px; }
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.analytics-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.analytics-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.analytics-card-value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+.analytics-card-change {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.analytics-card-change.up { color: var(--green); }
+.analytics-card-change.down { color: var(--red); }
+.analytics-chart {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.analytics-chart-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.4s ease;
+}
+.bar-label { font-size: 9px; color: var(--text-muted); }
+.bar-value { font-size: 10px; font-weight: 700; color: var(--text-secondary); }
+.utilization-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.utilization-label { font-size: 12px; color: var(--text-secondary); min-width: 80px; }
+.utilization-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.utilization-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+.utilization-pct { font-size: 12px; font-weight: 700; min-width: 36px; text-align: right; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <a href="#" class="header-brand" onclick="goToToday(); return false;">
+    <div class="brand-icon">🏓</div>
+    <div class="brand-text" id="brandText">Ace Pickleball Club <span>Queue</span></div>
+  </a>
+
+  <div class="date-nav">
+    <button onclick="changeDate(-1)" title="Previous day">‹</button>
+    <div class="current-date today" id="currentDateLabel">Today</div>
+    <button onclick="changeDate(1)" title="Next day">›</button>
+  </div>
+
+  <button class="date-today-btn" onclick="goToToday()">Today</button>
+
+  <button class="time-format-btn" id="timeFormatBtn" onclick="toggleTimeFormat()">24h</button>
+
+  <div class="metrics-strip" id="metricsStrip"></div>
+
+  <div class="header-actions">
+    <button class="header-btn" onclick="openModal('queue')">⚡ Queue</button>
+    <button class="header-btn" onclick="openModal('booking')">+ Book</button>
+  </div>
+</header>
+
+<!-- SCHEDULE VIEW -->
+<div class="view-container active" id="view-schedule">
+
+<!-- QUICK PANEL — shown when a session is selected -->
+<div class="quick-panel hidden" id="quickPanel">
+  <div class="qp-indicator" id="qpIndicator"></div>
+  <div class="qp-court-badge">
+    <div class="dot"></div>
+    <span id="qpCourtName">Court 1</span>
+  </div>
+  <div class="qp-time" id="qpTime">—</div>
+  <div class="qp-info">
+    <div class="qp-type-row" id="qpTypeRow"></div>
+    <div class="qp-title" id="qpTitle"></div>
+    <div class="qp-subtitle" id="qpSubtitle"></div>
+  </div>
+  <div class="qp-actions" id="qpActions"></div>
+</div>
+
+<!-- DAY VIEW -->
+<div class="day-view">
+  <div class="day-grid" id="dayGrid"></div>
+</div>
+
+</div><!-- /schedule view -->
+
+<!-- COURTS VIEW -->
+<div class="view-container" id="view-courts"></div>
+
+<!-- BOOKINGS VIEW -->
+<div class="view-container" id="view-bookings"></div>
+
+<!-- PLAYERS VIEW -->
+<div class="view-container" id="view-players"></div>
+
+<!-- SETTINGS VIEW -->
+<div class="view-container" id="view-settings"></div>
+
+<!-- ANALYTICS VIEW -->
+<div class="view-container" id="view-analytics"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add Session</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="modalSubmit" onclick="submitModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- BOTTOM TAB BAR -->
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-item active" data-view="schedule" onclick="switchView('schedule')">
+    <span class="tab-icon">📅</span>
+    <span>Schedule</span>
+  </button>
+  <button class="tab-item" data-view="courts" onclick="switchView('courts')">
+    <span class="tab-icon">🏟️</span>
+    <span>Courts</span>
+  </button>
+  <button class="tab-item" data-view="bookings" onclick="switchView('bookings')">
+    <span class="tab-icon">📋</span>
+    <span>Bookings</span>
+  </button>
+  <button class="tab-item" data-view="players" onclick="switchView('players')">
+    <span class="tab-icon">👥</span>
+    <span>Players</span>
+  </button>
+  <button class="tab-item" data-view="settings" onclick="switchView('settings')">
+    <span class="tab-icon">⚙️</span>
+    <span>Settings</span>
+  </button>
+</nav>
+
+<script>
+// ══════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════
+const STORAGE_KEY = 'pb_queue_v5';
+const SESSION_COLORS = {
+  open:       { pill: 'pill-open',       hex: '#14B8A6', label: 'Open Play' },
+  reserved:   { pill: 'pill-reserved',   hex: '#3B82F6', label: 'Reserved' },
+  league:     { pill: 'pill-league',     hex: '#F5A623', label: 'League' },
+  tournament: { pill: 'pill-tournament', hex: '#EF4444', label: 'Tournament' }
+};
+const ROW_H = 72; // must match --hour-h in CSS
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let state = {
+  courts: [
+    { id: 'c1', name: 'Court 1' },
+    { id: 'c2', name: 'Court 2' }
+  ],
+  sessions: [],
+  bookings: [],
+  queue: [],
+  selectedSessionId: null,
+  currentDate: new Date().toISOString().split('T')[0]
+};
+
+// ══════════════════════════════════════════════════════
+// VENUE CONFIG
+// ══════════════════════════════════════════════════════
+const DEFAULT_VENUE = {
+  name: 'Ace Pickleball Club',
+  sport: 'pickleball',
+  address: '123 Court Street, Sportsville',
+  phone: '(555) 123-4567',
+  openHour: 7,
+  closeHour: 21,
+  slotDuration: 60, // minutes
+  maxPlayersPerCourt: 4,
+  pricing: {
+    openPlay: 15,
+    reserved: 40,
+    league: 25,
+    tournament: 30
+  }
+};
+
+// Merge venue config into state
+if (!state.venue) state.venue = { ...DEFAULT_VENUE };
+// playerDirectory initialization deferred to load() since PLAYER_POOL is defined later
+
+function buildPlayerDirectory() {
+  const dir = {};
+  PLAYER_POOL.forEach(p => {
+    dir[p.name] = {
+      name: p.name,
+      rating: p.rating,
+      sessionsPlayed: Math.floor(hashCode(p.name) % 20) + 1,
+      wins: Math.floor(hashCode(p.name + 'w') % 15),
+      losses: Math.floor(hashCode(p.name + 'l') % 12),
+      lastPlayed: state.currentDate,
+      memberSince: '2024-' + String((hashCode(p.name) % 12) + 1).padStart(2, '0') + '-15'
+    };
+  });
+  // Add players from bookings/queue
+  [...state.bookings, ...state.queue].forEach(b => {
+    if (!dir[b.playerName]) {
+      dir[b.playerName] = {
+        name: b.playerName,
+        rating: b.rating || 3.0,
+        sessionsPlayed: 1,
+        wins: 0,
+        losses: 0,
+        lastPlayed: state.currentDate,
+        memberSince: state.currentDate
+      };
+    }
+  });
+  return dir;
+}
+
+// ══════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ══════════════════════════════════════════════════════
+let currentView = 'schedule';
+
+function switchView(viewName) {
+  currentView = viewName;
+  // Update tab bar
+  document.querySelectorAll('.tab-item').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.view === viewName);
+  });
+  // Update view containers
+  document.querySelectorAll('.view-container').forEach(vc => {
+    vc.classList.toggle('active', vc.id === 'view-' + viewName);
+  });
+  // Show/hide header elements based on view
+  const dateNav = document.querySelector('.date-nav');
+  const todayBtn = document.querySelector('.date-today-btn');
+  const timeFmtBtn = document.getElementById('timeFormatBtn');
+  const metrics = document.getElementById('metricsStrip');
+  const headerActions = document.querySelector('.header-actions');
+  const isSchedule = viewName === 'schedule';
+  if (dateNav) dateNav.style.display = isSchedule ? '' : 'none';
+  if (todayBtn) todayBtn.style.display = isSchedule ? '' : 'none';
+  if (timeFmtBtn) timeFmtBtn.style.display = isSchedule ? '' : 'none';
+  if (metrics) metrics.style.display = isSchedule ? '' : 'none';
+  if (headerActions) headerActions.style.display = isSchedule ? '' : 'none';
+  // Render the active view
+  if (viewName === 'schedule') render();
+  else if (viewName === 'courts') renderCourtsView();
+  else if (viewName === 'bookings') renderBookingsView();
+  else if (viewName === 'players') renderPlayersView();
+  else if (viewName === 'settings') renderSettingsView();
+  else if (viewName === 'analytics') renderAnalyticsView();
+}
+
+let modalMode = 'session';
+let timeLineInterval = null;
+let nowDotInterval = null;
+let timeFormat = localStorage.getItem('pb_time_format') || '12h'; // '12h' or '24h'
+
+// ══════════════════════════════════════════════════════
+// TIME FORMATTING
+// ══════════════════════════════════════════════════════
+function fmtTime24(h, m) {
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
+function fmtTimeDisplay(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  if (timeFormat === '24h') {
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  } else {
+    const ampm = h < 12 ? 'AM' : 'PM';
+    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+  }
+}
+
+function fmtRange(startTime, endTime) {
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  return `${fmtTimeDisplay(sh, sm)} – ${fmtTimeDisplay(eh, em)}`;
+}
+
+// fmtTimeDisplay — accepts (h, m) numbers for time cell labels
+function fmtTimeDisplay(h, m) {
+  if (timeFormat === '24h') {
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  } else {
+    const ampm = h < 12 ? 'AM' : 'PM';
+    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+  }
+}
+
+// fmtRange — accepts (startTime, endTime) strings for session blocks
+function fmtRange(startTime, endTime) {
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  return `${fmtTimeDisplay(sh, sm)} – ${fmtTimeDisplay(eh, em)}`;
+}
+
+function toggleTimeFormat() {
+  timeFormat = timeFormat === '12h' ? '24h' : '12h';
+  localStorage.setItem('pb_time_format', timeFormat);
+  updateTimeFormatBtn();
+  render();
+}
+
+function updateTimeFormatBtn() {
+  const btn = document.getElementById('timeFormatBtn');
+  btn.textContent = timeFormat === '12h' ? '24h' : '12h';
+  btn.classList.toggle('active', timeFormat === '24h');
+  btn.title = `Switch to ${timeFormat === '12h' ? '12' : '24'} hour format`;
+}
+
+// ══════════════════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════════════════
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const p = JSON.parse(raw);
+      state = { ...state, ...p };
+    }
+  } catch(e) {}
+  if (!state.venue) state.venue = { ...DEFAULT_VENUE };
+  else state.venue = { ...DEFAULT_VENUE, ...state.venue, pricing: { ...DEFAULT_VENUE.pricing, ...(state.venue.pricing || {}) } };
+  if (!state.playerDirectory) state.playerDirectory = buildPlayerDirectory();
+  if (!state.sessions || state.sessions.length === 0) seedSampleData();
+}
+
+function seedSampleData() {
+  const today = state.currentDate;
+  state.sessions = [
+    { id: genId(), courtId: 'c1', date: today, startTime: '08:00', endTime: '09:00', type: 'open' },
+    { id: genId(), courtId: 'c1', date: today, startTime: '09:00', endTime: '10:00', type: 'reserved' },
+    { id: genId(), courtId: 'c1', date: today, startTime: '10:00', endTime: '11:00', type: 'open' },
+    { id: genId(), courtId: 'c1', date: today, startTime: '11:00', endTime: '12:00', type: 'open' },
+    { id: genId(), courtId: 'c1', date: today, startTime: '12:00', endTime: '13:00', type: 'open' },
+    { id: genId(), courtId: 'c1', date: today, startTime: '14:00', endTime: '15:00', type: 'league' },
+    { id: genId(), courtId: 'c1', date: today, startTime: '15:00', endTime: '16:00', type: 'open' },
+    { id: genId(), courtId: 'c2', date: today, startTime: '08:00', endTime: '09:00', type: 'reserved' },
+    { id: genId(), courtId: 'c2', date: today, startTime: '09:00', endTime: '10:00', type: 'open' },
+    { id: genId(), courtId: 'c2', date: today, startTime: '10:00', endTime: '11:00', type: 'open' },
+    { id: genId(), courtId: 'c2', date: today, startTime: '13:00', endTime: '14:00', type: 'tournament' },
+    { id: genId(), courtId: 'c2', date: today, startTime: '14:00', endTime: '15:00', type: 'open' },
+  ];
+  const ss = state.sessions; // shorthand
+
+  state.bookings = [
+    // Reserved sessions (full 4/4)
+    { id: genId(), sessionId: ss[1].id,  playerName: 'Marcus Hayes',   groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 4.0 },
+    { id: genId(), sessionId: ss[1].id,  playerName: 'Sophie Nguyen',  groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 3.9 },
+    { id: genId(), sessionId: ss[7].id,  playerName: 'Jordan West',    groupSize: 2, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 2.5 },
+    { id: genId(), sessionId: ss[7].id,  playerName: 'Cameron Price',  groupSize: 2, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 5.5 },
+    // Open play sessions — mix of fill levels
+    { id: genId(), sessionId: ss[0].id,  playerName: 'Jamie Torres',   groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 3.3 },
+    { id: genId(), sessionId: ss[0].id,  playerName: 'Kai Bennett',    groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 4.7 },
+    { id: genId(), sessionId: ss[2].id,  playerName: 'Peyton Reed',    groupSize: 2, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 6.5 },
+    { id: genId(), sessionId: ss[2].id,  playerName: 'Harper Cole',    groupSize: 1, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 2.9 },
+    { id: genId(), sessionId: ss[3].id,  playerName: 'Logan Diaz',     groupSize: 4, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 3.1 },
+    { id: genId(), sessionId: ss[4].id,  playerName: 'Reese Walker',   groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 4.3 },
+    { id: genId(), sessionId: ss[4].id,  playerName: 'Finley Scott',   groupSize: 2, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 5.0 },
+    { id: genId(), sessionId: ss[6].id,  playerName: 'Sage Murphy',    groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 3.7 },
+    { id: genId(), sessionId: ss[6].id,  playerName: 'Rowan James',    groupSize: 1, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 2.0 },
+    { id: genId(), sessionId: ss[8].id,  playerName: 'Emery Clark',    groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 4.1 },
+    { id: genId(), sessionId: ss[8].id,  playerName: 'Jesse Hart',     groupSize: 1, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 3.4 },
+    { id: genId(), sessionId: ss[9].id,  playerName: 'Parker Liu',     groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 4.9 },
+    { id: genId(), sessionId: ss[9].id,  playerName: 'Skyler Fox',     groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 2.2 },
+    { id: genId(), sessionId: ss[11].id, playerName: 'Avery Chen',     groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 4.8 },
+    { id: genId(), sessionId: ss[11].id, playerName: 'Dana Brooks',    groupSize: 2, status: 'confirmed',   bookedAt: new Date().toISOString(), rating: 3.6 },
+    // League and Tournament sessions (full)
+    { id: genId(), sessionId: ss[5].id,  playerName: 'Casey Martinez', groupSize: 2, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 4.2 },
+    { id: genId(), sessionId: ss[5].id,  playerName: 'Morgan Johnson', groupSize: 2, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 5.8 },
+    { id: genId(), sessionId: ss[10].id, playerName: 'Elena Foster',   groupSize: 2, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 5.1 },
+    { id: genId(), sessionId: ss[10].id, playerName: 'Sam Ellis',      groupSize: 2, status: 'checked_in',  bookedAt: new Date().toISOString(), rating: 6.2 },
+  ];
+  state.queue = [
+    // Queue for Court 1 morning open (ss[0])
+    { id: genId(), sessionId: ss[0].id,  playerName: 'Drew Parker',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 18*60000).toISOString(), rating: 3.2 },
+    { id: genId(), sessionId: ss[0].id,  playerName: 'Quinn Adams',    groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 12*60000).toISOString(), rating: 2.8 },
+    // Queue for Court 1 10am open (ss[2])
+    { id: genId(), sessionId: ss[2].id,  playerName: 'Blake Collins',  groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 22*60000).toISOString(), rating: 2.4 },
+    { id: genId(), sessionId: ss[2].id,  playerName: 'Riley Thompson', groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 15*60000).toISOString(), rating: 3.5 },
+    { id: genId(), sessionId: ss[2].id,  playerName: 'Taylor Kim',     groupSize: 1, position: 3, status: 'waiting', joinedAt: new Date(Date.now() - 8*60000).toISOString(),  rating: 4.5 },
+    // Queue for Court 1 11am open (ss[3])
+    { id: genId(), sessionId: ss[3].id,  playerName: 'Alex Rivera',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 25*60000).toISOString(), rating: 3.8 },
+    { id: genId(), sessionId: ss[3].id,  playerName: 'Jordan Lee',     groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 10*60000).toISOString(), rating: 3.0 },
+    // Queue for Court 1 12pm open (ss[4])
+    { id: genId(), sessionId: ss[4].id,  playerName: 'Avery Chen',     groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 5*60000).toISOString(),  rating: 4.8 },
+    // Queue for Court 1 3pm open (ss[6])
+    { id: genId(), sessionId: ss[6].id,  playerName: 'Cameron Price',  groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 3*60000).toISOString(),  rating: 5.5 },
+    { id: genId(), sessionId: ss[6].id,  playerName: 'Elena Foster',   groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 2*60000).toISOString(),  rating: 5.1 },
+    // Queue for Court 2 9am open (ss[8])
+    { id: genId(), sessionId: ss[8].id,  playerName: 'Kai Bennett',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 14*60000).toISOString(), rating: 4.7 },
+    // Queue for Court 2 10am open (ss[9])
+    { id: genId(), sessionId: ss[9].id,  playerName: 'Peyton Reed',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 20*60000).toISOString(), rating: 6.5 },
+    { id: genId(), sessionId: ss[9].id,  playerName: 'Dana Brooks',    groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 7*60000).toISOString(),  rating: 3.6 },
+    // Queue for Court 2 2pm open (ss[11])
+    { id: genId(), sessionId: ss[11].id, playerName: 'Jesse Hart',     groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 15*60000).toISOString(), rating: 3.4 },
+    { id: genId(), sessionId: ss[11].id, playerName: 'Rowan James',    groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 9*60000).toISOString(),  rating: 2.0 },
+  ];
+
+  // Pre-seed all sessions with matchup data so players appear immediately
+  state.sessions.forEach(s => seedSessionMatchup(s));
+}
+
+function genId() {
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+function formatDate(dateStr) {
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  if (dateStr === today) return 'Today';
+  if (dateStr === tomorrow) return 'Tomorrow';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function sessBookings(sessionId) {
+  return state.bookings.filter(b =>
+    b.sessionId === sessionId && b.status !== 'cancelled' && b.status !== 'no_show'
+  );
+}
+
+function sessQueue(sessionId) {
+  return state.queue
+    .filter(q => q.sessionId === sessionId && q.status === 'waiting')
+    .sort((a,b) => a.position - b.position);
+}
+
+function totalPlayers(sessionId) {
+  return sessBookings(sessionId).reduce((sum,b) => sum + b.groupSize, 0);
+}
+
+// ─── Player Photo Map (pravatar.cc) ─────────────────────
+const PHOTO_MAP = {
+  'Casey Martinez': 'cm01', 'Riley Thompson': 'rt02',
+  'Morgan Johnson': 'mj03', 'Alex Rivera': 'ar04',
+  'Jordan Lee': 'jl05', 'Taylor Kim': 'tk06',
+  'Drew Parker': 'dp07', 'Quinn Adams': 'qa08',
+  'Blake Collins': 'bc09', 'Sam Ellis': 'se10',
+  'Avery Chen': 'ac11', 'Dana Brooks': 'db12',
+  'Elena Foster': 'ef13', 'Marcus Hayes': 'mh14',
+  'Sophie Nguyen': 'sn15', 'Jordan West': 'jw16',
+  'Cameron Price': 'cp17', 'Jamie Torres': 'jt18',
+  'Kai Bennett': 'kb19', 'Peyton Reed': 'pr20',
+  'Harper Cole': 'hc21', 'Logan Diaz': 'ld22',
+  'Reese Walker': 'rw23', 'Finley Scott': 'fs24',
+  'Sage Murphy': 'sm25', 'Rowan James': 'rj26',
+  'Emery Clark': 'ec27', 'Jesse Hart': 'jh28',
+  'Parker Liu': 'pl29', 'Skyler Fox': 'sf30'
+};
+
+function avatarUrl(name, size = 128, bg = '14B8A6') {
+  const key = PHOTO_MAP[name];
+  if (key) {
+    return `https://i.pravatar.cc/${size}?u=${key}`;
+  }
+  // Fallback to initials-based avatar
+  const encoded = encodeURIComponent(name);
+  return `https://ui-avatars.com/api/?name=${encoded}&background=${bg}&color=fff&size=${size}&font-size=0.38&length=2&bold=true`;
+}
+
+function duprDisplay(rating) {
+  // rating: 2.0–9.0 (DUPR pickleball rating)
+  const r = parseFloat(rating || 3.0).toFixed(1);
+  return `<span class="dupr-value">${r}</span><span class="dupr-label">DUPR</span>`;
+}
+
+function getInitials(name) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+// ─── Matchup Algorithm ───────────────────────────────────
+// Auto-balances two teams of 2 so total rating is equal ±1
+// Greedy: sort waiting players by rating desc, then alternate assignment
+function balanceTeams(waitingPlayers) {
+  const sorted = [...waitingPlayers].sort((a, b) => b.rating - a.rating);
+  let teamA = [], teamB = [];
+  sorted.forEach((p, i) => {
+    if (i % 2 === 0) teamA.push(p); else teamB.push(p);
+  });
+  // Fine-tune: if diff > 1, swap highest diff pair
+  const sumA = teamA.reduce((s, p) => s + p.rating, 0);
+  const sumB = teamB.reduce((s, p) => s + p.rating, 0);
+  if (Math.abs(sumA - sumB) > 1 && teamA.length >= 2 && teamB.length >= 2) {
+    // Try swapping player 1 of A with player 1 of B to balance
+    const trialA = [teamB[0], ...teamA.slice(1)];
+    const trialB = [teamA[0], ...teamB.slice(1)];
+    if (Math.abs(trialA.reduce((s,p) => s+p.rating,0) - trialB.reduce((s,p) => s+p.rating,0)) < Math.abs(sumA - sumB)) {
+      return [trialA, trialB];
+    }
+  }
+  return [teamA, teamB];
+}
+
+// ─── Master Player Pool (20+ players with DUPR ratings) ──
+const PLAYER_POOL = [
+  { name: 'Casey Martinez', rating: 4.2 },
+  { name: 'Riley Thompson', rating: 3.5 },
+  { name: 'Morgan Johnson', rating: 5.8 },
+  { name: 'Alex Rivera',   rating: 3.8 },
+  { name: 'Jordan Lee',    rating: 3.0 },
+  { name: 'Taylor Kim',    rating: 4.5 },
+  { name: 'Drew Parker',   rating: 3.2 },
+  { name: 'Quinn Adams',   rating: 2.8 },
+  { name: 'Blake Collins', rating: 2.4 },
+  { name: 'Sam Ellis',     rating: 6.2 },
+  { name: 'Avery Chen',    rating: 4.8 },
+  { name: 'Dana Brooks',   rating: 3.6 },
+  { name: 'Elena Foster',  rating: 5.1 },
+  { name: 'Marcus Hayes',  rating: 4.0 },
+  { name: 'Sophie Nguyen', rating: 3.9 },
+  { name: 'Jordan West',   rating: 2.5 },
+  { name: 'Cameron Price', rating: 5.5 },
+  { name: 'Jamie Torres',  rating: 3.3 },
+  { name: 'Kai Bennett',   rating: 4.7 },
+  { name: 'Peyton Reed',   rating: 6.5 },
+  { name: 'Harper Cole',   rating: 2.9 },
+  { name: 'Logan Diaz',    rating: 3.1 },
+  { name: 'Reese Walker',  rating: 4.3 },
+  { name: 'Finley Scott',  rating: 5.0 },
+  { name: 'Sage Murphy',   rating: 3.7 },
+  { name: 'Rowan James',   rating: 2.0 },
+  { name: 'Emery Clark',   rating: 4.1 },
+  { name: 'Jesse Hart',    rating: 3.4 },
+  { name: 'Parker Liu',    rating: 4.9 },
+  { name: 'Skyler Fox',    rating: 2.2 }
+];
+
+// Simple deterministic hash for seeding per-session
+function hashCode(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+// Deterministic shuffle using seed
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 16807 + 7) % 2147483647;
+    const j = s % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function seedSessionMatchup(s) {
+  if (s.players !== undefined) return; // already seeded
+
+  const seed = hashCode(s.id);
+  const pool = seededShuffle(PLAYER_POOL, seed);
+  const pick = (n) => pool.splice(0, n);
+
+  // Determine how many on-court vs waiting based on session type
+  const onCourtCount = 4;
+  const waitingCount = Math.min(2 + (seed % 3), pool.length - 4); // 2-4 waiting
+
+  const courtPlayers = pick(onCourtCount);
+  const waitingPlayers = pick(waitingCount);
+
+  // Assign teams using balanceTeams
+  const [teamA, teamB] = balanceTeams(courtPlayers);
+
+  // Score variations based on seed
+  const scoreOptions = [
+    [{ a: 7, b: 3 }, { a: 5, b: 7 }],     // split games
+    [{ a: 11, b: 6 }, { a: 8, b: 4 }],     // team A dominating
+    [{ a: 3, b: 7 }, { a: 5, b: 4 }],      // team B leading
+    [{ a: 4, b: 2 }],                        // single game in progress
+    [{ a: 9, b: 5 }, { a: 6, b: 11 }, { a: 3, b: 1 }],  // 3 games
+    [{ a: 2, b: 5 }],                        // single game, B winning
+  ];
+  const scores = scoreOptions[seed % scoreOptions.length];
+
+  // Determine wins
+  let winsA = 0, winsB = 0;
+  scores.forEach(g => { if (g.a > g.b) winsA++; else if (g.b > g.a) winsB++; });
+
+  s.players = [];
+  teamA.forEach((p, i) => {
+    s.players.push({ ...p, position: i === 0 ? 'Left' : 'Right', onCourt: true, team: 'A' });
+  });
+  teamB.forEach((p, i) => {
+    s.players.push({ ...p, position: i === 0 ? 'Left' : 'Right', onCourt: true, team: 'B' });
+  });
+
+  // Waiting room with realistic wait times (2-25 min ago)
+  // Assign alternating teams so they're pre-sorted for rotation
+  s.waitingRoom = waitingPlayers.map((p, i) => ({
+    ...p,
+    position: '',
+    onCourt: false,
+    team: i % 2 === 0 ? 'A' : 'B',
+    waitStartedAt: Date.now() - (2 + ((seed + i * 7) % 24)) * 60000
+  }));
+
+  s.games = scores;
+  s.currentGame = Math.max(0, scores.length - 1);
+  s.gamesWonA = winsA;
+  s.gamesWonB = winsB;
+}
+
+function getMatchupData(s) {
+  seedSessionMatchup(s);
+  const q = sessQueue(s.id);
+  const bookings = sessBookings(s.id);
+
+  // Merge booking names into waiting room (queue players)
+  const waitingNames = q.map(entry => ({
+    name: entry.playerName,
+    rating: entry.rating || 3,
+    position: '',
+    onCourt: false,
+    team: '',
+    waitStartedAt: new Date(entry.joinedAt).getTime()
+  }));
+
+  // On-court players (first 4 from s.players)
+  const onCourt = (s.players || []).filter(p => p.onCourt).slice(0, 4);
+  const teamA = onCourt.filter(p => p.team === 'A');
+  const teamB = onCourt.filter(p => p.team === 'B');
+
+  // Waiting room (s.waitingRoom + any queue entries not already on court)
+  const waitingRoom = [
+    ...(s.waitingRoom || []),
+    ...waitingNames.filter(wn => !onCourt.some(oc => oc.name === wn.name))
+  ];
+
+  return {
+    games: s.games || [],
+    currentGame: s.currentGame || 0,
+    gamesWonA: s.gamesWonA || 0,
+    gamesWonB: s.gamesWonB || 0,
+    playersA: teamA,
+    playersB: teamB,
+    waitingRoom,
+    queue: q,
+    isLive: isSessionLive(s),
+    totalOnCourt: onCourt.length,
+    totalWaiting: waitingRoom.length
+  };
+}
+
+function rotatePlayer(sessionId, playerName) {
+  const s = state.sessions.find(x => x.id === sessionId);
+  if (!s || !s.players) return;
+  const onCourt = s.players.filter(p => p.onCourt);
+  const waiting = s.waitingRoom || [];
+  if (waiting.length === 0) return;
+
+  // Find player leaving court
+  const leaving = onCourt.find(p => p.name === playerName);
+  if (!leaving) return;
+
+  // Next player from waiting room
+  const incoming = waiting[0];
+
+  // Swap: leaving → waiting room, incoming → on court, keep same team
+  leaving.onCourt = false;
+  incoming.onCourt = true;
+  incoming.team = leaving.team;
+  incoming.position = leaving.position;
+
+  // Update waiting room: remove incoming, add leaving
+  s.waitingRoom = [leaving, ...waiting.slice(1)];
+
+  save();
+  openModal('sessionDetail', sessionId);
+}
+
+function autoBalanceTeams(sessionId) {
+  const s = state.sessions.find(x => x.id === sessionId);
+  if (!s || !s.players) return;
+  const allPlayers = [...(s.players || []).filter(p => p.onCourt), ...(s.waitingRoom || [])];
+  const [teamA, teamB] = balanceTeams(allPlayers);
+
+  // Reassign team + positions
+  teamA.forEach((p, i) => {
+    p.team = 'A';
+    p.position = i === 0 ? 'Left' : 'Right';
+    p.onCourt = true;
+  });
+  teamB.forEach((p, i) => {
+    p.team = 'B';
+    p.position = i === 0 ? 'Left' : 'Right';
+    p.onCourt = true;
+  });
+
+  // Remaining unassigned go to waiting room — preserve their original team assignment
+  const assigned = new Set([...teamA, ...teamB].map(p => p.name));
+  const leftovers = allPlayers.filter(p => !assigned.has(p.name)).map(p => ({
+    ...p,
+    onCourt: false,
+    // Keep existing team or assign based on rating parity
+    team: p.team || (p.rating >= 3.5 ? 'A' : 'B')
+  }));
+  s.waitingRoom = leftovers;
+  s.players = [...teamA, ...teamB];
+
+  save();
+  showToast('Teams rebalanced by skill rating', 'success');
+  openModal('sessionDetail', sessionId);
+}
+
+function changeScore(sessionId, team, delta) {
+  const s = state.sessions.find(x => x.id === sessionId);
+  if (!s) return;
+  seedSessionMatchup(s);
+
+  // Ensure games array exists
+  if (!s.games) { s.games = [{a:0,b:0}]; s.currentGame = 0; s.gamesWonA = 0; s.gamesWonB = 0; }
+  const cg = s.currentGame;
+  if (!s.games[cg]) s.games[cg] = {a:0, b:0};
+
+  const prevGamesWonA = s.gamesWonA;
+  const prevGamesWonB = s.gamesWonB;
+  const prevCurrentGame = s.currentGame;
+
+  if (delta > 0) {
+    // Point scored
+    if (team === 'A') {
+      s.games[cg].a++;
+    } else {
+      s.games[cg].b++;
+    }
+    // Check win condition: first to 11, win by 2
+    const a = s.games[cg].a, b = s.games[cg].b;
+    const maxPts = Math.max(a, b);
+    if (maxPts >= 11 && Math.abs(a - b) >= 2) {
+      // Game won
+      if (a > b) { s.gamesWonA++; } else { s.gamesWonB++; }
+      // Start next game if match not over (best of 3 = first to 2 games)
+      if (s.gamesWonA < 2 && s.gamesWonB < 2) {
+        s.currentGame = s.games.length; // add new game
+        s.games.push({a:0, b:0});
+      } else {
+        // Match over — disable further scoring
+        s.currentGame = -1;
+      }
+    }
+  } else {
+    // Remove point
+    if (team === 'A') {
+      s.games[cg].a = Math.max(0, s.games[cg].a - 1);
+    } else {
+      s.games[cg].b = Math.max(0, s.games[cg].b - 1);
+    }
+  }
+
+  save();
+
+  // If game state changed (game won, new game, match over), full re-render
+  const gameStateChanged = s.gamesWonA !== prevGamesWonA || s.gamesWonB !== prevGamesWonB || s.currentGame !== prevCurrentGame;
+  if (gameStateChanged) {
+    openModal('sessionDetail', sessionId);
+    return;
+  }
+
+  // Simple score update — patch DOM in-place for instant feedback (no flicker)
+  const scoreElA = document.getElementById('sdm-score-a');
+  const scoreElB = document.getElementById('sdm-score-b');
+  if (scoreElA && s.games[s.currentGame]) {
+    scoreElA.textContent = s.games[s.currentGame].a;
+  }
+  if (scoreElB && s.games[s.currentGame]) {
+    scoreElB.textContent = s.games[s.currentGame].b;
+  }
+  // Brief pulse animation on the changed score
+  const el = team === 'A' ? scoreElA : scoreElB;
+  if (el) {
+    el.style.transition = 'transform 0.15s ease';
+    el.style.transform = 'scale(1.2)';
+    setTimeout(() => { el.style.transform = 'scale(1)'; }, 150);
+  }
+}
+
+function buildCourtSVG(sessionId, playersA, playersB) {
+  const svg = `
+  <svg viewBox="0 0 200 300" class="court-svg" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="2" width="196" height="296" rx="3" class="court-area"/>
+    <line x1="2" y1="150" x2="198" y2="150" class="court-net"/>
+    <line x1="2" y1="2" x2="198" y2="2" class="court-line"/>
+    <line x1="2" y1="298" x2="198" y2="298" class="court-line"/>
+    <line x1="2" y1="2" x2="2" y2="298" class="court-line"/>
+    <line x1="198" y1="2" x2="198" y2="298" class="court-line"/>
+    <line x1="100" y1="2" x2="100" y2="298" class="court-line"/>
+    <rect x="2" y="2" width="196" height="44" style="fill:rgba(255,255,255,0.03);stroke:rgba(255,255,255,0.1);"/>
+    <line x1="2" y1="46" x2="198" y2="46" class="court-line"/>
+    <rect x="2" y="254" width="196" height="44" style="fill:rgba(255,255,255,0.03);stroke:rgba(255,255,255,0.1);"/>
+    <line x1="2" y1="254" x2="198" y2="254" class="court-line"/>
+    <text x="100" y="25" text-anchor="middle" class="court-label">KITCHEN</text>
+    <text x="100" y="275" text-anchor="middle" class="court-label">KITCHEN</text>
+    <!-- Team A dots -->
+    <circle cx="65" cy="70" r="8" fill="#14B8A6" class="player-dot" id="dot-a1" onclick="highlightPlayer('a1')"/>
+    <text x="65" y="70" class="player-dot-label" dominant-baseline="central">A1</text>
+    <circle cx="135" cy="70" r="8" fill="#14B8A6" class="player-dot" id="dot-a2" onclick="highlightPlayer('a2')"/>
+    <text x="135" y="70" class="player-dot-label" dominant-baseline="central">A2</text>
+    <!-- Team B dots -->
+    <circle cx="65" cy="225" r="8" fill="#F87171" class="player-dot" id="dot-b1" onclick="highlightPlayer('b1')"/>
+    <text x="65" y="240" class="player-dot-label" style="dominant-baseline: auto;">B1</text>
+    <circle cx="135" cy="225" r="8" fill="#F87171" class="player-dot" id="dot-b2" onclick="highlightPlayer('b2')"/>
+    <text x="135" y="240" class="player-dot-label" style="dominant-baseline: auto;">B2</text>
+  </svg>`;
+  return svg;
+}
+
+function highlightPlayer(id) {
+  const dot = document.getElementById('dot-' + id);
+  if (dot) {
+    dot.setAttribute('r', '11');
+    setTimeout(() => dot.setAttribute('r', '8'), 300);
+  }
+}
+
+function waitTime(joinedAt) {
+  const ms = Date.now() - new Date(joinedAt).getTime();
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m`;
+  return `${Math.floor(mins/60)}h ${mins%60}m`;
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function timeToY(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  return (h - 7) * ROW_H + (m / 60) * ROW_H;
+}
+
+function sessionBlockH(startTime, endTime) {
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  const startMin = (sh - 7) * 60 + sm;
+  const endMin   = (eh - 7) * 60 + em;
+  return Math.max((endMin - startMin) / 60 * ROW_H, 30);
+}
+
+function isSessionLive(session) {
+  const now = new Date();
+  const curH = now.getHours(), curM = now.getMinutes();
+  const [sh, sm] = session.startTime.split(':').map(Number);
+  const [eh, em] = session.endTime.split(':').map(Number);
+  const curMin = curH * 60 + curM;
+  return curMin >= sh * 60 + sm && curMin < eh * 60 + em;
+}
+
+function getNowTop() {
+  const now = new Date();
+  return timeToY(fmtTime24(now.getHours(), now.getMinutes()));
+}
+
+// ══════════════════════════════════════════════════════
+// METRICS
+// ══════════════════════════════════════════════════════
+function computeMetrics() {
+  const todaySessions = state.sessions.filter(s => s.date === state.currentDate);
+  const openSessions = todaySessions.filter(s => s.type === 'open');
+  const openWithQueue = openSessions.filter(s => sessQueue(s.id).length > 0);
+  const totalQueue = state.queue.filter(q => q.status === 'waiting').length;
+  const confirmed = state.bookings.filter(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    return s && s.date === state.currentDate && (b.status === 'confirmed' || b.status === 'checked_in');
+  }).length;
+  return { openCount: openSessions.length, openWithQueueCount: openWithQueue.length,
+    totalQueue, confirmed, totalSessions: todaySessions.length };
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════
+function render() {
+  updateTimeFormatBtn();
+  renderDateLabel();
+  renderMetrics();
+  renderDayGrid();
+  renderQuickPanel();
+  save();
+}
+
+function renderDateLabel() {
+  const el = document.getElementById('currentDateLabel');
+  const isToday = state.currentDate === new Date().toISOString().split('T')[0];
+  el.textContent = formatDate(state.currentDate);
+  el.className = 'current-date' + (isToday ? ' today' : '');
+}
+
+function renderMetrics() {
+  const m = computeMetrics();
+  document.getElementById('metricsStrip').innerHTML = `
+    <div class="metric-card"><div class="dot" style="background:var(--teal)"></div><span class="label">Open</span><span class="value teal">${m.openCount}</span></div>
+    <div class="metric-card"><div class="dot" style="background:var(--amber)"></div><span class="label">w/ Queue</span><span class="value gold">${m.openWithQueueCount}</span></div>
+    <div class="metric-card"><div class="dot" style="background:var(--green)"></div><span class="label">Queued</span><span class="value green">${m.totalQueue}</span></div>
+    <div class="metric-card"><div class="dot" style="background:var(--blue)"></div><span class="label">Booked</span><span class="value">${m.confirmed}</span></div>
+  `;
+}
+
+function renderDayGrid() {
+  const grid = document.getElementById('dayGrid');
+  const isToday = state.currentDate === new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const curH = now.getHours(), curM = now.getMinutes();
+  const curMin = curH * 60 + curM;
+
+  // Time column
+  let timeColHTML = `<div class="time-col">
+    <div class="time-col-header"></div>
+    <div>`;
+
+  for (let h = 7; h < 21; h++) {
+    const label = fmtTimeDisplay(h, 0);
+    timeColHTML += `<div class="time-cell"><span class="time-label">${label}</span></div>`;
+  }
+  timeColHTML += `</div></div>`;
+
+  // Courts
+  let courtsHTML = `<div class="courts-area">`;
+
+  state.courts.forEach(court => {
+    const courtSessions = state.sessions
+      .filter(s => s.courtId === court.id && s.date === state.currentDate)
+      .sort((a,b) => a.startTime.localeCompare(b.startTime));
+
+    // Find if any session is currently live on this court
+    const liveSession = courtSessions.find(s => isSessionLive(s));
+
+    courtsHTML += `<div class="court-column">`;
+
+    // Court header with optional NOW badge
+    let headerExtra = '';
+    if (liveSession && isToday) {
+      headerExtra = `<span class="now-badge">● LIVE</span>`;
+    }
+
+    courtsHTML += `<div class="court-col-header">
+      <div class="court-title-group">
+        <div class="court-status-dot ${liveSession && isToday ? 'live' : 'available'}"></div>
+        <div class="court-number">${escHtml(court.name)}</div>
+        ${headerExtra}
+      </div>
+      <button class="court-add-btn" onclick="openModal('session','${court.id}')">+</button>
+    </div>`;
+
+    // Court body
+    courtsHTML += `<div class="court-body" id="courtBody-${court.id}">
+      <div class="hour-grid">`;
+
+    // Hour rows
+    for (let h = 7; h < 21; h++) {
+      courtsHTML += `<div class="hour-row"></div>`;
+    }
+
+    // Session blocks
+    courtSessions.forEach(s => {
+      const top     = timeToY(s.startTime);
+      const height  = sessionBlockH(s.startTime, s.endTime);
+      const q       = sessQueue(s.id);
+      const players = totalPlayers(s.id);
+      const isSelected = state.selectedSessionId === s.id;
+      const isLive    = isSessionLive(s) && isToday;
+      const colorInfo  = SESSION_COLORS[s.type] || SESSION_COLORS.open;
+
+      let metaHTML = `<span class="sb-players">${players}/4</span>`;
+      if (s.type === 'open' && q.length > 0) {
+        metaHTML += `<span class="sb-badge queue">${q.length} queued</span>`;
+      } else if (s.type === 'open' && players >= 4) {
+        metaHTML += `<span class="sb-badge full">Full</span>`;
+      }
+
+      // NOW indicator inside the block
+      let liveBadge = '';
+      if (isLive) {
+        liveBadge = `<span style="font-size:8px;font-weight:900;color:var(--green);text-transform:uppercase;letter-spacing:0.08em;">● NOW</span>`;
+      }
+
+      courtsHTML += `<div
+        class="session-block type-${escHtml(s.type)}${isSelected ? ' selected' : ''}${isLive ? ' is-live' : ''}"
+        style="top:${top}px; height:${height}px;"
+        onclick="selectSession('${s.id}')"
+        id="block-${s.id}"
+      >
+        <div class="sb-time">${liveBadge}${fmtRange(s.startTime, s.endTime)}</div>
+        <div class="sb-title">
+          <span class="session-type-pill ${colorInfo.pill}">${colorInfo.label}</span>
+        </div>
+        <div class="sb-meta">${metaHTML}</div>
+        ${isSelected ? '<div class="click-hint">selected ✓</div>' : ''}
+      </div>`;
+    });
+
+    courtsHTML += `</div></div></div>`;
+  });
+
+  courtsHTML += `</div>`;
+
+  grid.innerHTML = timeColHTML + courtsHTML;
+
+  // Red time line (today only, during operating hours)
+  if (isToday && curH >= 7 && curH < 21) {
+    updateCurrentTimeLine();
+    if (timeLineInterval) clearInterval(timeLineInterval);
+    timeLineInterval = setInterval(updateCurrentTimeLine, 60000);
+  } else {
+    document.querySelectorAll('.current-time-line').forEach(el => el.remove());
+    if (timeLineInterval) { clearInterval(timeLineInterval); timeLineInterval = null; }
+  }
+}
+
+function updateCurrentTimeLine() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes();
+  if (h < 7 || h >= 21) {
+    document.querySelectorAll('.current-time-line').forEach(el => el.remove());
+    return;
+  }
+  const topPx = timeToY(fmtTime24(h, m));
+  document.querySelectorAll('.current-time-line').forEach(el => el.remove());
+  document.querySelectorAll('.court-body').forEach(body => {
+    const line = document.createElement('div');
+    line.className = 'current-time-line';
+    line.style.top = topPx + 'px';
+    body.appendChild(line);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// QUICK PANEL
+// ══════════════════════════════════════════════════════
+function renderQuickPanel() {
+  const panel = document.getElementById('quickPanel');
+  if (!state.selectedSessionId) { panel.classList.add('hidden'); return; }
+
+  const s = state.sessions.find(x => x.id === state.selectedSessionId);
+  if (!s) { panel.classList.add('hidden'); state.selectedSessionId = null; return; }
+
+  const court = state.courts.find(c => c.id === s.courtId);
+  const q = sessQueue(s.id);
+  const players = totalPlayers(s.id);
+  const colorInfo = SESSION_COLORS[s.type] || SESSION_COLORS.open;
+
+  panel.classList.remove('hidden');
+  document.getElementById('qpIndicator').style.background = colorInfo.hex;
+  document.getElementById('qpCourtName').textContent = court?.name || '';
+  document.getElementById('qpTime').textContent = fmtRange(s.startTime, s.endTime);
+
+  document.getElementById('qpTypeRow').innerHTML =
+    `<span class="session-type-pill ${colorInfo.pill}">${colorInfo.label}</span>`;
+
+  document.getElementById('qpTitle').textContent = `${players}/4 players`;
+
+  const isLive = isSessionLive(s);
+  document.getElementById('qpSubtitle').innerHTML = isLive
+    ? `<span style="color:var(--green);font-weight:700;">● Playing now</span>`
+    : q.length > 0
+      ? `<span style="color:var(--amber)">${q.length} in queue</span><span>·</span><span>${q[0].playerName} up next</span>`
+      : s.type === 'open'
+        ? players >= 4 ? `<span style="color:var(--teal)">Full — waiting for next</span>`
+                       : `<span>Available for booking</span>`
+        : `<span>${s.type === 'reserved' ? 'Private booking' : colorInfo.label}</span>`;
+
+  let actionsHTML = '';
+  if (s.type === 'open') {
+    actionsHTML += `<button class="qp-btn primary" onclick="callNext('${s.id}')" ${q.length === 0 ? 'disabled' : ''}>
+      ⚡ Call Next${q.length > 0 ? ` · ${q[0].playerName}` : ''}
+    </button>`;
+  }
+  actionsHTML += `
+    <button class="qp-btn" onclick="openModal('booking','${s.id}')">+ Book</button>
+    <button class="qp-btn danger" onclick="openModal('noShow','${s.id}')">No-show</button>
+  `;
+  document.getElementById('qpActions').innerHTML = actionsHTML;
+}
+
+// ══════════════════════════════════════════════════════
+// ACTIONS
+// ══════════════════════════════════════════════════════
+function selectSession(id) {
+  state.selectedSessionId = id;
+  openModal('sessionDetail', id);
+}
+
+function changeDate(delta) {
+  const d = new Date(state.currentDate + 'T12:00:00');
+  d.setDate(d.getDate() + delta);
+  state.currentDate = d.toISOString().split('T')[0];
+  state.selectedSessionId = null;
+  render();
+}
+
+function goToToday() {
+  state.currentDate = new Date().toISOString().split('T')[0];
+  state.selectedSessionId = null;
+  render();
+}
+
+function callNext(sessionId, entryId = null) {
+  const q = sessQueue(sessionId);
+  if (!q.length) return;
+  const entry = entryId ? state.queue.find(e => e.id === entryId) : q[0];
+  if (!entry) return;
+  entry.status = 'called';
+  showToast(`⚡ ${entry.playerName} called to court!`, 'info');
+  render();
+}
+
+function removeFromQueue(entryId) {
+  const entry = state.queue.find(e => e.id === entryId);
+  if (!entry) return;
+  const sessionId = entry.sessionId;
+  state.queue = state.queue.filter(e => e.id !== entryId);
+  state.queue.filter(e => e.sessionId === sessionId && e.status === 'waiting')
+    .sort((a,b) => a.position - b.position)
+    .forEach((e,i) => e.position = i+1);
+  showToast(`Removed ${entry.playerName}`, 'warning');
+  render();
+  if (modalMode === 'sessionDetail') {
+    openModal('sessionDetail', sessionId);
+  }
+}
+
+function callNextFromDetail(sessionId, entryId) {
+  callNext(sessionId, entryId);
+  openModal('sessionDetail', sessionId);
+}
+
+function updateDuprDisplay(val) {
+  document.getElementById('fQRatingValue').textContent = parseFloat(val).toFixed(1);
+}
+
+// ══════════════════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════════════════
+function openModal(mode, refId = null) {
+  modalMode = mode;
+  const title = document.getElementById('modalTitle');
+  const body  = document.getElementById('modalBody');
+
+  if (mode === 'session') {
+    title.textContent = 'Add Session';
+    body.innerHTML = `
+      <div class="fg">
+        <label>Court</label>
+        <select id="fCourt">
+          ${state.courts.map(c => `<option value="${c.id}" ${c.id === refId ? 'selected' : ''}>${c.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Start</label>
+          <input type="time" id="fStart" value="09:00" step="3600">
+        </div>
+        <div class="fg">
+          <label>End</label>
+          <input type="time" id="fEnd" value="10:00" step="3600">
+        </div>
+      </div>
+      <div class="fg">
+        <label>Type</label>
+        <select id="fType">
+          <option value="open">🏓 Open Play (queue)</option>
+          <option value="reserved">🔒 Reserved (booked)</option>
+          <option value="league">🏆 League</option>
+          <option value="tournament">🎯 Tournament</option>
+        </select>
+      </div>
+    `;
+  } else if (mode === 'queue') {
+    title.textContent = 'Add to Queue';
+    const openSessions = state.sessions.filter(s => s.date === state.currentDate && s.type === 'open');
+    body.innerHTML = `
+      <div class="fg">
+        <label>Session</label>
+        <select id="fQSession">
+          ${openSessions.map(s => {
+            const court = state.courts.find(c => c.id === s.courtId);
+            const q = sessQueue(s.id);
+            return `<option value="${s.id}">${court?.name} · ${fmtRange(s.startTime, s.endTime)} ${q.length ? `(${q.length} queued)` : ''}</option>`;
+          }).join('')}
+        </select>
+      </div>
+      <div class="fg">
+        <label>Player / Group Name</label>
+        <input type="text" id="fQName" placeholder="e.g. Casey & Morgan" autocomplete="off" autofocus>
+      </div>
+      <div class="fg">
+        <label>Group Size</label>
+        <select id="fQSize">
+          <option value="1">1 player</option><option value="2" selected>2 players</option>
+          <option value="3">3 players</option><option value="4">4 players</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Skill Rating (DUPR 2.0–9.0)</label>
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 0;">
+          <span style="font-size:10px;color:var(--text-muted);min-width:28px;">2.0</span>
+          <input type="range" id="fQRating" min="2.0" max="9.0" step="0.1" value="3.5"
+                 style="flex:1;accent-color:#F5A623;" oninput="updateDuprDisplay(this.value)">
+          <span style="font-size:10px;color:var(--text-muted);min-width:28px;">9.0</span>
+          <span id="fQRatingValue" style="font-size:13px;font-weight:800;color:#F5A623;min-width:36px;text-align:right;">3.5</span>
+        </div>
+      </div>
+    `;
+  } else if (mode === 'booking') {
+    const sid = refId || state.selectedSessionId || '';
+    const todaySessions = state.sessions.filter(s => s.date === state.currentDate);
+    title.textContent = 'Book Player';
+    body.innerHTML = `
+      <div class="fg">
+        <label>Session</label>
+        <select id="fBSession">
+          ${todaySessions.map(s => {
+            const court = state.courts.find(c => c.id === s.courtId);
+            const colorInfo = SESSION_COLORS[s.type];
+            return `<option value="${s.id}" ${s.id === sid ? 'selected' : ''}>${court?.name} · ${fmtRange(s.startTime, s.endTime)} (${colorInfo?.label})</option>`;
+          }).join('')}
+        </select>
+      </div>
+      <div class="fg">
+        <label>Player / Group Name</label>
+        <input type="text" id="fBName" placeholder="e.g. Alex & Jordan" autocomplete="off" autofocus>
+      </div>
+      <div class="fg">
+        <label>Group Size</label>
+        <select id="fBSize">
+          <option value="1">1 player</option><option value="2" selected>2 players</option>
+          <option value="3">3 players</option><option value="4">4 players</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Skill Rating (DUPR 2.0–9.0)</label>
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 0;">
+          <span style="font-size:10px;color:var(--text-muted);min-width:28px;">2.0</span>
+          <input type="range" id="fBRating" min="2.0" max="9.0" step="0.1" value="3.5"
+                 style="flex:1;accent-color:#F5A623;" oninput="document.getElementById('fBRatingValue').textContent=parseFloat(this.value).toFixed(1)">
+          <span style="font-size:10px;color:var(--text-muted);min-width:28px;">9.0</span>
+          <span id="fBRatingValue" style="font-size:13px;font-weight:800;color:#F5A623;min-width:36px;text-align:right;">3.5</span>
+        </div>
+      </div>
+    `;
+  } else if (mode === 'noShow') {
+    title.textContent = 'Mark No-Show';
+    const sessionBookings = state.bookings.filter(b => b.sessionId === refId && b.status === 'confirmed');
+    body.innerHTML = sessionBookings.length === 0
+      ? `<p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px 0;">No confirmed bookings for this session.</p>`
+      : `<div class="fg">
+          <label>Select Booking</label>
+          <select id="fNSBooking">
+            ${sessionBookings.map(b => `<option value="${b.id}">${escHtml(b.playerName)} (${b.groupSize}p)</option>`).join('')}
+          </select>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);">The booking will be marked as a no-show.</p>`;
+  } else if (mode === 'sessionDetail') {
+    const s = state.sessions.find(x => x.id === refId);
+    if (!s) { closeModal(); return; }
+    const court = state.courts.find(c => c.id === s.courtId);
+    const colorInfo = SESSION_COLORS[s.type] || SESSION_COLORS.open;
+    const isLive = isSessionLive(s);
+    const m = getMatchupData(s);
+
+    // Build team player cards HTML
+    function buildTeamCards(team, players, teamClass) {
+      let html = '';
+      players.forEach((player, i) => {
+        const initials = getInitials(player.name);
+        const liveBadge = isLive ? '<span class="player-status-badge playing">● LIVE</span>' : '';
+        html += `
+        <div class="player-card ${teamClass} ${isLive ? 'is-live' : ''}">
+          <div class="player-avatar ${teamClass === 'team-b' && i > 0 ? 'avatar-placeholder' : ''}"
+               style="${teamClass === 'team-b' && i > 0 ? 'background:rgba(248,113,113,0.3)' : ''}">
+            ${initials}
+          </div>
+          <div class="player-info">
+            <div class="player-name">${escHtml(player.name)}</div>
+            <div class="player-position">${player.position || ''}</div>
+          </div>
+          ${liveBadge}
+        </div>`;
+      });
+      // Pad with placeholder cards if fewer than 2 players
+      while (players.length < 2) {
+        players.push({ name: 'Open slot', position: '' });
+      }
+      return html;
+    }
+
+    const teamACards = buildTeamCards('A', m.playersA.slice(), 'team-a');
+    const teamBCards = buildTeamCards('B', m.playersB.slice(), 'team-b');
+
+    // Court SVG
+    const courtSVG = buildCourtSVG(s.id, m.playersA, m.playersB);
+
+    // Queue section
+    let queueHTML = '';
+    if (m.queue.length > 0) {
+      queueHTML = `
+      <div class="queue-section">
+        <div class="queue-section-header">
+          <div class="queue-section-title">⚡ Waiting Queue</div>
+          <span style="font-size:10px;color:var(--text-muted)">${m.queue.length} waiting</span>
+        </div>
+        ${m.queue.map((entry, i) => `
+        <div class="queue-entry-row">
+          <span class="qe-pos">#${i + 1}</span>
+          <div class="qe-avatar">${getInitials(entry.playerName)}</div>
+          <span class="qe-name">${escHtml(entry.playerName)}</span>
+          <span class="qe-size">${entry.groupSize}p</span>
+          <span class="qe-wait">${waitTime(entry.joinedAt)}</span>
+          <button class="qe-call" onclick="callNextFromDetail('${s.id}','${entry.id}')">⚡ Call</button>
+        </div>`).join('')}
+      </div>`;
+    } else {
+      queueHTML = `
+      <div class="queue-section">
+        <div class="queue-section-header">
+          <div class="queue-section-title">⚡ Waiting Queue</div>
+        </div>
+        <div class="queue-empty">Queue is empty — no one waiting</div>
+      </div>`;
+    }
+
+    const modalHTML = `
+    <div class="sdm-header">
+      <div class="sdm-title">
+        <span class="session-type-pill ${colorInfo.pill}">${colorInfo.label}</span>
+        <span class="sdm-court-time">${escHtml(court?.name || '')} · ${fmtRange(s.startTime, s.endTime)}</span>
+        ${isLive ? '<span class="sdm-live-badge">● LIVE NOW</span>' : ''}
+      </div>
+      <button class="sdm-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="sdm-body">
+      <!-- Scoreboard -->
+      <div class="scoreboard">
+        <div class="team-score-side team-a">
+          <div class="team-label">Team A</div>
+          <div class="team-players-row">
+            ${m.playersA.slice(0,2).map(p => `
+            <img class="team-mini-avatar" src="${avatarUrl(p.name, 64, '14B8A6')}"
+                 alt="${escHtml(p.name)}" title="${escHtml(p.name)}">`).join('')}
+          </div>
+          ${m.currentGame >= 0 && m.games[m.currentGame]
+            ? `<div class="score-number" id="sdm-score-a">${m.games[m.currentGame].a}</div>`
+            : `<div class="score-number" style="opacity:0.3">—</div>`}
+          <div class="score-btn-row">
+            <button class="score-btn" onclick="changeScore('${s.id}','A',1)">+</button>
+            <button class="score-btn" onclick="changeScore('${s.id}','A',-1)">−</button>
+          </div>
+        </div>
+        <div class="score-divider">
+          <div class="score-colon">${m.gamesWonA} — ${m.gamesWonB}</div>
+          <div class="score-label">Games Won</div>
+          ${m.currentGame >= 0 ? `<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Game ${m.currentGame + 1}</div>` : `<div style="font-size:10px;color:var(--amber);margin-top:4px;">Match Over</div>`}
+          <!-- Game history pills -->
+          <div class="game-history-pills">
+            ${m.games.map((g, gi) => {
+              const wonA = g.a > g.b;
+              const wonB = g.b > g.a;
+              const isCurrent = gi === m.currentGame;
+              return `<div style="font-size:9px;padding:2px 5px;border-radius:4px;
+                   background:${isCurrent ? 'rgba(245,166,35,0.2)' : 'rgba(255,255,255,0.05)'};
+                   border:1px solid ${isCurrent ? '#F5A623' : 'transparent'};
+                   color:${wonA ? '#14B8A6' : wonB ? '#F87171' : 'var(--text-muted)'};">
+                ${g.a}–${g.b}
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div class="team-score-side team-b">
+          <div class="team-label">Team B</div>
+          <div class="team-players-row">
+            ${m.playersB.slice(0,2).map(p => `
+            <img class="team-mini-avatar" src="${avatarUrl(p.name, 64, 'F87171')}"
+                 alt="${escHtml(p.name)}" title="${escHtml(p.name)}">`).join('')}
+          </div>
+          ${m.currentGame >= 0 && m.games[m.currentGame]
+            ? `<div class="score-number" id="sdm-score-b">${m.games[m.currentGame].b}</div>`
+            : `<div class="score-number" style="opacity:0.3">—</div>`}
+          <div class="score-btn-row">
+            <button class="score-btn" onclick="changeScore('${s.id}','B',1)">+</button>
+            <button class="score-btn" onclick="changeScore('${s.id}','B',-1)">−</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matchup: Player Cards + Court + Cards -->
+      <div class="matchup-section">
+        <!-- Team A on-court -->
+        <div class="player-col team-a">
+          <div class="player-col-header">🏏 On Court — Team A</div>
+          ${m.playersA.slice(0,2).map((p, i) => `
+          <div class="player-card team-a ${isLive ? 'is-live' : ''}">
+            <img class="player-avatar" src="${avatarUrl(p.name, 128, '14B8A6')}"
+                 alt="${escHtml(p.name)}">
+            <div class="player-info">
+              <div class="player-name">${escHtml(p.name)}</div>
+              <div class="player-rating">${duprDisplay(p.rating || 3.0)}</div>
+              <div class="player-position">${p.position || ('Player ' + (i+1))}</div>
+            </div>
+            <div class="player-card-actions">
+              ${isLive ? '<span class="player-status-badge playing">● LIVE</span>' : ''}
+              <button class="rotate-out-btn" onclick="rotatePlayer('${s.id}','${escHtml(p.name)}')"
+                      title="Rotate out">↻</button>
+            </div>
+          </div>`).join('')}
+          ${m.playersA.length === 0 ? '<div class="waiting-label">No players on court</div>' : ''}
+        </div>
+
+        <!-- Court diagram -->
+        <div class="court-diagram-wrap">
+          ${courtSVG}
+          <div class="court-hint">Tap dots to highlight</div>
+        </div>
+
+        <!-- Team B on-court -->
+        <div class="player-col team-b">
+          <div class="player-col-header">🏏 On Court — Team B</div>
+          ${m.playersB.slice(0,2).map((p, i) => `
+          <div class="player-card team-b ${isLive ? 'is-live' : ''}">
+            <img class="player-avatar" src="${avatarUrl(p.name, 128, 'F87171')}"
+                 alt="${escHtml(p.name)}">
+            <div class="player-info">
+              <div class="player-name">${escHtml(p.name)}</div>
+              <div class="player-rating">${duprDisplay(p.rating || 3.0)}</div>
+              <div class="player-position">${p.position || ('Player ' + (i+1))}</div>
+            </div>
+            <div class="player-card-actions">
+              ${isLive ? '<span class="player-status-badge playing">● LIVE</span>' : ''}
+              <button class="rotate-out-btn" onclick="rotatePlayer('${s.id}','${escHtml(p.name)}')"
+                      title="Rotate out">↻</button>
+            </div>
+          </div>`).join('')}
+          ${m.playersB.length === 0 ? '<div class="waiting-label">No players on court</div>' : ''}
+        </div>
+      </div>
+
+      <!-- Waiting Room -->
+      ${m.waitingRoom.length > 0 ? `
+      <div class="waiting-room-section">
+        <div class="wr-header">
+          <div class="wr-title">⏳ Waiting Room</div>
+          <div class="wr-controls">
+            <button class="sdm-btn" style="height:28px;font-size:11px;padding:0 12px;"
+                    onclick="autoBalanceTeams('${s.id}')">⚖ Auto-Balance</button>
+            <span style="font-size:10px;color:var(--text-muted);">${m.waitingRoom.length} waiting</span>
+          </div>
+        </div>
+        <div class="wr-grid">
+          ${m.waitingRoom.map((p, i) => `
+          <div class="wr-card ${i === 0 ? 'wr-next' : ''}">
+            <div class="wr-pos ${i === 0 ? 'wr-pos-next' : ''}">#${i + 1}</div>
+            <img class="wr-avatar" src="${avatarUrl(p.name, 128, '6B7280')}"
+                 alt="${escHtml(p.name)}">
+            <div class="wr-info">
+              <div class="wr-name-row">
+                <span class="wr-name">${escHtml(p.name)}</span>
+                ${i === 0 ? '<span class="wr-next-badge">NEXT UP</span>' : ''}
+              </div>
+              <div class="wr-rating">${duprDisplay(p.rating || 3.0)}</div>
+              <div class="wr-wait">${p.waitStartedAt ? waitTime(p.waitStartedAt) + ' waiting' : ''}</div>
+            </div>
+            <div class="wr-team-badge ${p.team === 'B' ? 'team-b' : 'team-a'}">${p.team === 'B' ? 'Team B' : 'Team A'}</div>
+          </div>`).join('')}
+        </div>
+      </div>` : `
+      <div class="queue-section">
+        <div class="queue-section-header">
+          <div class="queue-section-title">⏳ Waiting Room</div>
+        </div>
+        <div class="queue-empty">No players waiting — all spots filled</div>
+      </div>`}
+
+      <!-- Queue / Booking system entries -->
+      ${m.queue.length > 0 ? `
+      <div class="queue-section">
+        <div class="queue-section-header">
+          <div class="queue-section-title">📋 Booking Queue</div>
+          <span style="font-size:10px;color:var(--text-muted)">${m.queue.length} entries</span>
+        </div>
+        ${m.queue.map((entry, i) => `
+        <div class="queue-entry-row">
+          <span class="qe-pos">#${i + 1}</span>
+          <img class="qe-avatar-img" src="${avatarUrl(entry.playerName, 64, 'F5A623')}"
+               alt="${escHtml(entry.playerName)}">
+          <span class="qe-name">${escHtml(entry.playerName)}</span>
+          <span style="font-size:10px;">${duprDisplay(entry.rating || 3.0)}</span>
+          <span class="qe-size">${entry.groupSize}p</span>
+          <span class="qe-wait">${waitTime(entry.joinedAt)}</span>
+          <button class="qe-call" onclick="callNextFromDetail('${s.id}','${entry.id}')">⚡ Call</button>
+        </div>`).join('')}
+      </div>` : ''}
+    </div>
+    <div class="sdm-actions">
+      ${s.type === 'open' ? `<button class="sdm-btn primary" onclick="openModal('queue');">⚡ Add to Queue</button>` : ''}
+      <button class="sdm-btn" onclick="openModal('booking','${s.id}')">+ Book Player</button>
+      <button class="sdm-btn danger" onclick="openModal('noShow','${s.id}')">No-Show</button>
+      <button class="sdm-btn" onclick="closeModal()">Close</button>
+    </div>`;
+
+    // Render using the session-detail-modal structure
+    // IMPORTANT: look for existing .session-detail-modal FIRST (not .modal)
+    // to avoid creating duplicate DOM elements on re-render
+    const overlay = document.getElementById('modalOverlay');
+    let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.style.maxWidth = '900px';
+      overlay.appendChild(modal);
+    }
+    modal.className = 'session-detail-modal';
+    modal.innerHTML = modalHTML;
+    overlay.classList.add('open');
+    return; // Skip standard modal flow
+  }
+
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(() => {
+    const inp = document.querySelector('.modal-body input:not([type="time"])');
+    if (inp) inp.focus();
+  }, 80);
+}
+
+function closeModal() {
+  const overlay = document.getElementById('modalOverlay');
+  overlay.classList.remove('open');
+  // If session-detail-modal is showing, remove it and restore .modal
+  const sdm = overlay.querySelector('.session-detail-modal');
+  if (sdm) {
+    sdm.remove();
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = '<div class="modal-header"><div class="modal-title" id="modalTitle"></div><button class="modal-close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Cancel</button><button class="btn-save" id="modalSubmit" onclick="submitModal()">Save</button></div>';
+    overlay.appendChild(modal);
+  }
+}
+
+function submitModal() {
+  if (modalMode === 'session') {
+    const courtId = document.getElementById('fCourt').value;
+    const startTime = document.getElementById('fStart').value;
+    const endTime   = document.getElementById('fEnd').value;
+    const type      = document.getElementById('fType').value;
+    if (!courtId || !startTime || !endTime) { showToast('Fill all fields', 'error'); return; }
+    state.sessions.push({ id: genId(), courtId, date: state.currentDate, startTime, endTime, type });
+    showToast('Session added ✓', 'success');
+  } else if (modalMode === 'queue') {
+    const sessionId  = document.getElementById('fQSession').value;
+    const playerName = document.getElementById('fQName').value.trim();
+    const groupSize  = parseInt(document.getElementById('fQSize').value);
+    const rating     = parseFloat(document.getElementById('fQRating')?.value || '3.5');
+    if (!playerName || !sessionId) { showToast('Fill all fields', 'error'); return; }
+    const existing = state.queue.filter(q => q.sessionId === sessionId && q.status === 'waiting').length;
+    state.queue.push({ id: genId(), sessionId, playerName, groupSize, position: existing+1, status: 'waiting', joinedAt: new Date().toISOString(), rating });
+    showToast(`${playerName} added to queue ✓`, 'success');
+  } else if (modalMode === 'booking') {
+    const sessionId  = document.getElementById('fBSession').value;
+    const playerName = document.getElementById('fBName').value.trim();
+    const groupSize  = parseInt(document.getElementById('fBSize').value);
+    const rating     = parseFloat(document.getElementById('fBRating')?.value || '3.5');
+    if (!playerName || !sessionId) { showToast('Fill all fields', 'error'); return; }
+    state.bookings.push({ id: genId(), sessionId, playerName, groupSize, status: 'confirmed', bookedAt: new Date().toISOString(), rating });
+    showToast(`${playerName} booked ✓`, 'success');
+  } else if (modalMode === 'noShow') {
+    const bookingId = document.getElementById('fNSBooking')?.value;
+    const booking = state.bookings.find(b => b.id === bookingId);
+    if (booking) { booking.status = 'no_show'; showToast(`${booking.playerName} marked no-show`, 'warning'); }
+  }
+  closeModal();
+  render();
+}
+
+// ══════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════
+function showToast(msg, type = 'success') {
+  const icons = { success:'✓', error:'✕', info:'⚡', warning:'⚠' };
+  const container = document.getElementById('toastContainer');
+  const id = 't' + Date.now();
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.id = id;
+  el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${escHtml(msg)}</span>`;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('exit');
+    setTimeout(() => el.remove(), 300);
+  }, 2800);
+}
+
+// ══════════════════════════════════════════════════════
+// COURTS VIEW
+// ══════════════════════════════════════════════════════
+function renderCourtsView() {
+  const container = document.getElementById('view-courts');
+  let html = '<div class="courts-view"><h2 style="font-size:20px;font-weight:800;margin-bottom:20px;">🏟️ Courts</h2>';
+  
+  state.courts.forEach(court => {
+    const sessions = state.sessions.filter(s => s.courtId === court.id && s.date === state.currentDate);
+    const liveSession = sessions.find(s => isSessionLive(s));
+    const statusClass = liveSession ? 'occupied' : 'available';
+    const statusText = liveSession ? 'In Use' : 'Available';
+    const totalBooked = sessions.reduce((sum, s) => sum + totalPlayers(s.id), 0);
+    const totalSlots = sessions.length * 4;
+    
+    html += `
+    <div class="court-card">
+      <div class="court-card-header">
+        <div class="court-card-name">${escHtml(court.name)}</div>
+        <span class="court-card-status ${statusClass}">${statusText}</span>
+      </div>
+      <div class="court-card-meta">
+        <span>📅 ${sessions.length} sessions today</span>
+        <span>👥 ${totalBooked}/${totalSlots} players</span>
+        ${liveSession ? `<span>🔴 ${fmtRange(liveSession.startTime, liveSession.endTime)}</span>` : ''}
+      </div>
+    </div>`;
+  });
+  
+  html += `
+  <button class="add-court-card" onclick="addNewCourt()">
+    + Add Court
+  </button>
+  </div>`;
+  
+  container.innerHTML = html;
+}
+
+function addNewCourt() {
+  const num = state.courts.length + 1;
+  state.courts.push({ id: 'c' + genId().slice(0, 4), name: 'Court ' + num });
+  save();
+  renderCourtsView();
+  showToast('Court ' + num + ' added ✓', 'success');
+}
+
+// ══════════════════════════════════════════════════════
+// BOOKINGS VIEW
+// ══════════════════════════════════════════════════════
+function renderBookingsView() {
+  const container = document.getElementById('view-bookings');
+  const today = state.currentDate;
+  const todayBookings = state.bookings
+    .filter(b => {
+      const s = state.sessions.find(sess => sess.id === b.sessionId);
+      return s && s.date === today;
+    })
+    .sort((a, b) => {
+      const sa = state.sessions.find(s => s.id === a.sessionId);
+      const sb = state.sessions.find(s => s.id === b.sessionId);
+      return (sa?.startTime || '').localeCompare(sb?.startTime || '');
+    });
+
+  let html = '<div class="bookings-view"><h2 style="font-size:20px;font-weight:800;margin-bottom:20px;">📋 Bookings</h2>';
+  html += `<div class="booking-date-header">${formatDate(today)}</div>`;
+  
+  if (todayBookings.length === 0) {
+    html += '<div style="text-align:center;padding:40px 0;color:var(--text-muted);font-size:14px;">No bookings for this day</div>';
+  }
+  
+  todayBookings.forEach(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    const court = state.courts.find(c => c.id === s?.courtId);
+    const colorInfo = SESSION_COLORS[s?.type] || SESSION_COLORS.open;
+    html += `
+    <div class="booking-card">
+      <div class="booking-time-badge">${s ? fmtRange(s.startTime, s.endTime) : '—'}</div>
+      <div class="booking-info">
+        <div class="booking-player">${escHtml(b.playerName)}</div>
+        <div class="booking-detail">${court?.name || ''} · ${colorInfo.label} · ${b.groupSize}p · DUPR ${parseFloat(b.rating || 3).toFixed(1)}</div>
+      </div>
+      <span class="booking-status ${b.status}">${b.status.replace('_', ' ')}</span>
+    </div>`;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════
+// PLAYERS VIEW
+// ══════════════════════════════════════════════════════
+function renderPlayersView(searchTerm) {
+  if (typeof searchTerm === 'undefined') searchTerm = '';
+  const container = document.getElementById('view-players');
+  const dir = state.playerDirectory || {};
+  let players = Object.values(dir);
+  
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase();
+    players = players.filter(p => p.name.toLowerCase().includes(q));
+  }
+  
+  players.sort((a, b) => b.rating - a.rating);
+  
+  let html = '<div class="players-view"><h2 style="font-size:20px;font-weight:800;margin-bottom:20px;">👥 Players</h2>';
+  html += `<input type="text" class="players-search" placeholder="Search players..." value="${escHtml(searchTerm)}" oninput="renderPlayersView(this.value)">`;
+  
+  players.forEach(p => {
+    html += `
+    <div class="player-list-card">
+      <img class="player-list-avatar" src="${avatarUrl(p.name, 80)}" alt="${escHtml(p.name)}">
+      <div class="player-list-info">
+        <div class="player-list-name">${escHtml(p.name)}</div>
+        <div class="player-list-meta">DUPR ${parseFloat(p.rating).toFixed(1)} · Member since ${p.memberSince || 'N/A'}</div>
+      </div>
+      <div class="player-list-stats">
+        <div class="stat"><span class="stat-val">${p.sessionsPlayed}</span><span>sessions</span></div>
+        <div class="stat"><span class="stat-val">${p.wins}W</span><span>wins</span></div>
+      </div>
+    </div>`;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════
+// SETTINGS VIEW
+// ══════════════════════════════════════════════════════
+function renderSettingsView() {
+  const v = state.venue || DEFAULT_VENUE;
+  const container = document.getElementById('view-settings');
+  
+  const sportOptions = ['pickleball', 'tennis', 'padel', 'badminton', 'basketball', 'futsal'];
+  const sportEmojis = { pickleball: '🏓', tennis: '🎾', padel: '🏸', badminton: '🏸', basketball: '🏀', futsal: '⚽' };
+  
+  function fmtHour(h) {
+    if (timeFormat === '24h') {
+      return `${String(h).padStart(2,'0')}:00`;
+    } else {
+      const ampm = h < 12 ? 'AM' : 'PM';
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      return `${h12}:00 ${ampm}`;
+    }
+  }
+  
+  container.innerHTML = `
+  <div class="settings-view">
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:24px;">⚙️ Settings</h2>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Venue Info</div>
+      <div class="settings-row">
+        <span class="settings-row-label">Venue Name</span>
+        <input type="text" value="${escHtml(v.name)}" onchange="updateVenue('name', this.value)">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Sport</span>
+        <select onchange="updateVenue('sport', this.value)">
+          ${sportOptions.map(s => `<option value="${s}" ${v.sport === s ? 'selected' : ''}>${sportEmojis[s] || '🏟️'} ${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Address</span>
+        <input type="text" value="${escHtml(v.address || '')}" onchange="updateVenue('address', this.value)">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Phone</span>
+        <input type="text" value="${escHtml(v.phone || '')}" onchange="updateVenue('phone', this.value)">
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Operating Hours</div>
+      <div class="settings-row">
+        <span class="settings-row-label">Opens</span>
+        <select onchange="updateVenue('openHour', parseInt(this.value))">
+          ${Array.from({length: 24}, (_, i) => `<option value="${i}" ${v.openHour === i ? 'selected' : ''}>${fmtHour(i)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Closes</span>
+        <select onchange="updateVenue('closeHour', parseInt(this.value))">
+          ${Array.from({length: 24}, (_, i) => `<option value="${i}" ${v.closeHour === i ? 'selected' : ''}>${fmtHour(i)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Slot Duration</span>
+        <select onchange="updateVenue('slotDuration', parseInt(this.value))">
+          ${[30, 45, 60, 90, 120].map(d => `<option value="${d}" ${v.slotDuration === d ? 'selected' : ''}>${d} min</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Pricing ($ per player)</div>
+      <div class="settings-row">
+        <span class="settings-row-label">🏓 Open Play</span>
+        <input type="number" value="${v.pricing?.openPlay || 15}" onchange="updateVenuePricing('openPlay', parseFloat(this.value))">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">🔒 Reserved</span>
+        <input type="number" value="${v.pricing?.reserved || 40}" onchange="updateVenuePricing('reserved', parseFloat(this.value))">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">🏆 League</span>
+        <input type="number" value="${v.pricing?.league || 25}" onchange="updateVenuePricing('league', parseFloat(this.value))">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">🎯 Tournament</span>
+        <input type="number" value="${v.pricing?.tournament || 30}" onchange="updateVenuePricing('tournament', parseFloat(this.value))">
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Courts: ${state.courts.length}</div>
+      ${state.courts.map(c => `
+      <div class="settings-row">
+        <span class="settings-row-label">${escHtml(c.name)}</span>
+        <button style="background:var(--red-subtle);color:var(--red);border:none;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;" onclick="removeCourt('${c.id}')">Remove</button>
+      </div>`).join('')}
+      <button class="add-court-card" style="margin-top:8px;padding:16px;" onclick="addNewCourt()">+ Add Court</button>
+    </div>
+    
+    <div class="settings-section">
+      <div class="settings-section-title">Data</div>
+      <div class="settings-row">
+        <span class="settings-row-label">Reset Demo Data</span>
+        <button style="background:var(--gold-subtle);color:var(--gold);border:none;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;" onclick="if(confirm('Reset all data?')){localStorage.removeItem('${STORAGE_KEY}');location.reload();}">Reset</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateVenue(key, value) {
+  if (!state.venue) state.venue = { ...DEFAULT_VENUE };
+  state.venue[key] = value;
+  save();
+  // Update header brand text
+  const brandText = document.getElementById('brandText');
+  if (brandText && key === 'name') {
+    brandText.innerHTML = `${escHtml(value)} <span>Queue</span>`;
+  }
+}
+
+function updateVenuePricing(key, value) {
+  if (!state.venue) state.venue = { ...DEFAULT_VENUE };
+  if (!state.venue.pricing) state.venue.pricing = {};
+  state.venue.pricing[key] = value;
+  save();
+}
+
+function removeCourt(courtId) {
+  if (state.courts.length <= 1) { showToast('Need at least 1 court', 'error'); return; }
+  state.courts = state.courts.filter(c => c.id !== courtId);
+  state.sessions = state.sessions.filter(s => s.courtId !== courtId);
+  save();
+  renderCourtsView();
+  renderSettingsView();
+  showToast('Court removed', 'warning');
+}
+
+// ══════════════════════════════════════════════════════
+// ANALYTICS VIEW
+// ══════════════════════════════════════════════════════
+function renderAnalyticsView() {
+  const container = document.getElementById('view-analytics');
+  const today = state.currentDate;
+  const todaySessions = state.sessions.filter(s => s.date === today);
+  const todayBookings = state.bookings.filter(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    return s && s.date === today;
+  });
+  const v = state.venue || DEFAULT_VENUE;
+  
+  // Calculate revenue
+  let totalRevenue = 0;
+  todayBookings.forEach(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    if (!s) return;
+    const pricePerPlayer = v.pricing?.[s.type] || 15;
+    totalRevenue += pricePerPlayer * b.groupSize;
+  });
+  
+  // Utilization per court
+  const courtUtil = state.courts.map(court => {
+    const sessions = todaySessions.filter(s => s.courtId === court.id);
+    const totalHours = sessions.reduce((sum, s) => {
+      const [sh, sm] = s.startTime.split(':').map(Number);
+      const [eh, em] = s.endTime.split(':').map(Number);
+      return sum + ((eh * 60 + em) - (sh * 60 + sm)) / 60;
+    }, 0);
+    const availableHours = (v.closeHour - v.openHour);
+    return { name: court.name, pct: availableHours > 0 ? Math.round((totalHours / availableHours) * 100) : 0 };
+  });
+  
+  // Hourly distribution
+  const hourCounts = {};
+  for (let h = v.openHour; h < v.closeHour; h++) hourCounts[h] = 0;
+  todaySessions.forEach(s => {
+    const [sh] = s.startTime.split(':').map(Number);
+    if (hourCounts[sh] !== undefined) hourCounts[sh]++;
+  });
+  const maxHourCount = Math.max(1, ...Object.values(hourCounts));
+  
+  function fmtHourLabel(h) {
+    if (timeFormat === '24h') {
+      return `${String(h).padStart(2,'0')}:00`;
+    } else {
+      const ampm = h < 12 ? 'AM' : 'PM';
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      return `${h12} ${ampm}`;
+    }
+  }
+  
+  container.innerHTML = `
+  <div class="analytics-view">
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:20px;">📊 Analytics</h2>
+    
+    <div class="analytics-grid">
+      <div class="analytics-card">
+        <div class="analytics-card-label">Revenue Today</div>
+        <div class="analytics-card-value" style="color:var(--green);">$${totalRevenue}</div>
+        <div class="analytics-card-change up">↑ from bookings</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-card-label">Total Bookings</div>
+        <div class="analytics-card-value">${todayBookings.length}</div>
+        <div class="analytics-card-change">${todayBookings.filter(b => b.status === 'checked_in').length} checked in</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-card-label">Sessions</div>
+        <div class="analytics-card-value">${todaySessions.length}</div>
+        <div class="analytics-card-change">${todaySessions.filter(s => s.type === 'open').length} open play</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-card-label">Players Active</div>
+        <div class="analytics-card-value">${new Set(todayBookings.map(b => b.playerName)).size}</div>
+        <div class="analytics-card-change">unique players</div>
+      </div>
+    </div>
+    
+    <div class="analytics-chart">
+      <div class="analytics-chart-title">Court Utilization</div>
+      ${courtUtil.map(c => `
+      <div class="utilization-bar">
+        <span class="utilization-label">${escHtml(c.name)}</span>
+        <div class="utilization-track">
+          <div class="utilization-fill" style="width:${c.pct}%;background:${c.pct > 80 ? 'var(--green)' : c.pct > 40 ? 'var(--teal)' : 'var(--amber)'}"></div>
+        </div>
+        <span class="utilization-pct">${c.pct}%</span>
+      </div>`).join('')}
+    </div>
+    
+    <div class="analytics-chart">
+      <div class="analytics-chart-title">Sessions by Hour</div>
+      <div class="bar-chart">
+        ${Object.entries(hourCounts).map(([h, count]) => {
+          const pct = Math.round((count / maxHourCount) * 100);
+          return `<div class="bar-col">
+            <div class="bar-value">${count}</div>
+            <div class="bar" style="height:${pct}%;background:var(--teal);"></div>
+            <div class="bar-label">${fmtHourLabel(parseInt(h))}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    
+    <div class="analytics-chart">
+      <div class="analytics-chart-title">Session Types</div>
+      ${Object.entries(SESSION_COLORS).map(([type, info]) => {
+        const count = todaySessions.filter(s => s.type === type).length;
+        const pct = todaySessions.length > 0 ? Math.round((count / todaySessions.length) * 100) : 0;
+        return `<div class="utilization-bar">
+          <span class="utilization-label">${info.label}</span>
+          <div class="utilization-track">
+            <div class="utilization-fill" style="width:${pct}%;background:${info.hex}"></div>
+          </div>
+          <span class="utilization-pct">${count}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════
+load();
+render();
+// Update brand from venue config
+const brandText = document.getElementById('brandText');
+if (brandText && state.venue?.name) {
+  brandText.innerHTML = `${escHtml(state.venue.name)} <span>Queue</span>`;
+}
+</script>
+</body>
+</html>
