@@ -685,6 +685,15 @@ body {
   box-shadow: 0 0 0 2px var(--green), 0 0 0 4px rgba(34,197,94,0.2), 0 4px 16px rgba(0,0,0,0.6);
 }
 
+/* Completed session block */
+.session-block.is-completed {
+  position: relative;
+  pointer-events: auto;
+}
+.session-block.is-completed:hover {
+  opacity: 0.7 !important;
+}
+
 .sb-time {
   font-size: 10px;
   font-weight: 700;
@@ -1491,6 +1500,127 @@ body {
   font-size: 12px;
   color: var(--text-muted);
 }
+
+/* ─── WAITLIST ENGINE ─── */
+@keyframes claimPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.qe-status-notified {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-left: 3px solid var(--red);
+}
+
+.qe-status-expired {
+  opacity: 0.45;
+}
+
+.qe-status-claimed {
+  background: rgba(34, 197, 94, 0.08) !important;
+  border-left: 3px solid var(--green);
+}
+
+.claim-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--red);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  animation: claimPulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.claim-countdown {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--red);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.claim-countdown.warning { color: var(--amber); }
+.claim-countdown.critical { color: var(--red); animation: claimPulse 0.8s ease-in-out infinite; }
+
+.qe-claim-btn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.qe-claim-btn:hover { background: var(--green); color: #fff; }
+
+.qe-leave-btn {
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.qe-leave-btn:hover { border-color: var(--red); color: var(--red); }
+
+.notify-waitlist-btn {
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--amber);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.notify-waitlist-btn:hover { background: var(--amber); color: #000; }
+
+.qe-status-pill {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.qe-status-pill.waiting  { background: rgba(100,116,139,0.2); color: var(--text-muted); }
+.qe-status-pill.notified { background: rgba(239,68,68,0.2); color: var(--red); }
+.qe-status-pill.claimed  { background: rgba(34,197,94,0.2); color: var(--green); }
+.qe-status-pill.expired  { background: rgba(100,116,139,0.15); color: var(--text-muted); }
+.qe-status-pill.served   { background: rgba(59,130,246,0.2); color: var(--blue); }
+.qe-status-pill.cancelled{ background: rgba(100,116,139,0.1); color: var(--text-muted); text-decoration: line-through; }
+
+.waitlist-join-hint {
+  padding: var(--space-3) var(--space-4);
+  background: rgba(245, 166, 35, 0.06);
+  border: 1px dashed rgba(245, 166, 35, 0.25);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-size: 11px;
+  color: var(--amber);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.waitlist-join-hint:hover { background: rgba(245, 166, 35, 0.12); }
 
 /* ─── ACTION BAR ─── */
 .sdm-actions {
@@ -2656,6 +2786,173 @@ body {
 /* Clickable player names */
 .player-name-click { cursor: pointer; transition: color 0.15s; }
 .player-name-click:hover { color: var(--teal); text-decoration: underline; }
+
+/* ──────────────────────────────────────────────────────
+   NOTIFICATION CENTER
+────────────────────────────────────────────────────── */
+.notif-bell {
+  position: relative;
+  width: 36px; height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.notif-bell:hover { background: var(--teal-subtle); color: var(--teal); border-color: var(--border-teal); }
+.notif-badge {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 16px; height: 16px;
+  background: var(--red);
+  color: #fff; font-size: 9px; font-weight: 800;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+  pointer-events: none;
+}
+.notif-badge:empty, .notif-badge[data-count="0"] { display: none; }
+.notif-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 340px; max-height: 420px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 300;
+  overflow: hidden;
+  display: none;
+}
+.notif-dropdown.open { display: block; }
+.notif-dropdown-header {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; font-weight: 700;
+}
+.notif-dropdown-body {
+  max-height: 340px; overflow-y: auto;
+}
+.notif-item {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  transition: background 0.15s;
+  cursor: default;
+}
+.notif-item:hover { background: rgba(255,255,255,0.02); }
+.notif-item.unread { border-left: 3px solid var(--teal); }
+.notif-item-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+.notif-item-body { flex: 1; min-width: 0; }
+.notif-item-msg { font-size: 12px; color: var(--text-primary); line-height: 1.4; }
+.notif-item-time { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.notif-unread-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); flex-shrink: 0; margin-top: 6px; }
+.notif-empty { padding: var(--space-6); text-align: center; color: var(--text-muted); font-size: 13px; }
+
+/* ──────────────────────────────────────────────────────
+   ENHANCED PLAYER DIRECTORY
+────────────────────────────────────────────────────── */
+.players-toolbar {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin-bottom: var(--space-3); flex-wrap: wrap;
+}
+.players-search {
+  flex: 1; min-width: 160px;
+  height: 36px; padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px; font-family: inherit;
+  outline: none; transition: border-color 0.15s;
+}
+.players-search:focus { border-color: var(--teal); }
+.player-tabs { display: flex; gap: 2px; background: var(--bg-surface); border-radius: var(--radius-md); padding: 2px; border: 1px solid var(--border); }
+.player-tab-btn {
+  padding: 6px 14px; border: none; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-muted); font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap;
+}
+.player-tab-btn.active { background: var(--teal-subtle); color: var(--teal); }
+.player-tab-btn:hover:not(.active) { color: var(--text-secondary); }
+
+.player-card-grid {
+  display: grid; gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+.player-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--space-4);
+  cursor: pointer; transition: all 0.15s;
+  display: flex; gap: var(--space-3); align-items: center;
+}
+.player-card:hover { border-color: var(--border-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.player-card-avatar { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; }
+.player-card-info { flex: 1; min-width: 0; }
+.player-card-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.player-card-meta { font-size: 11px; color: var(--text-muted); display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center; }
+.player-card-right { text-align: right; flex-shrink: 0; }
+
+.member-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.member-badge.guest { background: rgba(100,116,139,0.2); color: var(--text-muted); }
+.member-badge.day_pass { background: var(--blue-subtle); color: var(--blue); }
+.member-badge.monthly { background: var(--teal-subtle); color: var(--teal); }
+.member-badge.annual { background: var(--gold-subtle); color: var(--gold); }
+.member-badge.package { background: rgba(168,85,247,0.15); color: #a855f7; }
+
+.strike-indicator {
+  display: flex; gap: 3px; align-items: center;
+}
+.strike-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid var(--border);
+  transition: all 0.2s;
+}
+.strike-dot.active-1 { background: var(--green); border-color: var(--green); }
+.strike-dot.active-2 { background: var(--amber); border-color: var(--amber); }
+.strike-dot.active-3 { background: var(--red); border-color: var(--red); }
+
+.pp-field { display: flex; align-items: center; gap: var(--space-2); padding: 6px 0; font-size: 12px; }
+.pp-field-label { color: var(--text-muted); min-width: 100px; }
+.pp-field-value { color: var(--text-primary); font-weight: 500; }
+.pp-package-card {
+  background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.2);
+  border-radius: var(--radius-md); padding: var(--space-3); margin-top: var(--space-2);
+}
+.pp-package-type { font-size: 13px; font-weight: 700; color: #a855f7; }
+.pp-package-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.add-player-fab {
+  display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: var(--teal); color: #fff; border: none;
+  border-radius: var(--radius-md); font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all 0.15s;
+  margin-top: var(--space-4);
+}
+.add-player-fab:hover { background: var(--teal-hover); }
+
+/* ──────────────────────────────────────────────────────
+   POLICIES SETTINGS
+───────────────────────────────────────────────────── */
+.policy-toggle { position: relative; width: 40px; height: 22px; }
+.policy-toggle input { opacity: 0; width: 0; height: 0; }
+.policy-toggle .slider {
+  position: absolute; inset: 0; background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: 11px; cursor: pointer; transition: all 0.2s;
+}
+.policy-toggle .slider::before {
+  content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  left: 2px; top: 2px; background: var(--text-muted); transition: all 0.2s;
+}
+.policy-toggle input:checked + .slider { background: var(--teal-subtle); border-color: var(--teal); }
+.policy-toggle input:checked + .slider::before { transform: translateX(18px); background: var(--teal); }
 </style>
 </head>
 <body>
@@ -2666,6 +2963,14 @@ body {
     <div class="brand-icon">🏓</div>
     <div class="brand-text" id="brandText">Ace Pickleball Club <span>Queue</span></div>
   </a>
+
+  <div style="position:relative;margin-left:4px;" id="notifBellWrapper">
+    <button class="notif-bell" onclick="toggleNotificationCenter()" title="Notifications">
+      🔔
+      <span class="notif-badge" id="notifBadge"></span>
+    </button>
+    <div class="notif-dropdown" id="notifDropdown"></div>
+  </div>
 
   <div class="date-nav">
     <button onclick="changeDate(-1)" title="Previous day">‹</button>
@@ -2763,6 +3068,10 @@ body {
     <span class="tab-icon">📊</span>
     <span>Dashboard</span>
   </button>
+  <button class="tab-item" data-view="analytics" onclick="switchView('analytics')">
+    <span class="tab-icon">📈</span>
+    <span>Analytics</span>
+  </button>
   <button class="tab-item" data-view="bookings" onclick="switchView('bookings')">
     <span class="tab-icon">📋</span>
     <span>Bookings</span>
@@ -2791,6 +3100,7 @@ const SESSION_COLORS = {
   lesson:     { pill: 'pill-lesson',     hex: '#EC4899', label: 'Lesson' }
 };
 const ROW_H = 72; // must match --hour-h in CSS
+const CLAIM_WINDOW_MINS = 15; // minutes to claim a slot after notification
 
 // ══════════════════════════════════════════════════════
 // STATE
@@ -2809,6 +3119,7 @@ let state = {
   bookingFilter: 'all',
   recurringRules: [],
   transactions: [],
+  notifications: [],
   staff: []
 };
 
@@ -2825,12 +3136,12 @@ const DEFAULT_VENUE = {
   slotDuration: 60, // minutes
   maxPlayersPerCourt: 4,
   pricing: {
-    openPlay: 15,
-    reserved: 40,
-    league: 25,
-    tournament: 30,
-    clinic: 35,
-    lesson: 50
+    openPlay: 150,
+    reserved: 500,
+    league: 200,
+    tournament: 250,
+    clinic: 350,
+    lesson: 800
   }
 };
 
@@ -2986,6 +3297,7 @@ function load() {
   if (!state.venue) state.venue = { ...DEFAULT_VENUE };
   else state.venue = { ...DEFAULT_VENUE, ...state.venue, pricing: { ...DEFAULT_VENUE.pricing, ...(state.venue.pricing || {}) } };
   if (!state.playerDirectory) state.playerDirectory = buildPlayerDirectory();
+  if (!state.settings) state.settings = {};
   if (!state.sessions || state.sessions.length === 0) seedSampleData();
 }
 
@@ -3038,28 +3350,28 @@ function seedSampleData() {
   ];
   state.queue = [
     // Queue for Court 1 morning open (ss[0])
-    { id: genId(), sessionId: ss[0].id,  playerName: 'Drew Parker',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 18*60000).toISOString(), rating: 3.2 },
-    { id: genId(), sessionId: ss[0].id,  playerName: 'Quinn Adams',    groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 12*60000).toISOString(), rating: 2.8 },
+    { id: genId(), sessionId: ss[0].id,  playerName: 'Drew Parker',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 18*60000).toISOString(), rating: 3.2, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0101', playerId: null },
+    { id: genId(), sessionId: ss[0].id,  playerName: 'Quinn Adams',    groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 12*60000).toISOString(), rating: 2.8, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0102', playerId: null },
     // Queue for Court 1 10am open (ss[2])
-    { id: genId(), sessionId: ss[2].id,  playerName: 'Blake Collins',  groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 22*60000).toISOString(), rating: 2.4 },
-    { id: genId(), sessionId: ss[2].id,  playerName: 'Riley Thompson', groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 15*60000).toISOString(), rating: 3.5 },
-    { id: genId(), sessionId: ss[2].id,  playerName: 'Taylor Kim',     groupSize: 1, position: 3, status: 'waiting', joinedAt: new Date(Date.now() - 8*60000).toISOString(),  rating: 4.5 },
+    { id: genId(), sessionId: ss[2].id,  playerName: 'Blake Collins',  groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 22*60000).toISOString(), rating: 2.4, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0103', playerId: null },
+    { id: genId(), sessionId: ss[2].id,  playerName: 'Riley Thompson', groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 15*60000).toISOString(), rating: 3.5, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0104', playerId: null },
+    { id: genId(), sessionId: ss[2].id,  playerName: 'Taylor Kim',     groupSize: 1, position: 3, status: 'waiting', joinedAt: new Date(Date.now() - 8*60000).toISOString(),  rating: 4.5, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0105', playerId: null },
     // Queue for Court 1 11am open (ss[3])
-    { id: genId(), sessionId: ss[3].id,  playerName: 'Alex Rivera',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 25*60000).toISOString(), rating: 3.8 },
-    { id: genId(), sessionId: ss[3].id,  playerName: 'Jordan Lee',     groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 10*60000).toISOString(), rating: 3.0 },
+    { id: genId(), sessionId: ss[3].id,  playerName: 'Alex Rivera',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 25*60000).toISOString(), rating: 3.8, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0106', playerId: null },
+    { id: genId(), sessionId: ss[3].id,  playerName: 'Jordan Lee',     groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 10*60000).toISOString(), rating: 3.0, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0107', playerId: null },
     // Queue for Court 1 12pm open (ss[4])
-    { id: genId(), sessionId: ss[4].id,  playerName: 'Avery Chen',     groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 5*60000).toISOString(),  rating: 4.8 },
+    { id: genId(), sessionId: ss[4].id,  playerName: 'Avery Chen',     groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 5*60000).toISOString(),  rating: 4.8, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0108', playerId: null },
     // Queue for Court 1 3pm open (ss[6])
-    { id: genId(), sessionId: ss[6].id,  playerName: 'Cameron Price',  groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 3*60000).toISOString(),  rating: 5.5 },
-    { id: genId(), sessionId: ss[6].id,  playerName: 'Elena Foster',   groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 2*60000).toISOString(),  rating: 5.1 },
+    { id: genId(), sessionId: ss[6].id,  playerName: 'Cameron Price',  groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 3*60000).toISOString(),  rating: 5.5, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0109', playerId: null },
+    { id: genId(), sessionId: ss[6].id,  playerName: 'Elena Foster',   groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 2*60000).toISOString(),  rating: 5.1, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0110', playerId: null },
     // Queue for Court 2 9am open (ss[8])
-    { id: genId(), sessionId: ss[8].id,  playerName: 'Kai Bennett',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 14*60000).toISOString(), rating: 4.7 },
+    { id: genId(), sessionId: ss[8].id,  playerName: 'Kai Bennett',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 14*60000).toISOString(), rating: 4.7, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0111', playerId: null },
     // Queue for Court 2 10am open (ss[9])
-    { id: genId(), sessionId: ss[9].id,  playerName: 'Peyton Reed',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 20*60000).toISOString(), rating: 6.5 },
-    { id: genId(), sessionId: ss[9].id,  playerName: 'Dana Brooks',    groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 7*60000).toISOString(),  rating: 3.6 },
+    { id: genId(), sessionId: ss[9].id,  playerName: 'Peyton Reed',    groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 20*60000).toISOString(), rating: 6.5, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0112', playerId: null },
+    { id: genId(), sessionId: ss[9].id,  playerName: 'Dana Brooks',    groupSize: 1, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 7*60000).toISOString(),  rating: 3.6, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0113', playerId: null },
     // Queue for Court 2 2pm open (ss[11])
-    { id: genId(), sessionId: ss[11].id, playerName: 'Jesse Hart',     groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 15*60000).toISOString(), rating: 3.4 },
-    { id: genId(), sessionId: ss[11].id, playerName: 'Rowan James',    groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 9*60000).toISOString(),  rating: 2.0 },
+    { id: genId(), sessionId: ss[11].id, playerName: 'Jesse Hart',     groupSize: 2, position: 1, status: 'waiting', joinedAt: new Date(Date.now() - 15*60000).toISOString(), rating: 3.4, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0114', playerId: null },
+    { id: genId(), sessionId: ss[11].id, playerName: 'Rowan James',    groupSize: 2, position: 2, status: 'waiting', joinedAt: new Date(Date.now() - 9*60000).toISOString(),  rating: 2.0, notifiedAt: null, claimDeadline: null, playerPhone: '0917-555-0115', playerId: null },
   ];
 
   // Pre-seed all sessions with matchup data so players appear immediately
@@ -3090,7 +3402,19 @@ function sessBookings(sessionId) {
 
 function sessQueue(sessionId) {
   return state.queue
+    .filter(q => q.sessionId === sessionId && (q.status === 'waiting' || q.status === 'notified' || q.status === 'claimed'))
+    .sort((a,b) => a.position - b.position);
+}
+
+function sessQueueWaiting(sessionId) {
+  return state.queue
     .filter(q => q.sessionId === sessionId && q.status === 'waiting')
+    .sort((a,b) => a.position - b.position);
+}
+
+function sessQueueNotified(sessionId) {
+  return state.queue
+    .filter(q => q.sessionId === sessionId && q.status === 'notified')
     .sort((a,b) => a.position - b.position);
 }
 
@@ -3665,17 +3989,38 @@ function renderDayGrid() {
         liveBadge = `<span style="font-size:8px;font-weight:900;color:var(--green);text-transform:uppercase;letter-spacing:0.08em;">● NOW</span>`;
       }
 
+      // Check-in badge: show when session is within 30min and has confirmed bookings
+      let checkInBadge = '';
+      if (isToday && !isLive) {
+        const [sh2, sm2] = s.startTime.split(':').map(Number);
+        const sessionStartMin = sh2 * 60 + sm2;
+        const minsUntil = sessionStartMin - curMin;
+        const hasConfirmed = state.bookings.some(b => b.sessionId === s.id && b.status === 'confirmed');
+        if (minsUntil > 0 && minsUntil <= 30 && hasConfirmed) {
+          checkInBadge = `<span class="sb-badge" style="background:var(--blue-subtle);color:var(--blue);font-size:8px;font-weight:700;">CHECK-IN OPEN</span>`;
+        }
+      }
+
+      // Completed overlay for past sessions
+      const [eh2, em2] = s.endTime.split(':').map(Number);
+      const sessionEndMin = eh2 * 60 + em2;
+      const isCompleted = isToday && curMin >= sessionEndMin;
+      const completedOverlay = isCompleted
+        ? `<div style="position:absolute;inset:0;background:rgba(0,0,0,0.45);border-radius:inherit;display:flex;align-items:center;justify-content:center;z-index:2;pointer-events:none;"><span style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">✓ Completed</span></div>`
+        : '';
+
       courtsHTML += `<div
-        class="session-block type-${escHtml(s.type)}${isSelected ? ' selected' : ''}${isLive ? ' is-live' : ''}"
-        style="top:${top}px; height:${height}px;"
+        class="session-block type-${escHtml(s.type)}${isSelected ? ' selected' : ''}${isLive ? ' is-live' : ''}${isCompleted ? ' is-completed' : ''}"
+        style="top:${top}px; height:${height}px;${isCompleted ? 'opacity:0.5;' : ''}"
         onclick="selectSession('${s.id}')"
         id="block-${s.id}"
       >
+        ${completedOverlay}
         <div class="sb-time">${liveBadge}${fmtRange(s.startTime, s.endTime)}</div>
         <div class="sb-title">
           <span class="session-type-pill ${colorInfo.pill}">${colorInfo.label}</span>
         </div>
-        <div class="sb-meta">${metaHTML}</div>
+        <div class="sb-meta">${metaHTML}${checkInBadge}</div>
         ${isSelected ? '<div class="click-hint">selected ✓</div>' : ''}
       </div>`;
     });
@@ -3741,20 +4086,44 @@ function renderQuickPanel() {
   document.getElementById('qpTitle').textContent = `${players}/4 players`;
 
   const isLive = isSessionLive(s);
-  document.getElementById('qpSubtitle').innerHTML = isLive
-    ? `<span style="color:var(--green);font-weight:700;">● Playing now</span>`
-    : q.length > 0
-      ? `<span style="color:var(--amber)">${q.length} in queue</span><span>·</span><span>${q[0].playerName} up next</span>`
-      : s.type === 'open'
-        ? players >= 4 ? `<span style="color:var(--teal)">Full — waiting for next</span>`
-                       : `<span>Available for booking</span>`
-        : `<span>${s.type === 'reserved' ? 'Private booking' : colorInfo.label}</span>`;
+  const waitingQ = q.filter(e => e.status === 'waiting');
+  const notifiedQ = q.filter(e => e.status === 'notified');
+  const hasActiveClaim = notifiedQ.length > 0 && isClaimActive(notifiedQ[0]);
+
+  let subtitleHTML = '';
+  if (isLive) {
+    subtitleHTML = `<span style="color:var(--green);font-weight:700;">● Playing now</span>`;
+  } else if (hasActiveClaim) {
+    const cd = claimTimeRemaining(notifiedQ[0].claimDeadline);
+    const cdClass = claimCountdownClass(notifiedQ[0].claimDeadline);
+    subtitleHTML = `<span class="claim-badge">🔔 CLAIM NOW</span><span class="claim-countdown ${cdClass}" data-claim-countdown data-claim-deadline="${notifiedQ[0].claimDeadline}">${cd}</span>`;
+  } else if (notifiedQ.length > 0) {
+    subtitleHTML = `<span style="color:var(--red)">${notifiedQ.length} notified — waiting for claim</span>`;
+  } else if (waitingQ.length > 0) {
+    subtitleHTML = `<span style="color:var(--amber)">${waitingQ.length} in queue</span><span>·</span><span>${waitingQ[0].playerName} up next</span>`;
+  } else if (s.type === 'open') {
+    subtitleHTML = players >= 4 ? `<span style="color:var(--teal)">Full — waiting for next</span>` : `<span>Available for booking</span>`;
+  } else {
+    subtitleHTML = `<span>${s.type === 'reserved' ? 'Private booking' : colorInfo.label}</span>`;
+  }
+  document.getElementById('qpSubtitle').innerHTML = subtitleHTML;
 
   let actionsHTML = '';
   if (s.type === 'open') {
-    actionsHTML += `<button class="qp-btn primary" onclick="callNext('${s.id}')" ${q.length === 0 ? 'disabled' : ''}>
-      ⚡ Call Next${q.length > 0 ? ` · ${q[0].playerName}` : ''}
+    if (notifiedQ.length > 0 && hasActiveClaim) {
+      // Show claim buttons for notified entries
+      actionsHTML += notifiedQ.slice(0, 2).map(entry =>
+        `<button class="qe-claim-btn" onclick="claimSlot('${entry.id}')">✅ ${entry.playerName} — Claim</button>`
+      ).join('');
+    }
+    actionsHTML += `<button class="qp-btn primary" onclick="callNext('${s.id}')"
+      ${waitingQ.length === 0 ? 'disabled' : ''}>
+      ⚡ Call Next${waitingQ.length > 0 ? ` · ${waitingQ[0].playerName}` : ''}
     </button>`;
+    // Notify waitlist button (for staff, when there are waiters but no active claims)
+    if (waitingQ.length > 0 && notifiedQ.length === 0 && players < getSessionMaxPlayers(s)) {
+      actionsHTML += `<button class="notify-waitlist-btn" onclick="notifyWaitlist('${s.id}')">🔔 Notify Waitlist</button>`;
+    }
   }
   actionsHTML += `
     <button class="qp-btn" onclick="openModal('bookingDetail','${s.id}')">+ Book</button>
@@ -3813,6 +4182,535 @@ function removeFromQueue(entryId) {
 function callNextFromDetail(sessionId, entryId) {
   callNext(sessionId, entryId);
   openModal('sessionDetail', sessionId);
+}
+
+// ══════════════════════════════════════════════════════
+// WAITLIST ENGINE
+// ══════════════════════════════════════════════════════
+
+/**
+ * Add a notification to the notifications log.
+ */
+function addNotification(type, sessionId, playerName, message) {
+  if (!state.notifications) state.notifications = [];
+  state.notifications.unshift({
+    id: genId(),
+    type,
+    sessionId,
+    playerName,
+    message,
+    createdAt: new Date().toISOString(),
+    read: false
+  });
+  // Keep only last 100 notifications
+  if (state.notifications.length > 100) state.notifications = state.notifications.slice(0, 100);
+  save();
+  renderNotificationBell();
+}
+
+function getUnreadCount() {
+  return (state.notifications || []).filter(n => !n.read).length;
+}
+
+function renderNotificationBell() {
+  const badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  const count = getUnreadCount();
+  badge.textContent = count > 9 ? '9+' : count;
+  badge.style.display = count > 0 ? 'flex' : 'none';
+}
+
+function toggleNotificationCenter() {
+  const dropdown = document.getElementById('notifDropdown');
+  if (!dropdown) return;
+  const isOpen = dropdown.classList.contains('open');
+  if (isOpen) {
+    dropdown.classList.remove('open');
+  } else {
+    renderNotificationCenter();
+    dropdown.classList.add('open');
+    // Mark as read on open
+    (state.notifications || []).forEach(n => n.read = true);
+    save();
+    renderNotificationBell();
+  }
+}
+
+function renderNotificationCenter() {
+  const container = document.getElementById('notifList');
+  if (!container) return;
+  const notifs = (state.notifications || []).slice(0, 30);
+  if (notifs.length === 0) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">No notifications yet</div>';
+    return;
+  }
+  const icons = {
+    waitlist: '🔔', booking: '✓', cancel: '✕', strike: '⚠️',
+    package: '🎫', general: 'ℹ️', cascade: '🔄', pair: '🎾'
+  };
+  container.innerHTML = notifs.map(n => `
+    <div class="notif-item" style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;">
+      <span style="font-size:16px;flex-shrink:0;margin-top:2px;">${icons[n.type] || 'ℹ️'}</span>
+      <div style="flex:1;min-width:0;">
+        <div style="color:var(--text-primary);line-height:1.4;">${escHtml(n.message)}</div>
+        <div style="color:var(--text-muted);font-size:10px;margin-top:3px;">${waitTime(n.createdAt)} ago</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function markAllNotificationsRead() {
+  (state.notifications || []).forEach(n => n.read = true);
+  save();
+  renderNotificationBell();
+  renderNotificationCenter();
+}
+
+/**
+ * Join the waitlist for a session.
+ * Auto-assigns position as max existing position + 1.
+ */
+function joinWaitlist(sessionId, playerName, groupSize, playerPhone, playerId, rating) {
+  const activeStatuses = ['waiting', 'notified', 'claimed'];
+  const existing = state.queue.filter(q => q.sessionId === sessionId && activeStatuses.includes(q.status));
+  const maxPos = existing.length > 0 ? Math.max(...existing.map(e => e.position)) : 0;
+
+  const entry = {
+    id: genId(),
+    sessionId,
+    playerName,
+    groupSize: groupSize || 1,
+    position: maxPos + 1,
+    status: 'waiting',
+    joinedAt: new Date().toISOString(),
+    calledAt: null,
+    notifiedAt: null,
+    claimDeadline: null,
+    claimedAt: null,
+    expiredAt: null,
+    playerPhone: playerPhone || '',
+    playerId: playerId || null,
+    rating: rating || 3.0
+  };
+
+  state.queue.push(entry);
+  save();
+
+  addNotification('waitlist_joined', sessionId, playerName,
+    `${playerName} joined the waitlist (position #${entry.position})`);
+
+  showToast(`${playerName} added to waitlist — #${entry.position}`, 'success');
+  return entry;
+}
+
+/**
+ * Leave the waitlist (player cancels their queue entry).
+ * Sets status to 'cancelled', reorders remaining positions.
+ */
+function leaveWaitlist(queueEntryId) {
+  const entry = state.queue.find(e => e.id === queueEntryId);
+  if (!entry) return;
+
+  const sessionId = entry.sessionId;
+  entry.status = 'cancelled';
+  entry.expiredAt = new Date().toISOString();
+
+  // Reorder remaining active entries for this session
+  state.queue
+    .filter(e => e.sessionId === sessionId && (e.status === 'waiting' || e.status === 'notified'))
+    .sort((a, b) => a.position - b.position)
+    .forEach((e, i) => e.position = i + 1);
+
+  save();
+
+  addNotification('waitlist_cancelled', sessionId, entry.playerName,
+    `${entry.playerName} left the waitlist`);
+
+  showToast(`${entry.playerName} removed from waitlist`, 'warning');
+  render();
+  if (modalMode === 'sessionDetail') {
+    openModal('sessionDetail', sessionId);
+  }
+}
+
+/**
+ * Notify waitlist: when a slot opens, notify ALL waiting entries for a session.
+ * Sets their status to 'notified' and starts the 15-min claim countdown.
+ * Returns the number of players notified.
+ */
+function notifyWaitlist(sessionId) {
+  const waitingEntries = state.queue.filter(
+    q => q.sessionId === sessionId && q.status === 'waiting'
+  );
+
+  if (waitingEntries.length === 0) return 0;
+
+  const now = new Date();
+  const deadline = new Date(now.getTime() + CLAIM_WINDOW_MINS * 60000);
+
+  waitingEntries.forEach(entry => {
+    entry.status = 'notified';
+    entry.notifiedAt = now.toISOString();
+    entry.claimDeadline = deadline.toISOString();
+  });
+
+  save();
+
+  const s = state.sessions.find(x => x.id === sessionId);
+  const sessionName = s?.name || 'Session';
+
+  addNotification('slot_opened', sessionId, '',
+    `Slot opened in ${sessionName} — ${waitingEntries.length} players notified (${CLAIM_WINDOW_MINS}min to claim)`);
+
+  showToast(`🔔 ${waitingEntries.length} players notified — ${CLAIM_WINDOW_MINS}min to claim!`, 'info');
+
+  // Start the claim expiry checker
+  startClaimExpiryChecker();
+
+  render();
+  if (modalMode === 'sessionDetail') {
+    openModal('sessionDetail', sessionId);
+  }
+
+  return waitingEntries.length;
+}
+
+/**
+ * Claim a slot: if claimDeadline hasn't passed, convert to booking.
+ * All other notified entries for the same session are expired.
+ */
+function claimSlot(queueEntryId) {
+  const entry = state.queue.find(e => e.id === queueEntryId);
+  if (!entry) { showToast('Entry not found', 'error'); return false; }
+  if (entry.status !== 'notified') { showToast('This entry is not in claimable state', 'error'); return false; }
+
+  const now = new Date();
+  const deadline = new Date(entry.claimDeadline);
+
+  if (now > deadline) {
+    // Claim window expired
+    entry.status = 'expired';
+    entry.expiredAt = now.toISOString();
+    save();
+    showToast('Claim window has expired', 'error');
+    expireClaims(entry.sessionId);
+    return false;
+  }
+
+  // Success! Mark as claimed
+  entry.status = 'claimed';
+  entry.claimedAt = now.toISOString();
+
+  // Convert to booking
+  const s = state.sessions.find(x => x.id === entry.sessionId);
+  if (s) {
+    state.bookings.push({
+      id: genId(),
+      sessionId: entry.sessionId,
+      playerName: entry.playerName,
+      groupSize: entry.groupSize,
+      status: 'confirmed',
+      bookedAt: now.toISOString(),
+      rating: entry.rating
+    });
+
+    addNotification('booking_confirmed', entry.sessionId, entry.playerName,
+      `${entry.playerName} claimed their slot in ${s.name || 'Session'}`);
+  }
+
+  // Mark entry as served
+  entry.status = 'served';
+
+  // Expire all other notified entries for this session (slot taken)
+  state.queue
+    .filter(q => q.sessionId === entry.sessionId && q.id !== entry.id && q.status === 'notified')
+    .forEach(q => {
+      q.status = 'expired';
+      q.expiredAt = now.toISOString();
+    });
+
+  // Reorder remaining waiting entries
+  state.queue
+    .filter(e => e.sessionId === entry.sessionId && e.status === 'waiting')
+    .sort((a, b) => a.position - b.position)
+    .forEach((e, i) => e.position = i + 1);
+
+  save();
+
+  showToast(`✅ ${entry.playerName} claimed the slot!`, 'success');
+  render();
+  if (modalMode === 'sessionDetail') {
+    openModal('sessionDetail', entry.sessionId);
+  }
+  return true;
+}
+
+/**
+ * Expire claims: for all 'notified' entries past claimDeadline,
+ * mark as 'expired'. Then cascade or open slot.
+ */
+function expireClaims(sessionId) {
+  const now = new Date();
+  const expired = [];
+
+  state.queue
+    .filter(q => q.sessionId === sessionId && q.status === 'notified')
+    .forEach(q => {
+      const deadline = new Date(q.claimDeadline);
+      if (now > deadline) {
+        q.status = 'expired';
+        q.expiredAt = now.toISOString();
+        expired.push(q);
+      }
+    });
+
+  if (expired.length > 0) {
+    save();
+
+    const s = state.sessions.find(x => x.id === sessionId);
+    addNotification('claim_expired', sessionId, '',
+      `Claim window expired for ${expired.length} player(s) in ${s?.name || 'Session'}`);
+
+    showToast(`⏰ Claim window expired for ${expired.length} player(s)`, 'warning');
+  }
+
+  // After expiry, check if we should cascade (second round) or open for public
+  const stillWaiting = state.queue.filter(q => q.sessionId === sessionId && q.status === 'waiting');
+  const anyNotified = state.queue.filter(q => q.sessionId === sessionId && q.status === 'notified');
+
+  // Only cascade if there are still waiting entries and no active notifications
+  if (stillWaiting.length > 0 && anyNotified.length === 0) {
+    // Check if this session has already had 2 rounds of notifications
+    const totalExpired = state.queue.filter(q => q.sessionId === sessionId && q.status === 'expired').length;
+    const totalNotified = state.queue.filter(q => q.sessionId === sessionId && q.notifiedAt !== null).length;
+
+    if (totalNotified <= stillWaiting.length) {
+      // First round expired — cascade to next round
+      cascadeWaitlist(sessionId);
+    } else {
+      // Two rounds done — open for public
+      openSlotForPublic(sessionId);
+    }
+  } else if (stillWaiting.length === 0 && anyNotified.length === 0) {
+    // No one left — slot opens for public
+    openSlotForPublic(sessionId);
+  }
+
+  render();
+  if (modalMode === 'sessionDetail') {
+    openModal('sessionDetail', sessionId);
+  }
+}
+
+/**
+ * Cascade waitlist: second round of notifications after first claim expires.
+ * Notifies next batch of waiting entries.
+ */
+function cascadeWaitlist(sessionId) {
+  const waitingEntries = state.queue.filter(
+    q => q.sessionId === sessionId && q.status === 'waiting'
+  );
+
+  if (waitingEntries.length === 0) {
+    openSlotForPublic(sessionId);
+    return 0;
+  }
+
+  const now = new Date();
+  const deadline = new Date(now.getTime() + CLAIM_WINDOW_MINS * 60000);
+
+  waitingEntries.forEach(entry => {
+    entry.status = 'notified';
+    entry.notifiedAt = now.toISOString();
+    entry.claimDeadline = deadline.toISOString();
+  });
+
+  save();
+
+  const s = state.sessions.find(x => x.id === sessionId);
+  addNotification('slot_opened', sessionId, '',
+    `Cascade round: ${waitingEntries.length} more players notified for ${s?.name || 'Session'}`);
+
+  showToast(`🔄 Cascade: ${waitingEntries.length} more players notified`, 'info');
+
+  startClaimExpiryChecker();
+
+  render();
+  if (modalMode === 'sessionDetail') {
+    openModal('sessionDetail', sessionId);
+  }
+
+  return waitingEntries.length;
+}
+
+/**
+ * Open slot for public booking: no waitlist claimers, slot is now available to anyone.
+ */
+function openSlotForPublic(sessionId) {
+  const s = state.sessions.find(x => x.id === sessionId);
+  const sessionName = s?.name || 'Session';
+
+  addNotification('slot_public', sessionId, '',
+    `Slot in ${sessionName} is now open for public booking`);
+
+  showToast(`📢 Slot open for public booking`, 'info');
+  render();
+}
+
+/**
+ * Cancel a booking with cascade logic:
+ * 1. Cancel the booking
+ * 2. Check if session is open_play type
+ * 3. If waitlist exists → trigger notifyWaitlist
+ * 4. If no waitlist → slot opens for public
+ * 5. Log cancellation in notifications
+ */
+function cancelBookingWithCascade(bookingId) {
+  if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+  const booking = state.bookings.find(x => x.id === bookingId);
+  if (!booking) return;
+
+  const sessionId = booking.sessionId;
+  const playerName = booking.playerName;
+  const s = state.sessions.find(x => x.id === sessionId);
+
+  // 1. Cancel the booking
+  booking.status = 'cancelled';
+  booking.cancelledAt = new Date().toISOString();
+
+  // 2. Log cancellation
+  addNotification('booking_cancelled', sessionId, playerName,
+    `${playerName} cancelled booking for ${s?.name || 'Session'}`);
+
+  showToast(`Booking for ${playerName} cancelled`, 'info');
+
+  // 3. Check if this is an open_play type session with waitlist
+  if (s && s.type === 'open') {
+    const waitingEntries = state.queue.filter(
+      q => q.sessionId === sessionId && q.status === 'waiting'
+    );
+
+    if (waitingEntries.length > 0) {
+      // 4. Waitlist exists — trigger notification cascade
+      save();
+      notifyWaitlist(sessionId);
+    } else {
+      // 5. No waitlist — slot opens for public booking
+      save();
+      openSlotForPublic(sessionId);
+    }
+  } else {
+    save();
+  }
+
+  render();
+  renderBookingsView();
+}
+
+// ─── Claim Expiry Checker ───────────────────────────────
+let claimCheckInterval = null;
+
+function startClaimExpiryChecker() {
+  if (claimCheckInterval) return; // Already running
+
+  claimCheckInterval = setInterval(() => {
+    const now = new Date();
+    let hasActiveClaims = false;
+
+    // Find all sessions with 'notified' entries
+    const sessionIds = [...new Set(
+      state.queue
+        .filter(q => q.status === 'notified')
+        .map(q => q.sessionId)
+    )];
+
+    sessionIds.forEach(sessionId => {
+      const notifiedEntries = state.queue.filter(
+        q => q.sessionId === sessionId && q.status === 'notified'
+      );
+
+      const anyExpired = notifiedEntries.some(q => now > new Date(q.claimDeadline));
+      if (anyExpired) {
+        expireClaims(sessionId);
+      } else if (notifiedEntries.length > 0) {
+        hasActiveClaims = true;
+      }
+    });
+
+    // Re-render if there are active claims (for countdown updates)
+    if (hasActiveClaims) {
+      renderQuickPanel();
+      // Also re-render session detail if open
+      if (modalMode === 'sessionDetail' && state.selectedSessionId) {
+        // Light update: just refresh countdown elements
+        document.querySelectorAll('[data-claim-countdown]').forEach(el => {
+          const deadline = el.dataset.claimDeadline;
+          if (deadline) {
+            const remaining = Math.max(0, Math.floor((new Date(deadline) - now) / 1000));
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            el.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+            el.className = 'claim-countdown' + (remaining < 120 ? ' critical' : remaining < 300 ? ' warning' : '');
+          }
+        });
+      }
+    } else {
+      // No active claims, stop checking
+      clearInterval(claimCheckInterval);
+      claimCheckInterval = null;
+    }
+  }, 5000); // Check every 5 seconds
+}
+
+/**
+ * Get claim time remaining as a formatted string.
+ */
+function claimTimeRemaining(claimDeadline) {
+  if (!claimDeadline) return '';
+  const remaining = Math.max(0, Math.floor((new Date(claimDeadline) - Date.now()) / 1000));
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  return `${mins}:${String(secs).padStart(2, '0')}`;
+}
+
+/**
+ * Get claim countdown CSS class based on remaining time.
+ */
+function claimCountdownClass(claimDeadline) {
+  if (!claimDeadline) return '';
+  const remaining = Math.max(0, Math.floor((new Date(claimDeadline) - Date.now()) / 1000));
+  if (remaining < 120) return 'critical';
+  if (remaining < 300) return 'warning';
+  return '';
+}
+
+/**
+ * Check if a queue entry has an active (non-expired) claim window.
+ */
+function isClaimActive(entry) {
+  if (entry.status !== 'notified' || !entry.claimDeadline) return false;
+  return new Date() < new Date(entry.claimDeadline);
+}
+
+/**
+ * Get the display position for a queue entry (ignoring expired/cancelled).
+ */
+function getQueueDisplayPosition(sessionId, entryId) {
+  const activeEntries = state.queue
+    .filter(q => q.sessionId === sessionId && (q.status === 'waiting' || q.status === 'notified' || q.status === 'claimed'))
+    .sort((a, b) => a.position - b.position);
+  const idx = activeEntries.findIndex(e => e.id === entryId);
+  return idx >= 0 ? idx + 1 : null;
+}
+
+/**
+ * Get all queue entries for a session including historical (for display).
+ */
+function sessQueueAll(sessionId) {
+  return state.queue
+    .filter(q => q.sessionId === sessionId)
+    .sort((a, b) => a.position - b.position);
 }
 
 function updateDuprDisplay(val) {
@@ -3947,7 +4845,7 @@ function openModal(mode, refId = null) {
       </div>
     `;
   } else if (mode === 'queue') {
-    title.textContent = 'Add to Queue';
+    title.textContent = 'Add to Waitlist';
     const openSessions = state.sessions.filter(s => s.date === state.currentDate && s.type === 'open');
     body.innerHTML = `
       <div class="fg">
@@ -3956,7 +4854,7 @@ function openModal(mode, refId = null) {
           ${openSessions.map(s => {
             const court = state.courts.find(c => c.id === s.courtId);
             const q = sessQueue(s.id);
-            return `<option value="${s.id}">${court?.name} · ${fmtRange(s.startTime, s.endTime)} ${q.length ? `(${q.length} queued)` : ''}</option>`;
+            return `<option value="${s.id}">${court?.name} · ${fmtRange(s.startTime, s.endTime)} ${q.length ? `(${q.length} on waitlist)` : ''}</option>`;
           }).join('')}
         </select>
       </div>
@@ -3964,12 +4862,18 @@ function openModal(mode, refId = null) {
         <label>Player / Group Name</label>
         <input type="text" id="fQName" placeholder="e.g. Casey & Morgan" autocomplete="off" autofocus>
       </div>
-      <div class="fg">
-        <label>Group Size</label>
-        <select id="fQSize">
-          <option value="1">1 player</option><option value="2" selected>2 players</option>
-          <option value="3">3 players</option><option value="4">4 players</option>
-        </select>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Group Size</label>
+          <select id="fQSize">
+            <option value="1">1 player</option><option value="2" selected>2 players</option>
+            <option value="3">3 players</option><option value="4">4 players</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Phone <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+          <input type="tel" id="fQPhone" placeholder="0917-xxx-xxxx" autocomplete="off">
+        </div>
       </div>
       <div class="fg">
         <label>Skill Rating (DUPR 2.0–9.0)</label>
@@ -4085,8 +4989,8 @@ function openModal(mode, refId = null) {
           <div class="booking-detail-section">
             <div class="booking-detail-section-title">Price Breakdown</div>
             <div class="price-breakdown" id="priceBreakdown">
-              <div class="price-row"><span>$${price.toFixed(2)} per player</span><span id="priceCalcPlayers">× 2 players</span></div>
-              <div class="price-row total"><span>Total</span><span id="priceCalcTotal">$${(price * 2).toFixed(2)}</span></div>
+              <div class="price-row"><span>₱${price.toFixed(2)} per player</span><span id="priceCalcPlayers">× 2 players</span></div>
+              <div class="price-row total"><span>Total</span><span id="priceCalcTotal">₱${(price * 2).toFixed(2)}</span></div>
             </div>
           </div>
           <div class="booking-detail-section">
@@ -4166,33 +5070,68 @@ function openModal(mode, refId = null) {
     // Court SVG
     const courtSVG = buildCourtSVG(s.id, m.playersA, m.playersB);
 
-    // Queue section
+    // Queue section — Enhanced Waitlist Engine
+    const allQueue = sessQueueAll(s.id);
+    const waitingQueue = allQueue.filter(e => e.status === 'waiting');
+    const notifiedQueue = allQueue.filter(e => e.status === 'notified');
+    const historicalQueue = allQueue.filter(e => ['expired', 'served', 'cancelled', 'claimed'].includes(e.status));
+    const activeQueue = [...waitingQueue, ...notifiedQueue];
+
     let queueHTML = '';
-    if (m.queue.length > 0) {
+    if (activeQueue.length > 0 || historicalQueue.length > 0) {
       queueHTML = `
       <div class="queue-section">
         <div class="queue-section-header">
-          <div class="queue-section-title">⚡ Waiting Queue</div>
-          <span style="font-size:10px;color:var(--text-muted)">${m.queue.length} waiting</span>
+          <div class="queue-section-title">⚡ Waitlist</div>
+          <span style="font-size:10px;color:var(--text-muted)">${activeQueue.length} active</span>
         </div>
-        ${m.queue.map((entry, i) => `
-        <div class="queue-entry-row">
-          <span class="qe-pos">#${i + 1}</span>
-          <div class="qe-avatar">${getInitials(entry.playerName)}</div>
-          <span class="qe-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(entry.playerName)}')">${escHtml(entry.playerName)}</span></span>
-          <span class="qe-size">${entry.groupSize}p</span>
-          <span class="qe-wait">${waitTime(entry.joinedAt)}</span>
-          <button class="qe-call" onclick="callNextFromDetail('${s.id}','${entry.id}')">⚡ Call</button>
-        </div>`).join('')}
+        ${activeQueue.map((entry, i) => {
+          const pos = getQueueDisplayPosition(s.id, entry.id);
+          const isActiveClaim = entry.status === 'notified' && isClaimActive(entry);
+          const cd = isActiveClaim ? claimTimeRemaining(entry.claimDeadline) : '';
+          const cdClass = isActiveClaim ? claimCountdownClass(entry.claimDeadline) : '';
+          const statusClass = `qe-status-${entry.status}`;
+          let actionBtn = '';
+          if (entry.status === 'notified' && isActiveClaim) {
+            actionBtn = `<button class="qe-claim-btn" onclick="claimSlot('${entry.id}');openModal('sessionDetail','${s.id}')">✅ Claim</button>`;
+          } else if (entry.status === 'waiting') {
+            actionBtn = `<button class="qe-call" onclick="callNextFromDetail('${s.id}','${entry.id}')">⚡ Call</button>`;
+          }
+          return `
+          <div class="queue-entry-row ${statusClass}">
+            <span class="qe-pos">#${pos || (i + 1)}</span>
+            <div class="qe-avatar">${getInitials(entry.playerName)}</div>
+            <span class="qe-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(entry.playerName)}')">${escHtml(entry.playerName)}</span></span>
+            <span class="qe-status-pill ${entry.status}">${entry.status}</span>
+            ${isActiveClaim ? `<span class="claim-badge">🔔 CLAIM</span><span class="claim-countdown ${cdClass}" data-claim-countdown data-claim-deadline="${entry.claimDeadline}">${cd}</span>` : ''}
+            <span class="qe-size">${entry.groupSize}p</span>
+            <span class="qe-wait">${waitTime(entry.joinedAt)}</span>
+            ${actionBtn}
+            <button class="qe-leave-btn" onclick="leaveWaitlist('${entry.id}')">✕</button>
+          </div>`;
+        }).join('')}
+        ${historicalQueue.length > 0 ? `
+        <div style="padding:6px 16px;font-size:9px;color:var(--text-muted);border-top:1px solid var(--border);">
+          Recent: ${historicalQueue.slice(-3).map(e => `${escHtml(e.playerName)} (${e.status})`).join(', ')}
+        </div>` : ''}
       </div>`;
     } else {
       queueHTML = `
       <div class="queue-section">
         <div class="queue-section-header">
-          <div class="queue-section-title">⚡ Waiting Queue</div>
+          <div class="queue-section-title">⚡ Waitlist</div>
         </div>
-        <div class="queue-empty">Queue is empty — no one waiting</div>
+        <div class="queue-empty">No one on the waitlist</div>
       </div>`;
+    }
+
+    // Staff notify button for waitlist (when there are waiting entries and no active claims)
+    let notifyBtnHTML = '';
+    if (waitingQueue.length > 0 && notifiedQueue.length === 0) {
+      const spotsLeft = Math.max(0, getSessionMaxPlayers(s) - totalPlayers(s.id));
+      if (spotsLeft > 0) {
+        notifyBtnHTML = `<button class="notify-waitlist-btn" style="margin-top:8px;" onclick="notifyWaitlist('${s.id}');openModal('sessionDetail','${s.id}')">🔔 Notify Waitlist (${waitingQueue.length} waiting)</button>`;
+      }
     }
 
     const modalHTML = `
@@ -4207,7 +5146,7 @@ function openModal(mode, refId = null) {
         <span class="sdm-meta-tag">🎯 ${(s.sport || 'pickleball').charAt(0).toUpperCase() + (s.sport || 'pickleball').slice(1)}</span>
         ${s.skillLevel && s.skillLevel !== 'all' ? `<span class="skill-badge ${s.skillLevel}">${({all:'All Levels',beginner:'Beginner',intermediate:'Intermediate',advanced:'Advanced'})[s.skillLevel] || 'All Levels'}</span>` : ''}
         ${s.instructor ? `<span class="sdm-meta-tag">👤 ${escHtml(s.instructor)}</span>` : ''}
-        <span class="sdm-price-tag">$${getSessionPrice(s).toFixed(2)}/player</span>
+        <span class="sdm-price-tag">₱${getSessionPrice(s).toFixed(2)}/player</span>
         <span class="sdm-meta-tag">👥 ${totalPlayers(s.id)}/${getSessionMaxPlayers(s)} players</span>
       </div>
       ${s.description ? `<div class="sdm-description">${escHtml(s.description)}</div>` : ''}
@@ -4354,29 +5293,56 @@ function openModal(mode, refId = null) {
         <div class="queue-empty">No players waiting — all spots filled</div>
       </div>`}
 
-      <!-- Queue / Booking system entries -->
-      ${m.queue.length > 0 ? `
-      <div class="queue-section">
-        <div class="queue-section-header">
-          <div class="queue-section-title">📋 Booking Queue</div>
-          <span style="font-size:10px;color:var(--text-muted)">${m.queue.length} entries</span>
-        </div>
-        ${m.queue.map((entry, i) => `
-        <div class="queue-entry-row">
-          <span class="qe-pos">#${i + 1}</span>
-          <img class="qe-avatar-img" src="${avatarUrl(entry.playerName, 64, 'F5A623')}"
-               alt="${escHtml(entry.playerName)}">
-          <span class="qe-name"><span class="player-name-click" onclick="event.stopPropagation();openPlayerProfile('${escHtml(entry.playerName)}')">${escHtml(entry.playerName)}</span></span>
-          <span style="font-size:10px;">${duprDisplay(entry.rating || 3.0)}</span>
-          <span class="qe-size">${entry.groupSize}p</span>
-          <span class="qe-wait">${waitTime(entry.joinedAt)}</span>
-          <button class="qe-call" onclick="callNextFromDetail('${s.id}','${entry.id}')">⚡ Call</button>
-        </div>`).join('')}
-      </div>` : ''}
+      <!-- Waitlist (replaces old Booking Queue) -->
+      ${queueHTML}
+      ${notifyBtnHTML}
+
+      <!-- Check-in List & Session Stats -->
+      ${(() => {
+        const sessionBookings = state.bookings.filter(b => b.sessionId === s.id && b.status !== 'cancelled');
+        const checkedIn = sessionBookings.filter(b => b.status === 'checked_in');
+        const confirmed = sessionBookings.filter(b => b.status === 'confirmed');
+        const totalCollected = sessionBookings.filter(b => b.paymentStatus === 'paid').reduce((sum, b) => sum + (getSessionPrice(s) * (b.groupSize || 1)), 0);
+        const price = getSessionPrice(s);
+
+        let checkInHTML = `
+        <div class="queue-section" style="margin-top:8px;">
+          <div class="queue-section-header">
+            <div class="queue-section-title">📋 Check-in & Stats</div>
+            <span style="font-size:10px;color:var(--text-muted);">${checkedIn.length}/${sessionBookings.length} checked in · ₱${totalCollected} collected</span>
+          </div>`;
+
+        if (sessionBookings.length === 0) {
+          checkInHTML += `<div class="queue-empty">No bookings yet</div>`;
+        } else {
+          sessionBookings.forEach(b => {
+            const isCI = b.status === 'checked_in';
+            const payStatus = b.paymentStatus || 'unpaid';
+            const payBadge = payStatus === 'paid'
+              ? '<span style="font-size:9px;background:var(--green-subtle);color:var(--green);padding:1px 6px;border-radius:4px;">Paid</span>'
+              : '<span style="font-size:9px;background:var(--red-subtle);color:var(--red);padding:1px 6px;border-radius:4px;">Unpaid</span>';
+            checkInHTML += `
+            <div class="queue-entry-row" style="display:flex;align-items:center;gap:8px;padding:6px 16px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:${isCI ? 'var(--green-subtle)' : 'var(--bg-input)'};display:flex;align-items:center;justify-content:center;font-size:12px;">${isCI ? '✓' : ''}</div>
+              <img src="${avatarUrl(b.playerName, 64)}" style="width:28px;height:28px;border-radius:50%;" alt="">
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;">${escHtml(b.playerName)}</div>
+                <div style="display:flex;gap:6px;align-items:center;">${payBadge}<span style="font-size:10px;color:var(--text-muted);">${b.groupSize || 1}p · ₱${price * (b.groupSize || 1)}</span></div>
+              </div>
+              ${!isCI ? `<button class="sdm-btn" style="height:26px;font-size:10px;padding:0 10px;" onclick="checkInBooking('${b.id}','${s.id}')">Check In</button>` : ''}
+            </div>`;
+          });
+        }
+
+        checkInHTML += `</div>`;
+        return checkInHTML;
+      })()}
     </div>
     <div class="sdm-actions">
-      ${s.type === 'open' ? `<button class="sdm-btn primary" onclick="openModal('queue');">⚡ Add to Queue</button>` : ''}
+      ${s.type === 'open' ? `<button class="sdm-btn primary" onclick="openModal('queue');">⚡ Add to Waitlist</button>` : ''}
       <button class="sdm-btn" onclick="openModal('bookingDetail','${s.id}')">+ Book Player</button>
+      ${s.type === 'open' ? `<button class="sdm-btn" onclick="autoPairSession('${s.id}')">⚖ Auto-Pair Teams</button>` : ''}
+      ${waitingQueue.length > 0 && notifiedQueue.length === 0 ? `<button class="notify-waitlist-btn" onclick="notifyWaitlist('${s.id}');openModal('sessionDetail','${s.id}')">🔔 Notify Waitlist</button>` : ''}
       <button class="sdm-btn danger" onclick="openModal('noShow','${s.id}')">No-Show</button>
       <button class="sdm-btn" onclick="closeModal()">Close</button>
     </div>`;
@@ -4474,10 +5440,9 @@ function submitModal() {
     const playerName = document.getElementById('fQName').value.trim();
     const groupSize  = parseInt(document.getElementById('fQSize').value);
     const rating     = parseFloat(document.getElementById('fQRating')?.value || '3.5');
+    const phone      = document.getElementById('fQPhone')?.value.trim() || '';
     if (!playerName || !sessionId) { showToast('Fill all fields', 'error'); return; }
-    const existing = state.queue.filter(q => q.sessionId === sessionId && q.status === 'waiting').length;
-    state.queue.push({ id: genId(), sessionId, playerName, groupSize, position: existing+1, status: 'waiting', joinedAt: new Date().toISOString(), rating });
-    showToast(`${playerName} added to queue ✓`, 'success');
+    joinWaitlist(sessionId, playerName, groupSize, phone, null, rating);
   } else if (modalMode === 'booking') {
     const sessionId  = document.getElementById('fBSession').value;
     const playerName = document.getElementById('fBName').value.trim();
@@ -4508,7 +5473,7 @@ function selectPlayerCount(n, price) {
   const calcPlayers = document.getElementById('priceCalcPlayers');
   const calcTotal = document.getElementById('priceCalcTotal');
   if (calcPlayers) calcPlayers.textContent = `× ${n} player${n > 1 ? 's' : ''}`;
-  if (calcTotal) calcTotal.textContent = `$${(price * n).toFixed(2)}`;
+  if (calcTotal) calcTotal.textContent = `₱${(price * n).toFixed(2)}`;
 }
 
 function confirmBooking(sessionId) {
@@ -4522,9 +5487,14 @@ function confirmBooking(sessionId) {
   const booked = totalPlayers(s.id);
   const spotsLeft = Math.max(0, maxP - booked);
   const groupSize = Math.min(bookingPlayerCount, spotsLeft > 0 ? spotsLeft : bookingPlayerCount);
-  const status = spotsLeft > 0 ? 'confirmed' : 'waitlisted';
+  if (spotsLeft === 0) {
+    // Session is full — redirect to waitlist instead of creating a waitlisted booking
+    joinWaitlist(sessionId, playerName, groupSize);
+    closeModal();
+    return;
+  }
   state.bookings.push({
-    id: genId(), sessionId, playerName, groupSize, status,
+    id: genId(), sessionId, playerName, groupSize, status: 'confirmed',
     bookedAt: new Date().toISOString(), rating, notes
   });
   save();
@@ -4585,7 +5555,7 @@ function showBookingConfirmation(session, playerName, groupSize, status) {
         </div>
         <div class="booking-summary-row">
           <span style="color:var(--text-muted)">Total</span>
-          <span style="font-weight:800;color:var(--green);">$${(price * groupSize).toFixed(2)}</span>
+          <span style="font-weight:800;color:var(--green);">₱${(price * groupSize).toFixed(2)}</span>
         </div>
       </div>
       <div style="display:flex;gap:8px;">
@@ -4597,24 +5567,23 @@ function showBookingConfirmation(session, playerName, groupSize, status) {
   overlay.classList.add('open');
 }
 
+// @deprecated — use cancelBookingWithCascade for full waitlist cascade support
 function cancelBooking(bookingId) {
-  if (!confirm('Are you sure you want to cancel this booking?')) return;
-  const b = state.bookings.find(x => x.id === bookingId);
-  if (b) {
-    b.status = 'cancelled';
-    save();
-    showToast('Booking cancelled', 'info');
-    renderBookingsView();
-  }
+  cancelBookingWithCascade(bookingId);
 }
 
-function checkInBooking(bookingId) {
+function checkInBooking(bookingId, sessionId) {
   const b = state.bookings.find(x => x.id === bookingId);
   if (b) {
     b.status = 'checked_in';
+    b.checkedInAt = new Date().toISOString();
     save();
     showToast(`${b.playerName} checked in ✓`, 'success');
-    renderBookingsView();
+    if (sessionId) {
+      openModal('sessionDetail', sessionId);
+    } else {
+      renderBookingsView();
+    }
   }
 }
 
@@ -4756,7 +5725,7 @@ function renderBookingsView() {
         ${b.payment ? `<span class="payment-badge paid" style="font-size:9px;">PAID</span>` : ''}
         <div class="my-booking-actions">
           ${isLive && b.status === 'confirmed' ? `<button class="btn-checkin" onclick="checkInBooking('${b.id}')">✓ Check In</button>` : ''}
-          ${b.status === 'confirmed' || b.status === 'waitlisted' ? `<button class="btn-cancel-booking" onclick="cancelBooking('${b.id}')">✕ Cancel</button>` : ''}
+          ${b.status === 'confirmed' || b.status === 'waitlisted' ? `<button class="btn-cancel-booking" onclick="cancelBookingWithCascade('${b.id}')">✕ Cancel</button>` : ''}
         </div>
       </div>`;
     });
@@ -4796,7 +5765,7 @@ function renderBookingsView() {
           <div>
             <div class="session-card-title">${escHtml(s.name || 'Session')}</div>
           </div>
-          <div class="session-card-price">$${price.toFixed(2)} <span>/ player</span></div>
+          <div class="session-card-price">₱${price.toFixed(2)} <span>/ player</span></div>
         </div>
         <div class="session-card-meta">
           <span class="meta-tag">🕐 ${fmtRange(s.startTime, s.endTime)}</span>
@@ -4845,38 +5814,113 @@ function setBookingFilter(type) {
 // ══════════════════════════════════════════════════════
 // PLAYERS VIEW
 // ══════════════════════════════════════════════════════
-function renderPlayersView(searchTerm) {
-  if (typeof searchTerm === 'undefined') searchTerm = '';
+let playersSearchTerm = '';
+let playersTab = 'all'; // all | members | guests | strikes
+
+function getPlayerStrikeCount(playerName) {
+  const dir = state.playerDirectory || {};
+  const p = dir[playerName];
+  return p ? (p.strikes || 0) : 0;
+}
+
+function getPlayerPackage(playerName) {
+  const dir = state.playerDirectory || {};
+  const p = dir[playerName];
+  return p ? (p.package || null) : null;
+}
+
+function getPlayerBadge(playerName) {
+  const dir = state.playerDirectory || {};
+  const p = dir[playerName];
+  if (!p) return { type: 'guest', color: 'var(--text-muted)', label: 'Guest' };
+  const types = { guest: 'Guest', day_pass: 'Day Pass', monthly: 'Monthly', annual: 'Annual', package: 'Package' };
+  return { type: p.memberType || 'guest', label: types[p.memberType || 'guest'] || 'Guest' };
+}
+
+function searchPlayers(query) {
+  const dir = state.playerDirectory || {};
+  const q = query.toLowerCase();
+  return Object.values(dir).filter(p =>
+    p.name.toLowerCase().includes(q) || (p.phone || '').includes(q)
+  );
+}
+
+function renderPlayersView(searchTerm, tab) {
+  if (typeof searchTerm !== 'undefined') playersSearchTerm = searchTerm;
+  if (typeof tab !== 'undefined') playersTab = tab;
   const container = document.getElementById('view-players');
   const dir = state.playerDirectory || {};
   let players = Object.values(dir);
-  
-  if (searchTerm) {
-    const q = searchTerm.toLowerCase();
-    players = players.filter(p => p.name.toLowerCase().includes(q));
+
+  // Filter by search
+  if (playersSearchTerm) {
+    const q = playersSearchTerm.toLowerCase();
+    players = players.filter(p =>
+      p.name.toLowerCase().includes(q) || (p.phone || '').includes(q)
+    );
   }
-  
+
+  // Filter by tab
+  if (playersTab === 'members') {
+    players = players.filter(p => ['monthly', 'annual', 'package'].includes(p.memberType));
+  } else if (playersTab === 'guests') {
+    players = players.filter(p => !p.memberType || p.memberType === 'guest' || p.memberType === 'day_pass');
+  } else if (playersTab === 'strikes') {
+    players = players.filter(p => (p.strikes || 0) > 0);
+  }
+
   players.sort((a, b) => b.rating - a.rating);
-  
-  let html = '<div class="players-view"><h2 style="font-size:20px;font-weight:800;margin-bottom:20px;">👥 Players</h2>';
-  html += `<input type="text" class="players-search" placeholder="Search players..." value="${escHtml(searchTerm)}" oninput="renderPlayersView(this.value)">`;
-  
-  players.forEach(p => {
-    html += `
-    <div class="player-list-card" onclick="openPlayerProfile('${escHtml(p.name)}')" style="cursor:pointer;">
-      <img class="player-list-avatar" src="${avatarUrl(p.name, 80)}" alt="${escHtml(p.name)}">
-      <div class="player-list-info">
-        <div class="player-list-name">${escHtml(p.name)}</div>
-        <div class="player-list-meta">DUPR ${parseFloat(p.rating).toFixed(1)} · Member since ${p.memberSince || 'N/A'}</div>
+  const totalCount = Object.values(dir).length;
+  const memberCount = Object.values(dir).filter(p => ['monthly', 'annual', 'package'].includes(p.memberType)).length;
+  const guestCount = totalCount - memberCount;
+  const strikeCount = Object.values(dir).filter(p => (p.strikes || 0) > 0).length;
+
+  let html = `<div class="players-view">
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:16px;">👥 Players <span style="font-size:13px;font-weight:500;color:var(--text-muted);">(${totalCount})</span></h2>
+    <div class="players-toolbar">
+      <input type="text" class="players-search" placeholder="Search by name or phone..." value="${escHtml(playersSearchTerm)}" oninput="renderPlayersView(this.value)">
+      <div class="player-tabs">
+        <button class="player-tab-btn ${playersTab === 'all' ? 'active' : ''}" onclick="renderPlayersView(undefined,'all')">All (${totalCount})</button>
+        <button class="player-tab-btn ${playersTab === 'members' ? 'active' : ''}" onclick="renderPlayersView(undefined,'members')">Members (${memberCount})</button>
+        <button class="player-tab-btn ${playersTab === 'guests' ? 'active' : ''}" onclick="renderPlayersView(undefined,'guests')">Guests (${guestCount})</button>
+        <button class="player-tab-btn ${playersTab === 'strikes' ? 'active' : ''}" onclick="renderPlayersView(undefined,'strikes')">On Strike (${strikeCount})</button>
       </div>
-      <div class="player-list-stats">
-        <div class="stat"><span class="stat-val">${p.sessionsPlayed}</span><span>sessions</span></div>
-        <div class="stat"><span class="stat-val">${p.wins}W</span><span>wins</span></div>
+    </div>
+    <div class="player-card-grid">`;
+
+  if (players.length === 0) {
+    html += `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">No players found</div>`;
+  }
+
+  players.forEach(p => {
+    const badge = getPlayerBadge(p.name);
+    const strikes = p.strikes || 0;
+    const lastPlayed = p.lastPlayed || 'N/A';
+    html += `
+    <div class="player-card" onclick="openPlayerProfile('${escHtml(p.name)}')">
+      <img class="player-card-avatar" src="${avatarUrl(p.name, 96)}" alt="${escHtml(p.name)}">
+      <div class="player-card-info">
+        <div class="player-card-name">${escHtml(p.name)}</div>
+        <div class="player-card-meta">
+          ${duprDisplay(p.rating)}
+          <span class="member-badge ${badge.type}">${badge.label}</span>
+        </div>
+        <div class="player-card-meta" style="margin-top:2px;">
+          <span>📞 ${escHtml(p.phone || 'N/A')}</span>
+          <span>📅 Last: ${lastPlayed}</span>
+        </div>
+      </div>
+      <div class="player-card-right">
+        <div class="strike-indicator">
+          ${[1,2,3].map(i => `<div class="strike-dot ${strikes >= i ? 'active-' + i : ''}"></div>`).join('')}
+        </div>
       </div>
     </div>`;
   });
-  
-  html += '</div>';
+
+  html += `</div>
+    <button class="add-player-fab" onclick="openAddPlayerModal()">+ Add Player</button>
+  </div>`;
   container.innerHTML = html;
 }
 
@@ -4949,22 +5993,49 @@ function renderSettingsView() {
     </div>
     
     <div class="settings-section">
-      <div class="settings-section-title">Pricing ($ per player)</div>
+      <div class="settings-section-title">Pricing (₱ per player)</div>
       <div class="settings-row">
         <span class="settings-row-label">🏓 Open Play</span>
-        <input type="number" value="${v.pricing?.openPlay || 15}" onchange="updateVenuePricing('openPlay', parseFloat(this.value))">
+        <input type="number" value="${v.pricing?.openPlay || 150}" onchange="updateVenuePricing('openPlay', parseFloat(this.value))">
       </div>
       <div class="settings-row">
         <span class="settings-row-label">🔒 Reserved</span>
-        <input type="number" value="${v.pricing?.reserved || 40}" onchange="updateVenuePricing('reserved', parseFloat(this.value))">
+        <input type="number" value="${v.pricing?.reserved || 500}" onchange="updateVenuePricing('reserved', parseFloat(this.value))">
       </div>
       <div class="settings-row">
         <span class="settings-row-label">🏆 League</span>
-        <input type="number" value="${v.pricing?.league || 25}" onchange="updateVenuePricing('league', parseFloat(this.value))">
+        <input type="number" value="${v.pricing?.league || 200}" onchange="updateVenuePricing('league', parseFloat(this.value))">
       </div>
       <div class="settings-row">
         <span class="settings-row-label">🎯 Tournament</span>
-        <input type="number" value="${v.pricing?.tournament || 30}" onchange="updateVenuePricing('tournament', parseFloat(this.value))">
+        <input type="number" value="${v.pricing?.tournament || 250}" onchange="updateVenuePricing('tournament', parseFloat(this.value))">
+     </div>
+   </div>
+   
+    <div class="settings-section">
+      <div class="settings-section-title">📋 Policies</div>
+      <div class="settings-row">
+        <span class="settings-row-label">Late Cancel Window (min)</span>
+        <input type="number" value="${state.settings?.lateCancelWindow || 120}" min="0" step="15" onchange="updateSettings('lateCancelWindow', parseInt(this.value))">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">No-Show Fee (₱)</span>
+        <input type="number" value="${state.settings?.noShowFee || 50}" min="0" step="10" onchange="updateSettings('noShowFee', parseFloat(this.value))">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Late Cancel Fee (₱)</span>
+        <input type="number" value="${state.settings?.lateCancelFee || 30}" min="0" step="10" onchange="updateSettings('lateCancelFee', parseFloat(this.value))">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Strike Reset (days)</span>
+        <input type="number" value="${state.settings?.strikeResetDays || 30}" min="1" max="365" onchange="updateSettings('strikeResetDays', parseInt(this.value))">
+      </div>
+      <div class="settings-row">
+        <span class="settings-row-label">Require Waiver</span>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" ${state.settings?.requireWaiver !== false ? 'checked' : ''} onchange="updateSettings('requireWaiver', this.checked)">
+          <span style="font-size:12px;color:var(--text-secondary);">${state.settings?.requireWaiver !== false ? 'Required' : 'Optional'}</span>
+        </label>
       </div>
     </div>
     
@@ -5008,6 +6079,12 @@ function updateVenuePricing(key, value) {
   save();
 }
 
+function updateSettings(key, value) {
+  if (!state.settings) state.settings = {};
+  state.settings[key] = value;
+  save();
+}
+
 function removeCourt(courtId) {
   if (state.courts.length <= 1) { showToast('Need at least 1 court', 'error'); return; }
   state.courts = state.courts.filter(c => c.id !== courtId);
@@ -5039,7 +6116,7 @@ function renderAnalyticsView() {
     todayBookings.forEach(b => {
       const s = state.sessions.find(sess => sess.id === b.sessionId);
       if (!s) return;
-      const pricePerPlayer = v.pricing?.[s.type] || 15;
+      const pricePerPlayer = v.pricing?.[s.type] || 150;
       totalRevenue += pricePerPlayer * b.groupSize;
     });
   }
@@ -5082,7 +6159,7 @@ function renderAnalyticsView() {
     <div class="analytics-grid">
       <div class="analytics-card">
         <div class="analytics-card-label">Revenue Today</div>
-        <div class="analytics-card-value" style="color:var(--green);">$${totalRevenue}</div>
+        <div class="analytics-card-value" style="color:var(--green);">₱${totalRevenue}</div>
         <div class="analytics-card-change up">↑ from bookings</div>
       </div>
       <div class="analytics-card">
@@ -5319,7 +6396,7 @@ function renderDashboardView() {
     <div class="dash-stats">
       <div class="dash-stat-card green">
         <div class="dash-stat-label">Revenue Today</div>
-        <div class="dash-stat-value">$${totalRevenue.toLocaleString()}</div>
+        <div class="dash-stat-value">₱${totalRevenue.toLocaleString()}</div>
         <div class="dash-stat-sub">${todayBookings.length} bookings</div>
       </div>
       <div class="dash-stat-card teal">
@@ -5899,7 +6976,7 @@ function openPlayerProfile(playerName) {
         <span class="pp-activity-date">${s ? formatDate(s.date) : 'N/A'}</span>
         <span class="pp-activity-name">${escHtml(s?.name || 'Session')}</span>
         <span style="font-size:11px;color:var(--text-muted)">${s ? fmtRange(s.startTime, s.endTime) : ''} · ${escHtml(court?.name || '')}</span>
-        <button class="staff-btn danger" style="padding:2px 8px;font-size:10px;" onclick="event.stopPropagation();cancelBooking('${b.id}');openPlayerProfile('${escHtml(playerName)}');">Cancel</button>
+        <button class="staff-btn danger" style="padding:2px 8px;font-size:10px;" onclick="event.stopPropagation();cancelBookingWithCascade('${b.id}');openPlayerProfile('${escHtml(playerName)}');">Cancel</button>
       </div>`;
   });
   if (!upcomingHTML) upcomingHTML = '<div style="color:var(--text-muted);font-size:13px;padding:8px 0;">No upcoming bookings</div>';
@@ -6019,36 +7096,31 @@ function showPaymentModal(bookingId, session, playerName, groupSize) {
     <div class="modal-body">
       <div class="payment-summary">
         <div style="font-weight:700;font-size:15px;margin-bottom:8px;">${escHtml(session.name || 'Session')}</div>
-        <div class="payment-row"><span>${groupSize} player${groupSize > 1 ? 's' : ''} × $${price.toFixed(2)}</span><span>$${subtotal.toFixed(2)}</span></div>
-        <div class="payment-row"><span style="color:var(--text-muted)">Tax (8%)</span><span style="color:var(--text-muted)">$${tax.toFixed(2)}</span></div>
-        <div class="payment-row total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+        <div class="payment-row"><span>${groupSize} player${groupSize > 1 ? 's' : ''} × ₱${price.toFixed(2)}</span><span>₱${subtotal.toFixed(2)}</span></div>
+        <div class="payment-row"><span style="color:var(--text-muted)">Tax (8%)</span><span style="color:var(--text-muted)">₱${tax.toFixed(2)}</span></div>
+        <div class="payment-row total"><span>Total</span><span>₱${total.toFixed(2)}</span></div>
       </div>
       <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">PAYMENT METHOD</div>
       <div class="payment-methods">
-        <div class="payment-method active" onclick="selectPayMethod('card', this)">
-          <div class="payment-method-icon">💳</div>
-          <div class="payment-method-label">Card</div>
+        <div class="payment-method active" onclick="selectPayMethod('gcash', this)">
+          <div class="payment-method-icon">📱</div>
+          <div class="payment-method-label">GCash</div>
+        </div>
+        <div class="payment-method" onclick="selectPayMethod('maya', this)">
+          <div class="payment-method-icon">💎</div>
+          <div class="payment-method-label">Maya</div>
         </div>
         <div class="payment-method" onclick="selectPayMethod('cash', this)">
           <div class="payment-method-icon">💵</div>
           <div class="payment-method-label">Cash</div>
         </div>
-        <div class="payment-method" onclick="selectPayMethod('credit', this)">
-          <div class="payment-method-icon">🏷️</div>
-          <div class="payment-method-label">Member Credit</div>
-        </div>
       </div>
       <div id="cardInputsSection">
-        <div class="card-inputs">
-          <input type="text" id="payCardNum" placeholder="Card Number" value="4242 4242 4242 4242" maxlength="19">
-          <div class="card-row">
-            <input type="text" id="payExpiry" placeholder="MM/YY" value="12/28" maxlength="5">
-            <input type="text" id="payCVC" placeholder="CVC" value="123" maxlength="4">
-          </div>
+        <div class="card-inputs" id="gcashRefSection" style="margin-bottom:8px;">
+          <input type="text" id="payRefNum" placeholder="GCash Reference Number" maxlength="13">
         </div>
-      </div>
       <button class="pay-btn" id="payBtn" onclick="processPayment('${bookingId}', '${escHtml(playerName)}', ${subtotal}, ${tax}, ${total}, '${receiptId}', '${escHtml(session.id)}')">
-        Pay $${total.toFixed(2)}
+        Pay ₱${total.toFixed(2)}
       </button>
     </div>
   `;
@@ -6059,8 +7131,19 @@ function selectPayMethod(method, el) {
   paymentMethod = method;
   document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
   el.classList.add('active');
-  const cardSection = document.getElementById('cardInputsSection');
-  if (cardSection) cardSection.style.display = method === 'card' ? '' : 'none';
+  const refSection = document.getElementById('gcashRefSection');
+  const payBtn = document.getElementById('payBtn');
+  if (method === 'gcash') {
+    if (refSection) refSection.style.display = '';
+    refSection.querySelector('input').placeholder = 'GCash Reference Number';
+    if (payBtn) payBtn.textContent = 'Pay ₱${total.toFixed(2)}';
+  } else if (method === 'maya') {
+    if (refSection) refSection.style.display = '';
+    refSection.querySelector('input').placeholder = 'Maya Reference Number';
+    if (payBtn) payBtn.textContent = 'Pay ₱${total.toFixed(2)}';
+  } else {
+    if (refSection) refSection.style.display = 'none';
+  }
 }
 
 function processPayment(bookingId, playerName, subtotal, tax, total, receiptId, sessionId) {
@@ -6069,6 +7152,8 @@ function processPayment(bookingId, playerName, subtotal, tax, total, receiptId, 
   btn.classList.add('processing');
   btn.textContent = 'Processing...';
   btn.disabled = true;
+
+  const refNum = document.getElementById('payRefNum')?.value.trim() || '';
 
   setTimeout(() => {
     // Record transaction
@@ -6081,6 +7166,7 @@ function processPayment(bookingId, playerName, subtotal, tax, total, receiptId, 
       tax,
       total,
       method: paymentMethod,
+      refNumber: refNum,
       status: 'paid',
       createdAt: new Date().toISOString(),
       receiptId
@@ -6093,6 +7179,7 @@ function processPayment(bookingId, playerName, subtotal, tax, total, receiptId, 
     if (booking) {
       booking.payment = {
         method: paymentMethod,
+        refNumber: refNum,
         amount: subtotal,
         tax,
         total,
@@ -6118,7 +7205,8 @@ function showPaymentSuccess(txn, session, playerName) {
   }
   modal.className = 'modal payment-modal';
   modal.style.maxWidth = '400px';
-  const methodLabels = { card: '💳 Card', cash: '💵 Cash', credit: '🏷️ Member Credit' };
+  const methodLabels = { gcash: '📱 GCash', maya: '💎 Maya', cash: '💵 Cash' };
+  const refRow = txn.refNumber ? `<div class="receipt-row"><span>Ref #</span><span style="font-weight:600;">${escHtml(txn.refNumber)}</span></div>` : '';
   modal.innerHTML = `
     <div class="payment-success">
       <div class="checkmark">✅</div>
@@ -6131,10 +7219,11 @@ function showPaymentSuccess(txn, session, playerName) {
         </div>
         <div class="receipt-row"><span>Receipt ID</span><span style="font-weight:600;">${txn.receiptId}</span></div>
         <div class="receipt-row"><span>Session</span><span>${escHtml(session?.name || 'Session')}</span></div>
-        <div class="receipt-row"><span>Amount</span><span>$${txn.amount.toFixed(2)}</span></div>
-        <div class="receipt-row"><span>Tax</span><span>$${txn.tax.toFixed(2)}</span></div>
-        <div class="receipt-row" style="font-weight:700;font-size:15px;padding-top:8px;border-top:1px solid var(--border);margin-top:4px;"><span>Total</span><span style="color:var(--green)">$${txn.total.toFixed(2)}</span></div>
+        <div class="receipt-row"><span>Amount</span><span>₱${txn.amount.toFixed(2)}</span></div>
+        <div class="receipt-row"><span>Tax</span><span>₱${txn.tax.toFixed(2)}</span></div>
+        <div class="receipt-row" style="font-weight:700;font-size:15px;padding-top:8px;border-top:1px solid var(--border);margin-top:4px;"><span>Total</span><span style="color:var(--green)">₱${txn.total.toFixed(2)}</span></div>
         <div class="receipt-row"><span>Method</span><span>${methodLabels[txn.method] || txn.method}</span></div>
+        ${refRow}
         <div class="receipt-row"><span>Date</span><span>${new Date(txn.createdAt).toLocaleString()}</span></div>
         <div class="receipt-row"><span>Status</span><span class="payment-badge paid">PAID</span></div>
       </div>
@@ -6435,8 +7524,338 @@ function removeStaff(staffId) {
 }
 
 // ══════════════════════════════════════════════════════
+// ADD / EDIT / DELETE PLAYER MODAL
+// ══════════════════════════════════════════════════════
+function openAddPlayerModal(playerName) {
+  const dir = state.playerDirectory || {};
+  const p = playerName ? dir[playerName] : null;
+  const isEdit = !!p;
+  const overlay = document.getElementById('modalOverlay');
+  let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    overlay.appendChild(modal);
+  }
+  modal.className = 'modal';
+  modal.style.maxWidth = '480px';
+  modal.style.position = 'relative';
+
+  const duprOptions = [2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0].map(v =>
+    `<option value="${v}" ${p && parseFloat(p.rating) === v ? 'selected' : ''}>${v.toFixed(1)}</option>`
+  ).join('');
+  const memberOptions = [
+    { val: 'guest', label: 'Guest' },
+    { val: 'day_pass', label: 'Day Pass' },
+    { val: 'monthly', label: 'Monthly' },
+    { val: 'annual', label: 'Annual' }
+  ].map(o =>
+    `<option value="${o.val}" ${p && p.memberType === o.val ? 'selected' : ''}>${o.label}</option>`
+  ).join('');
+
+  modal.innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">${isEdit ? 'Edit Player' : 'Add Player'}</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Full Name *</label>
+        <input type="text" id="fPlayerName" value="${escHtml(p?.name || '')}" placeholder="e.g. Juan Dela Cruz" autocomplete="off" autofocus>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Phone</label>
+          <input type="tel" id="fPlayerPhone" value="${escHtml(p?.phone || '')}" placeholder="0917-xxx-xxxx">
+        </div>
+        <div class="fg">
+          <label>Email</label>
+          <input type="email" id="fPlayerEmail" value="${escHtml(p?.email || '')}" placeholder="email@example.com">
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>DUPR Rating</label>
+          <select id="fPlayerDupr">${duprOptions}</select>
+        </div>
+        <div class="fg">
+          <label>Member Type</label>
+          <select id="fPlayerMemberType">${memberOptions}</select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Emergency Contact Name</label>
+        <input type="text" id="fPlayerEmergencyName" value="${escHtml(p?.emergencyContactName || '')}" placeholder="Contact person">
+      </div>
+      <div class="fg">
+        <label>Emergency Contact Phone</label>
+        <input type="tel" id="fPlayerEmergencyPhone" value="${escHtml(p?.emergencyContactPhone || '')}" placeholder="0917-xxx-xxxx">
+      </div>
+      ${isEdit ? `<div style="margin-top:12px;"><button class="staff-btn danger" style="width:100%;" onclick="deletePlayer('${escHtml(playerName)}')">🗑 Delete Player</button></div>` : ''}
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="savePlayer('${escHtml(playerName || '')}')">${isEdit ? 'Save Changes' : 'Add Player'}</button>
+    </div>
+  `;
+  overlay.classList.add('open');
+}
+
+function savePlayer(existingName) {
+  const name = document.getElementById('fPlayerName')?.value.trim();
+  if (!name) { showToast('Player name is required', 'error'); return; }
+
+  const dupr = parseFloat(document.getElementById('fPlayerDupr')?.value || 3.0);
+  if (dupr < 2.0 || dupr > 5.0) { showToast('DUPR must be between 2.0 and 5.0', 'error'); return; }
+
+  const phone = document.getElementById('fPlayerPhone')?.value.trim() || '';
+  const email = document.getElementById('fPlayerEmail')?.value.trim() || '';
+  const memberType = document.getElementById('fPlayerMemberType')?.value || 'guest';
+  const emergencyContactName = document.getElementById('fPlayerEmergencyName')?.value.trim() || '';
+  const emergencyContactPhone = document.getElementById('fPlayerEmergencyPhone')?.value.trim() || '';
+
+  const dir = state.playerDirectory;
+  const isEdit = existingName && dir[existingName];
+
+  // If renaming: delete old key
+  if (isEdit && existingName !== name) {
+    delete dir[existingName];
+  }
+
+  const existing = isEdit ? dir[existingName] : null;
+  dir[name] = {
+    name,
+    rating: dupr,
+    phone,
+    email,
+    memberType,
+    emergencyContactName,
+    emergencyContactPhone,
+    sessionsPlayed: existing?.sessionsPlayed || 0,
+    wins: existing?.wins || 0,
+    losses: existing?.losses || 0,
+    lastPlayed: existing?.lastPlayed || null,
+    memberSince: existing?.memberSince || state.currentDate,
+    strikes: existing?.strikes || 0,
+    notes: existing?.notes || ''
+  };
+
+  save();
+  showToast(isEdit ? 'Player updated' : 'Player added', 'success');
+  closeModal();
+  if (currentView === 'players') renderPlayersView();
+}
+
+function deletePlayer(playerName) {
+  if (!confirm(`Remove ${playerName} from the directory? This cannot be undone.`)) return;
+  const dir = state.playerDirectory;
+  if (dir[playerName]) {
+    delete dir[playerName];
+    save();
+    showToast('Player removed', 'warning');
+    closeModal();
+    if (currentView === 'players') renderPlayersView();
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// AUTO-PAIRING ENGINE (Open Play Sessions)
+// ══════════════════════════════════════════════════════
+let _lastAutoPairResult = null;
+let _lastAutoPairSessionId = null;
+
+function autoPairSession(sessionId) {
+  const s = state.sessions.find(x => x.id === sessionId);
+  if (!s) return;
+  const bookings = state.bookings.filter(b => b.sessionId === sessionId && b.status !== 'cancelled');
+  if (bookings.length < 4) {
+    showToast('Need at least 4 confirmed players to auto-pair', 'error');
+    return;
+  }
+  showAutoPairModal(sessionId);
+}
+
+function showAutoPairModal(sessionId) {
+  const s = state.sessions.find(x => x.id === sessionId);
+  if (!s) return;
+  const court = state.courts.find(c => c.id === s.courtId);
+  const colorInfo = SESSION_COLORS[s.type] || SESSION_COLORS.open;
+  const dir = state.playerDirectory || {};
+
+  // Get confirmed/checked-in players with DUPR ratings
+  const bookings = state.bookings.filter(b => b.sessionId === sessionId && b.status !== 'cancelled');
+  const players = bookings.map(b => ({
+    name: b.playerName,
+    rating: dir[b.playerName]?.rating || b.rating || 3.0
+  }));
+
+  // Generate balanced teams
+  const result = generateBalancedPairing(players);
+  _lastAutoPairResult = result;
+  _lastAutoPairSessionId = sessionId;
+
+  const overlay = document.getElementById('modalOverlay');
+  let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    overlay.appendChild(modal);
+  }
+  modal.className = 'session-detail-modal';
+  modal.style.maxWidth = '600px';
+  modal.style.position = 'relative';
+
+  function renderTeamCard(team, teamLabel, teamColor) {
+    const avg = team.reduce((s, p) => s + p.rating, 0) / team.length;
+    return `
+      <div style="flex:1;background:var(--bg-elevated);border-radius:var(--radius-md);padding:16px;border:1px solid ${teamColor}30;">
+        <div style="font-size:14px;font-weight:700;color:${teamColor};margin-bottom:4px;">${teamLabel}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">Avg DUPR: ${avg.toFixed(2)}</div>
+        ${team.map(p => `
+          <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);">
+            <img src="${avatarUrl(p.name, 64, teamColor.replace('#',''))}" style="width:32px;height:32px;border-radius:50%;" alt="">
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;">${escHtml(p.name)}</div>
+              <div style="font-size:11px;color:var(--text-muted);">${duprDisplay(p.rating)}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  modal.innerHTML = `
+    <div class="sdm-header">
+      <div class="sdm-title">
+        <span class="session-type-pill ${colorInfo.pill}">${colorInfo.label}</span>
+        <span style="font-size:16px;font-weight:800;margin-left:4px;">Auto-Pair Teams</span>
+      </div>
+      <div class="sdm-court-time">${escHtml(court?.name || '')} · ${fmtRange(s.startTime, s.endTime)} · ${players.length} players</div>
+      <button class="sdm-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="sdm-body" style="padding:20px;">
+      <div style="display:flex;gap:16px;margin-bottom:20px;">
+        ${renderTeamCard(result.teamA, 'Team A', '#14B8A6')}
+        ${renderTeamCard(result.teamB, 'Team B', '#F87171')}
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:16px;">
+        Balance: |${result.teamAAvg.toFixed(2)} − ${result.teamBAvg.toFixed(2)}| = ${Math.abs(result.teamAAvg - result.teamBAvg).toFixed(2)} DUPR
+      </div>
+    </div>
+    <div class="sdm-actions">
+      <button class="sdm-btn primary" onclick="acceptAutoPairFromResult()">✅ Accept Teams</button>
+      <button class="sdm-btn" onclick="showAutoPairModal('${sessionId}')">🎲 Reroll</button>
+      <button class="sdm-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  `;
+  overlay.classList.add('open');
+}
+
+function generateBalancedPairing(players) {
+  // For 4 players: 2v2 pairing
+  // For 8 players: 4v4 pairing
+  // General: split into two equal teams with minimum DUPR difference
+  const half = Math.floor(players.length / 2);
+  const sorted = [...players].sort((a, b) => b.rating - a.rating);
+
+  // Try multiple strategies and pick the best
+  let bestA = [], bestB = [], bestDiff = Infinity;
+
+  // Strategy 1: Alternating (high-low pairing)
+  let a1 = [], b1 = [];
+  sorted.forEach((p, i) => { if (i % 2 === 0) a1.push(p); else b1.push(p); });
+  const diff1 = Math.abs(aAvg(a1) - aAvg(b1));
+  if (diff1 < bestDiff) { bestA = a1; bestB = b1; bestDiff = diff1; }
+
+  // Strategy 2: Top half vs bottom half, then cross-swap
+  let a2 = sorted.slice(0, half);
+  let b2 = sorted.slice(half);
+  const diff2 = Math.abs(aAvg(a2) - aAvg(b2));
+  if (diff2 < bestDiff) { bestA = a2; bestB = b2; bestDiff = diff2; }
+
+  // Strategy 3: Snake draft (1,4,5,8 vs 2,3,6,7)
+  let a3 = [], b3 = [];
+  sorted.forEach((p, i) => {
+    const round = Math.floor(i / 2);
+    if (round % 2 === 0) { if (i % 2 === 0) a3.push(p); else b3.push(p); }
+    else { if (i % 2 === 0) b3.push(p); else a3.push(p); }
+  });
+  const diff3 = Math.abs(aAvg(a3) - aAvg(b3));
+  if (diff3 < bestDiff) { bestA = a3; bestB = b3; bestDiff = diff3; }
+
+  // Strategy 4: Greedy — assign each player to the team with lower total
+  let a4 = [], b4 = [];
+  let sumA4 = 0, sumB4 = 0;
+  sorted.forEach(p => {
+    if (a4.length < half && (sumA4 <= sumB4 || b4.length >= half)) {
+      a4.push(p); sumA4 += p.rating;
+    } else {
+      b4.push(p); sumB4 += p.rating;
+    }
+  });
+  const diff4 = Math.abs(aAvg(a4) - aAvg(b4));
+  if (diff4 < bestDiff) { bestA = a4; bestB = b4; bestDiff = diff4; }
+
+  // Add slight randomization: swap one pair if diff is already small
+  if (Math.random() < 0.3 && bestA.length >= 1 && bestB.length >= 1) {
+    const iA = Math.floor(Math.random() * bestA.length);
+    const iB = Math.floor(Math.random() * bestB.length);
+    const trialA = [...bestA], trialB = [...bestB];
+    [trialA[iA], trialB[iB]] = [trialB[iB], trialA[iA]];
+    const trialDiff = Math.abs(aAvg(trialA) - aAvg(trialB));
+    if (trialDiff <= bestDiff + 0.1) { bestA = trialA; bestB = trialB; }
+  }
+
+  return {
+    teamA: bestA,
+    teamB: bestB,
+    teamAAvg: aAvg(bestA),
+    teamBAvg: aAvg(bestB)
+  };
+}
+
+function aAvg(team) {
+  return team.length ? team.reduce((s, p) => s + p.rating, 0) / team.length : 0;
+}
+
+function acceptAutoPair(sessionId, teamA, teamB) {
+  const s = state.sessions.find(x => x.id === sessionId);
+  if (!s) return;
+  seedSessionMatchup(s);
+  const dir = state.playerDirectory || {};
+
+  // Assign on-court players
+  s.players = [];
+  teamA.forEach((name, i) => {
+    const existing = s.players.find(p => p.name === name);
+    if (existing) { existing.team = 'A'; existing.position = i === 0 ? 'Left' : 'Right'; existing.onCourt = true; }
+    else { s.players.push({ name, rating: dir[name]?.rating || 3.0, position: i === 0 ? 'Left' : 'Right', onCourt: true, team: 'A' }); }
+  });
+  teamB.forEach((name, i) => {
+    const existing = s.players.find(p => p.name === name);
+    if (existing) { existing.team = 'B'; existing.position = i === 0 ? 'Left' : 'Right'; existing.onCourt = true; }
+    else { s.players.push({ name, rating: dir[name]?.rating || 3.0, position: i === 0 ? 'Left' : 'Right', onCourt: true, team: 'B' }); }
+  });
+
+  // Move any remaining players to waiting room
+  const assigned = new Set([...teamA, ...teamB]);
+  const allSessionPlayers = s.players.filter(p => !assigned.has(p.name));
+  s.waitingRoom = [...(s.waitingRoom || []), ...allSessionPlayers.filter(p => !p.onCourt)];
+
+  save();
+  showToast('Teams assigned! ⚖️', 'success');
+  openModal('sessionDetail', sessionId);
+}
+
+function acceptAutoPairFromResult() {
+  if (!_lastAutoPairResult || !_lastAutoPairSessionId) { showToast('No pairing result', 'error'); return; }
+  const teamANames = _lastAutoPairResult.teamA.map(p => p.name);
+  const teamBNames = _lastAutoPairResult.teamB.map(p => p.name);
+  acceptAutoPair(_lastAutoPairSessionId, teamANames, teamBNames);
+}
+
+// ══════════════════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════════════════
+// BOOT
 load();
 seedStaff();
 seedRecurringRules();
@@ -6446,6 +7865,12 @@ render();
 const brandText = document.getElementById('brandText');
 if (brandText && state.venue?.name) {
   brandText.innerHTML = `${escHtml(state.venue.name)} <span>Queue</span>`;
+}
+// Init notification bell
+renderNotificationBell();
+// Resume claim expiry checker if there are active claims
+if (state.queue && state.queue.some(q => q.status === 'notified')) {
+  startClaimExpiryChecker();
 }
 </script>
 </body>
