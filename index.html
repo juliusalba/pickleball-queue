@@ -3107,6 +3107,8 @@ body {
   <button class="more-menu-item" onclick="switchView('league');toggleMoreMenu()">🏆 Leagues</button>
   <button class="more-menu-item" onclick="switchView('courts');toggleMoreMenu()">🏸 Courts</button>
   <button class="more-menu-item" onclick="switchView('settings');toggleMoreMenu()">⚙️ Settings</button>
+  <button class="more-menu-item" onclick="renderDaySummary();toggleMoreMenu()">📋 Day Summary</button>
+  <button class="more-menu-item" onclick="openTVMode();toggleMoreMenu()">📺 TV Display</button>
 </div>
 
 <script>
@@ -5449,9 +5451,14 @@ function openModal(mode, refId = null) {
 function closeModal() {
   const overlay = document.getElementById('modalOverlay');
   overlay.classList.remove('open');
-  // Remove any custom modals (session-detail-modal) and restore standard modal
+  // Remove any custom modals (session-detail-modal, day-summary-modal) and restore standard modal
   const sdm = overlay.querySelector('.session-detail-modal');
   if (sdm) sdm.remove();
+  const dsm = overlay.querySelector('.day-summary-modal');
+  if (dsm) dsm.remove();
+  // Restore standard modal visibility
+  const stdModal = overlay.querySelector('.modal');
+  if (stdModal) stdModal.style.display = '';
   // Always ensure a standard .modal exists with proper structure
   let standardModal = overlay.querySelector('.modal');
   if (!standardModal || !standardModal.querySelector('#modalTitle')) {
@@ -6778,6 +6785,203 @@ const ACTIVITY_FEED = [
 ];
 
 // ══════════════════════════════════════════════════════
+// END-OF-DAY SUMMARY
+// ══════════════════════════════════════════════════════
+function renderDaySummary() {
+  const today = state.currentDate;
+  const v = state.venue || DEFAULT_VENUE;
+
+  // Today's sessions
+  const todaySessions = state.sessions.filter(s => s.date === today);
+
+  // Today's bookings (excl. cancelled)
+  const todayBookings = state.bookings.filter(b => {
+    const s = state.sessions.find(sess => sess.id === b.sessionId);
+    return s && s.date === today && b.status !== 'cancelled';
+  });
+
+  // Today's queue entries (match session date)
+  const todayQueue = state.queue.filter(q => {
+    const s = state.sessions.find(sess => sess.id === q.sessionId);
+    return s && s.date === today;
+  });
+
+  // ── Total Revenue (₱) from checked-in bookings ──
+  // Prefer transaction records if available; fall back to session price × groupSize
+  let totalRevenue = 0;
+  const checkedInBookings = todayBookings.filter(b => b.status === 'checked_in');
+  if (state.transactions && state.transactions.length > 0) {
+    const todayTxns = state.transactions.filter(t => {
+      if (t.status !== 'paid') return false;
+      // Match by bookingId → session date, or by createdAt date
+      if (t.bookingId) {
+        const bk = state.bookings.find(b => b.id === t.bookingId);
+        if (bk) {
+          const s = state.sessions.find(sess => sess.id === bk.sessionId);
+          return s && s.date === today;
+        }
+      }
+      return t.createdAt && t.createdAt.split('T')[0] === today;
+    });
+    totalRevenue = todayTxns.reduce((sum, t) => sum + (t.total || 0), 0);
+    // If no transactions matched today, fall back to checked-in bookings
+    if (totalRevenue === 0 && checkedInBookings.length > 0) {
+      totalRevenue = checkedInBookings.reduce((sum, b) => {
+        const s = state.sessions.find(sess => sess.id === b.sessionId);
+        return sum + (s ? getSessionPrice(s) * (b.groupSize || 1) : 0);
+      }, 0);
+    }
+  } else {
+    totalRevenue = checkedInBookings.reduce((sum, b) => {
+      const s = state.sessions.find(sess => sess.id === b.sessionId);
+      return sum + (s ? getSessionPrice(s) * (b.groupSize || 1) : 0);
+    }, 0);
+  }
+
+  // ── No-Show Count ──
+  const noShowCount = todayBookings.filter(b => b.status === 'no_show').length;
+
+  // ── Waitlist-to-Paid Conversions ──
+  // Queue entries that were 'served' or 'claimed' → became confirmed/checked_in bookings
+  const waitlistConversions = todayQueue.filter(q => {
+    if (q.status !== 'served' && q.status !== 'claimed') return false;
+    // Check if a booking exists for this player+session
+    return todayBookings.some(b =>
+      b.sessionId === q.sessionId &&
+      b.playerName === q.playerName &&
+      (b.status === 'confirmed' || b.status === 'checked_in')
+    );
+  }).length;
+
+  // ── Sessions Completed ──
+  const now = new Date();
+  const curMin = now.getHours() * 60 + now.getMinutes();
+  const sessionsCompleted = todaySessions.filter(s => {
+    const [eh, em] = s.endTime.split(':').map(Number);
+    return curMin >= eh * 60 + em;
+  }).length;
+
+  // ── Unique Players ──
+  const playerNames = new Set();
+  todayBookings.forEach(b => playerNames.add(b.playerName));
+  todayQueue.forEach(q => playerNames.add(q.playerName));
+  const uniquePlayers = playerNames.size;
+
+  // ── Court Utilization % ──
+  const availableHours = v.closeHour - v.openHour;
+  const totalCourtHours = state.courts.length * availableHours;
+  // Deduplicate overlapping slots per court
+  const usedMinutes = {};
+  state.courts.forEach(c => { usedMinutes[c.id] = new Set(); });
+  todaySessions.forEach(s => {
+    if (!usedMinutes[s.courtId]) return;
+    const [sh, sm] = s.startTime.split(':').map(Number);
+    const [eh, em] = s.endTime.split(':').map(Number);
+    for (let m = sh * 60 + sm; m < eh * 60 + em; m++) {
+      usedMinutes[s.courtId].add(m);
+    }
+  });
+  const totalUsedMinutes = Object.values(usedMinutes).reduce((sum, set) => sum + set.size, 0);
+  const utilization = totalCourtHours > 0 ? Math.round((totalUsedMinutes / (totalCourtHours * 60)) * 100) : 0;
+
+  // ── Build Modal ──
+  const dateLabel = new Date(today + 'T12:00:00').toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  const modalHTML = `
+    <div style="max-width:500px;width:92vw;background:var(--bg-elevated);border-radius:var(--radius-lg,16px);border:1px solid var(--border);overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 20px 12px;">
+        <div style="font-size:18px;font-weight:800;">📋 End-of-Day Summary</div>
+        <button onclick="closeModal()" style="background:none;border:none;color:var(--text-secondary);font-size:20px;cursor:pointer;padding:4px 8px;">✕</button>
+      </div>
+      <div style="padding:0 20px 6px;font-size:12px;color:var(--text-secondary);">${dateLabel}</div>
+      <div style="padding:0 20px 20px;">
+
+        <!-- Revenue Banner -->
+        <div style="background:rgba(20,184,166,0.12);border:1px solid rgba(20,184,166,0.3);border-radius:var(--radius-md,12px);padding:20px;text-align:center;margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--teal);margin-bottom:6px;">Total Revenue</div>
+          <div style="font-size:36px;font-weight:900;color:var(--green);">₱${totalRevenue.toLocaleString()}</div>
+          <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">from ${checkedInBookings.length} checked-in booking${checkedInBookings.length !== 1 ? 's' : ''}</div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+          <!-- Sessions -->
+          <div style="background:var(--bg-surface,#1a1f2e);border:1px solid var(--border);border-radius:var(--radius-md,12px);padding:14px;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary);margin-bottom:6px;">Sessions</div>
+            <div style="font-size:28px;font-weight:800;">${sessionsCompleted}<span style="font-size:14px;font-weight:600;color:var(--text-secondary);">/${todaySessions.length}</span></div>
+            <div style="font-size:11px;color:var(--text-secondary);">completed</div>
+          </div>
+
+          <!-- Unique Players -->
+          <div style="background:var(--bg-surface,#1a1f2e);border:1px solid var(--border);border-radius:var(--radius-md,12px);padding:14px;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary);margin-bottom:6px;">Unique Players</div>
+            <div style="font-size:28px;font-weight:800;">${uniquePlayers}</div>
+            <div style="font-size:11px;color:var(--text-secondary);">players today</div>
+          </div>
+
+          <!-- No-Shows -->
+          <div style="background:var(--bg-surface,#1a1f2e);border:1px solid var(--border);border-radius:var(--radius-md,12px);padding:14px;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary);margin-bottom:6px;">No-Shows</div>
+            <div style="font-size:28px;font-weight:800;color:${noShowCount > 0 ? 'var(--red)' : 'var(--text-primary)'};">${noShowCount}</div>
+            <div style="font-size:11px;color:var(--text-secondary);">did not arrive</div>
+          </div>
+
+          <!-- Waitlist Conversions -->
+          <div style="background:var(--bg-surface,#1a1f2e);border:1px solid var(--border);border-radius:var(--radius-md,12px);padding:14px;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary);margin-bottom:6px;">Waitlist → Paid</div>
+            <div style="font-size:28px;font-weight:800;color:var(--teal);">${waitlistConversions}</div>
+            <div style="font-size:11px;color:var(--text-secondary);">conversion${waitlistConversions !== 1 ? 's' : ''}</div>
+          </div>
+
+        </div>
+
+        <!-- Court Utilization -->
+        <div style="background:var(--bg-surface,#1a1f2e);border:1px solid var(--border);border-radius:var(--radius-md,12px);padding:16px;margin-top:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary);">Court Utilization</div>
+            <div style="font-size:20px;font-weight:800;color:var(--teal);">${utilization}%</div>
+          </div>
+          <div style="background:var(--bg-base,#0d1117);border-radius:99px;height:8px;overflow:hidden;">
+            <div style="background:linear-gradient(90deg,var(--teal),var(--green));height:100%;width:${Math.min(utilization, 100)}%;border-radius:99px;transition:width 0.5s;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--text-secondary);">
+            ${state.courts.map(c => {
+              const courtSessions = todaySessions.filter(s => s.courtId === c.id);
+              const courtMins = usedMinutes[c.id] ? usedMinutes[c.id].size : 0;
+              const courtPct = availableHours > 0 ? Math.round((courtMins / (availableHours * 60)) * 100) : 0;
+              return '<span>' + escHtml(c.name) + ': ' + courtPct + '%</span>';
+            }).join('')}
+          </div>
+        </div>
+
+      </div>
+      <div style="padding:0 20px 20px;">
+        <button onclick="closeModal()" style="width:100%;padding:12px;background:var(--teal,#14B8A6);color:#fff;border:none;border-radius:var(--radius-md,12px);font-size:14px;font-weight:700;cursor:pointer;">Close</button>
+      </div>
+    </div>
+  `;
+
+  const overlay = document.getElementById('modalOverlay');
+  // Remove existing custom modals
+  const sdm = overlay.querySelector('.session-detail-modal');
+  if (sdm) sdm.remove();
+  const existing = overlay.querySelector('.day-summary-modal');
+  if (existing) existing.remove();
+  const standardModal = overlay.querySelector('.modal');
+  if (standardModal) standardModal.style.display = 'none';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'day-summary-modal';
+  wrapper.style.cssText = 'display:flex;align-items:center;justify-content:center;width:100%;';
+  wrapper.innerHTML = modalHTML;
+  overlay.appendChild(wrapper);
+  overlay.classList.add('open');
+}
+
+// ══════════════════════════════════════════════════════
 // DASHBOARD VIEW
 // ══════════════════════════════════════════════════════
 function renderDashboardView() {
@@ -7218,7 +7422,7 @@ function renderKioskView() {
         ${fmtRange(session.startTime, session.endTime)} · ${court ? escHtml(court.name) : 'TBD'}
       </div>
       <div class="kiosk-player-list">${playerCards || '<div style="text-align:center;color:var(--text-muted);padding:40px;">No bookings yet</div>'}</div>
-      ${allCheckedIn ? `<button class="kiosk-checkin-btn done">✅ All Players Checked In</button>` : ''}
+      ${allCheckedIn ? `<button class="kiosk-checkin-btn done" onclick="kioskSessionId=null;renderKioskView();">✅ All Players Checked In — Tap to Finish</button>` : ''}
       <button class="kiosk-walkin-btn" onclick="kioskWalkinMode=true;renderKioskView();">＋ Add Walk-In</button>
     </div>`;
   }
@@ -7359,8 +7563,8 @@ function renderTVMode() {
   const courtCards = state.courts.map(court => {
     const courtSessions = todaySessions.filter(s => s.courtId === court.id);
     const liveSession = courtSessions.find(s => isSessionLive(s));
-    const bookings = liveSession ? sessBookings(liveSession.id) : [];
-    const queue = liveSession ? sessQueue(liveSession.id) : [];
+    const bookings = liveSession ? state.bookings.filter(b => b.sessionId === liveSession.id && b.status !== 'cancelled') : [];
+    const queue = liveSession ? state.queue.filter(q => q.sessionId === liveSession.id && q.status === 'waiting') : [];
 
     // Next session
     const nowMin = now.getHours() * 60 + now.getMinutes();
