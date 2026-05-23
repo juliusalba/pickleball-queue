@@ -9183,7 +9183,7 @@ function renderLeagueStandingsTab(el, league) {
 
 function openCreateLeagueModal() {
   const today = state.currentDate;
-  openModal('create-league-modal');
+  hideAllLeagueModals();
   document.getElementById('lgName').value = '';
   document.getElementById('lgFormat').value = 'single_elim';
   document.getElementById('lgTeamCount').value = '8';
@@ -9191,6 +9191,7 @@ function openCreateLeagueModal() {
   document.getElementById('lgEndDate').value = '';
   document.getElementById('lgCourts').value = '2';
   document.getElementById('lgGamesPerMatch').value = '3';
+  showLeagueModal('create-league-modal');
 }
 
 function handleCreateLeague() {
@@ -9211,10 +9212,11 @@ function handleCreateLeague() {
 
 function openCreateTeamModal(leagueId) {
   activeLeagueId = leagueId;
-  openModal('create-team-modal');
+  hideAllLeagueModals();
   document.getElementById('teamName').value = '';
   document.getElementById('teamSeed').value = '';
   document.getElementById('teamPlayers').value = '';
+  showLeagueModal('create-team-modal');
 }
 
 function handleCreateTeam() {
@@ -9223,7 +9225,7 @@ function handleCreateTeam() {
   const playerNames = document.getElementById('teamPlayers').value.split(',').map(s => s.trim()).filter(Boolean);
   if (playerNames.length < 2) { alert('Add at least 2 players'); return; }
   addTeamToLeague(activeLeagueId, { name, seed: parseInt(document.getElementById('teamSeed').value) || undefined, players: playerNames });
-  closeModal();
+  hideAllLeagueModals();
   renderLeagueDetail(activeLeagueId);
 }
 
@@ -9232,13 +9234,13 @@ function openTeamDetailModal(leagueId, teamId) {
   if (!league) return;
   const team = league.teams.find(t => t.id === teamId);
   if (!team) return;
-  const league2 = league;
-  openModal('team-detail-modal');
+  hideAllLeagueModals();
   document.getElementById('tdTeamName').textContent = team.name;
   document.getElementById('tdSeed').textContent = 'Seed #' + (team.seed || '?');
   document.getElementById('tdAvgDupr').textContent = getTeamAvgDupr(leagueId, teamId).toFixed(1) + ' DUPR';
   document.getElementById('tdPlayers').innerHTML = (team.players || []).map(p => `<span class="player-tag">${escHtml(p)}</span>`).join('');
-  document.getElementById('tdMatchStats').textContent = league2.matches.filter(m => m.status === 'completed' && (m.winnerId === teamId)).length + ' wins / ' + league2.matches.filter(m => m.status === 'completed' && (m.winnerId !== teamId) && (m.team1Id === teamId || m.team2Id === teamId)).length + ' losses';
+  document.getElementById('tdMatchStats').textContent = league.matches.filter(m => m.status === 'completed' && (m.winnerId === teamId)).length + ' wins / ' + league.matches.filter(m => m.status === 'completed' && (m.winnerId !== teamId) && (m.team1Id === teamId || m.team2Id === teamId)).length + ' losses';
+  showLeagueModal('team-detail-modal');
 }
 
 function openMatchResultModal(leagueId, matchId) {
@@ -9246,8 +9248,7 @@ function openMatchResultModal(leagueId, matchId) {
   if (!league) return;
   const match = league.matches.find(m => m.id === matchId);
   if (!match) return;
-
-  openModal('match-result-modal');
+  hideAllLeagueModals();
   document.getElementById('mrTeam1').textContent = match.team1Name;
   document.getElementById('mrTeam2').textContent = match.team2Name;
   document.getElementById('mrScore1').value = '';
@@ -9256,6 +9257,7 @@ function openMatchResultModal(leagueId, matchId) {
   document.getElementById('mrWinner').innerHTML = `<option value="">Select winner</option><option value="${match.team1Id}">${escHtml(match.team1Name)}</option><option value="${match.team2Id}">${escHtml(match.team2Name)}</option>`;
   document.getElementById('mrLeagueId').value = leagueId;
   document.getElementById('mrMatchId').value = matchId;
+  showLeagueModal('match-result-modal');
 }
 
 function handleSubmitMatchResult() {
@@ -9265,12 +9267,21 @@ function handleSubmitMatchResult() {
   const score2 = parseInt(document.getElementById('mrScore2').value);
   const winnerId = document.getElementById('mrWinner').value;
   const court = parseInt(document.getElementById('mrCourt').value);
-
   if (!winnerId) { alert('Select the winner'); return; }
   if (isNaN(score1) || isNaN(score2)) { alert('Enter both scores'); return; }
   submitMatchResult(leagueId, matchId, score1, score2, winnerId, court);
-  closeModal();
+  hideAllLeagueModals();
   renderLeagueDetail(leagueId);
+}
+
+function showLeagueModal(id) {
+  document.getElementById(id).style.display = 'flex';
+}
+function hideAllLeagueModals() {
+  ['create-league-modal','create-team-modal','team-detail-modal','match-result-modal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
 }
 
 function startLeague(leagueId) {
@@ -9289,7 +9300,7 @@ function generateAndRenderBracket(leagueId) {
 function getLeagueModalHTML() {
   return `
     <!-- Create League Modal -->
-    <div id="create-league-modal" class="modal" onclick="if(event.target===this)closeModal()">
+    <div id="create-league-modal" class="modal" style="display:none" onclick="if(event.target===this){closeModal();document.getElementById('create-league-modal').style.display='none'}">
       <div class="modal-content" style="max-width:440px;">
         <div class="modal-header">
           <h3>Create League</h3>
@@ -9338,7 +9349,7 @@ function getLeagueModalHTML() {
     </div>
 
     <!-- Create Team Modal -->
-    <div id="create-team-modal" class="modal" onclick="if(event.target===this)closeModal()">
+    <div id="create-team-modal" class="modal" style="display:none" onclick="if(event.target===this){closeModal();document.getElementById('create-team-modal').style.display='none'}">
       <div class="modal-content" style="max-width:440px;">
         <div class="modal-header">
           <h3>Add Team</h3>
@@ -9357,7 +9368,7 @@ function getLeagueModalHTML() {
     </div>
 
     <!-- Team Detail Modal -->
-    <div id="team-detail-modal" class="modal" onclick="if(event.target===this)closeModal()">
+    <div id="team-detail-modal" class="modal" style="display:none" onclick="if(event.target===this){closeModal();document.getElementById('team-detail-modal').style.display='none'}">
       <div class="modal-content" style="max-width:400px;">
         <div class="modal-header">
           <h3 id="tdTeamName">Team</h3>
@@ -9381,7 +9392,7 @@ function getLeagueModalHTML() {
     </div>
 
     <!-- Match Result Modal -->
-    <div id="match-result-modal" class="modal" onclick="if(event.target===this)closeModal()">
+    <div id="match-result-modal" class="modal" style="display:none" onclick="if(event.target===this){closeModal();document.getElementById('match-result-modal').style.display='none'}">
       <div class="modal-content" style="max-width:420px;">
         <div class="modal-header">
           <h3>Match Result</h3>
