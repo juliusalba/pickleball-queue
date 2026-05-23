@@ -3110,6 +3110,14 @@ body {
 </div>
 
 <script>
+// League format defs — defined before the league module
+const LEAGUE_FORMAT_DEFS = {
+  round_robin:   { label: 'Round Robin',       minTeams: 3,  maxTeams: 16, icon: '🔄' },
+  single_elim:   { label: 'Single Elimination', minTeams: 4,  maxTeams: 16, icon: '🏆' },
+  double_elim:   { label: 'Double Elimination', minTeams: 4,  maxTeams: 16, icon: '⚡' },
+  swiss:         { label: 'Swiss System',        minTeams: 4,  maxTeams: 16, icon: '🇨🇭' }
+};
+
 // ══════════════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════════════
