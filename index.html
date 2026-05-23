@@ -3103,6 +3103,17 @@ const ROW_H = 72; // must match --hour-h in CSS
 const CLAIM_WINDOW_MINS = 15; // minutes to claim a slot after notification
 
 // ══════════════════════════════════════════════════════
+// PACKAGE DEFINITIONS
+// ══════════════════════════════════════════════════════
+const PACKAGE_DEFS = {
+  day_pass:   { label: 'Day Pass',  price: 150,  sessions: 1,  expiryDays: 0,   perSession: '₱150/session' },
+  ten_pack:   { label: '10-Pack',   price: 1350, sessions: 10, expiryDays: 90,  perSession: '₱135/session · Save ₱150' },
+  twenty_pack:{ label: '20-Pack',   price: 2500, sessions: 20, expiryDays: 180, perSession: '₱125/session · Save ₱500' },
+  monthly:    { label: 'Monthly',   price: 800,  sessions: -1, expiryDays: 30,  perSession: 'Unlimited sessions' },
+  annual:     { label: 'Annual',    price: 6000, sessions: -1, expiryDays: 365, perSession: 'Unlimited sessions' }
+};
+
+// ══════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════
 let state = {
@@ -3120,7 +3131,8 @@ let state = {
   recurringRules: [],
   transactions: [],
   notifications: [],
-  staff: []
+  staff: [],
+  packageRedemptions: []
 };
 
 // ══════════════════════════════════════════════════════
@@ -3298,6 +3310,7 @@ function load() {
   else state.venue = { ...DEFAULT_VENUE, ...state.venue, pricing: { ...DEFAULT_VENUE.pricing, ...(state.venue.pricing || {}) } };
   if (!state.playerDirectory) state.playerDirectory = buildPlayerDirectory();
   if (!state.settings) state.settings = {};
+  if (!state.packageRedemptions) state.packageRedemptions = [];
   if (!state.sessions || state.sessions.length === 0) seedSampleData();
 }
 
@@ -5318,16 +5331,31 @@ function openModal(mode, refId = null) {
           sessionBookings.forEach(b => {
             const isCI = b.status === 'checked_in';
             const payStatus = b.paymentStatus || 'unpaid';
-            const payBadge = payStatus === 'paid'
-              ? '<span style="font-size:9px;background:var(--green-subtle);color:var(--green);padding:1px 6px;border-radius:4px;">Paid</span>'
-              : '<span style="font-size:9px;background:var(--red-subtle);color:var(--red);padding:1px 6px;border-radius:4px;">Unpaid</span>';
+            const isPackageCovered = b.payment && b.payment.method === 'package';
+            const payIcon = isPackageCovered ? '📦' : '💳';
+            let payBadge;
+            if (isPackageCovered) {
+              payBadge = '<span style="font-size:9px;background:var(--teal-subtle);color:var(--teal);padding:1px 6px;border-radius:4px;">📦 Package</span>';
+            } else if (payStatus === 'paid') {
+              payBadge = '<span style="font-size:9px;background:var(--green-subtle);color:var(--green);padding:1px 6px;border-radius:4px;">💳 Paid</span>';
+            } else {
+              payBadge = '<span style="font-size:9px;background:var(--red-subtle);color:var(--red);padding:1px 6px;border-radius:4px;">Unpaid</span>';
+            }
+            // Package expiry warning
+            let pkgExpiryWarning = '';
+            if (!isPackageCovered) {
+              const ps = getPlayerPackageStatus(b.playerName);
+              if (ps.status === 'active' && ps.daysLeft <= 7) {
+                pkgExpiryWarning = `<span style="font-size:9px;background:rgba(245,158,11,0.15);color:var(--amber);padding:1px 6px;border-radius:4px;">⚠️ Exp. soon</span>`;
+              }
+            }
             checkInHTML += `
             <div class="queue-entry-row" style="display:flex;align-items:center;gap:8px;padding:6px 16px;">
               <div style="width:28px;height:28px;border-radius:50%;background:${isCI ? 'var(--green-subtle)' : 'var(--bg-input)'};display:flex;align-items:center;justify-content:center;font-size:12px;">${isCI ? '✓' : ''}</div>
               <img src="${avatarUrl(b.playerName, 64)}" style="width:28px;height:28px;border-radius:50%;" alt="">
               <div style="flex:1;">
                 <div style="font-size:13px;font-weight:600;">${escHtml(b.playerName)}</div>
-                <div style="display:flex;gap:6px;align-items:center;">${payBadge}<span style="font-size:10px;color:var(--text-muted);">${b.groupSize || 1}p · ₱${price * (b.groupSize || 1)}</span></div>
+                <div style="display:flex;gap:6px;align-items:center;">${payBadge}${pkgExpiryWarning}<span style="font-size:10px;color:var(--text-muted);">${b.groupSize || 1}p · ₱${price * (b.groupSize || 1)}</span></div>
               </div>
               ${!isCI ? `<button class="sdm-btn" style="height:26px;font-size:10px;padding:0 10px;" onclick="checkInBooking('${b.id}','${s.id}')">Check In</button>` : ''}
             </div>`;
@@ -5499,11 +5527,37 @@ function confirmBooking(sessionId) {
   });
   save();
   const booking = state.bookings[state.bookings.length - 1];
-  // Show payment modal instead of immediate confirmation
-  showPaymentModal(booking.id, s, playerName, groupSize);
+
+  // Check if player has an active package that covers this session
+  const pkgEligibility = checkPackageEligibility(playerName, s.type);
+  if (pkgEligibility.eligible) {
+    // Auto-redeem package session (deduct 1 for session-count packages)
+    redeemPackageSession(playerName);
+    // Mark booking as covered by package
+    booking.payment = {
+      method: 'package',
+      packageType: pkgEligibility.pkgType,
+      amount: 0,
+      tax: 0,
+      total: 0,
+      status: 'covered_by_package',
+      paidAt: new Date().toISOString(),
+      receiptId: 'PKG-' + genId().slice(0, 8).toUpperCase()
+    };
+    booking.paymentStatus = 'paid';
+    save();
+    // Show confirmation with package info
+    const pkgLabel = pkgEligibility.label;
+    const remaining = pkgEligibility.sessionsRemaining !== undefined
+      ? ` (${pkgEligibility.sessionsRemaining - 1} sessions left)` : '';
+    showBookingConfirmation(s, playerName, groupSize, 'confirmed', `✓ Covered by ${pkgLabel}${remaining}`);
+  } else {
+    // Show payment modal
+    showPaymentModal(booking.id, s, playerName, groupSize);
+  }
 }
 
-function showBookingConfirmation(session, playerName, groupSize, status) {
+function showBookingConfirmation(session, playerName, groupSize, status, packageMsg) {
   const court = state.courts.find(c => c.id === session.courtId);
   const colorInfo = SESSION_COLORS[session.type] || SESSION_COLORS.open;
   const price = getSessionPrice(session);
@@ -5523,6 +5577,7 @@ function showBookingConfirmation(session, playerName, groupSize, status) {
     <div class="booking-confirmation">
       <div class="checkmark">✅</div>
       <h2>${status === 'waitlisted' ? 'Added to Waitlist!' : 'Booking Confirmed!'}</h2>
+      ${packageMsg ? `<div style="background:var(--green-subtle);color:var(--green);padding:8px 16px;border-radius:var(--radius-md);font-size:13px;font-weight:600;margin:8px 0;">📦 ${escHtml(packageMsg)}</div>` : ''}
       <div class="booking-ref">Reference #${refNum}</div>
       <div class="booking-summary">
         <div class="booking-summary-row">
@@ -5837,6 +5892,377 @@ function getPlayerBadge(playerName) {
   return { type: p.memberType || 'guest', label: types[p.memberType || 'guest'] || 'Guest' };
 }
 
+// ══════════════════════════════════════════════════════
+// PACKAGE PASS SYSTEM
+// ══════════════════════════════════════════════════════
+
+function getPlayerActivePackage(playerName) {
+  const dir = state.playerDirectory || {};
+  const p = dir[playerName];
+  if (!p || !p.activePackage) return null;
+  const pkg = p.activePackage;
+  // Check expiry
+  if (pkg.expiresAt && new Date() >= new Date(pkg.expiresAt)) {
+    return null; // expired
+  }
+  // Check if sessions exhausted
+  if (pkg.type !== 'monthly' && pkg.type !== 'annual') {
+    if (pkg.sessionsRemaining !== undefined && pkg.sessionsRemaining <= 0) return null;
+  }
+  return pkg;
+}
+
+function getPlayerPackageStatus(playerName) {
+  const dir = state.playerDirectory || {};
+  const p = dir[playerName];
+  if (!p || !p.activePackage) return { status: 'none' };
+  const pkg = p.activePackage;
+  const now = new Date();
+  const expiresAt = new Date(pkg.expiresAt);
+  if (now >= expiresAt) {
+    const daysSince = Math.floor((now - expiresAt) / (1000 * 60 * 60 * 24));
+    return { status: 'expired', package: pkg, daysSinceExpiry: daysSince };
+  }
+  const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+  return { status: 'active', package: pkg, daysLeft };
+}
+
+function checkPackageEligibility(playerName, sessionType) {
+  const pkg = getPlayerActivePackage(playerName);
+  if (!pkg) return { eligible: false };
+  // All session types are covered by any active package
+  if (pkg.type === 'monthly' || pkg.type === 'annual') {
+    return { eligible: true, pkgType: pkg.type, label: PACKAGE_DEFS[pkg.type]?.label || pkg.type };
+  }
+  // Session-count packages
+  if (pkg.sessionsRemaining > 0) {
+    const def = PACKAGE_DEFS[pkg.type];
+    return { eligible: true, pkgType: pkg.type, label: def?.label || pkg.type, sessionsRemaining: pkg.sessionsRemaining };
+  }
+  return { eligible: false };
+}
+
+function redeemPackageSession(playerName) {
+  const dir = state.playerDirectory || {};
+  const p = dir[playerName];
+  if (!p || !p.activePackage) return false;
+  const pkg = p.activePackage;
+  // Unlimited packages don't need session deduction
+  if (pkg.type === 'monthly' || pkg.type === 'annual') {
+    // Log redemption
+    if (!state.packageRedemptions) state.packageRedemptions = [];
+    state.packageRedemptions.push({
+      id: genId(),
+      playerName,
+      packageType: pkg.type,
+      sessionsRemaining: 'unlimited',
+      redeemedAt: new Date().toISOString()
+    });
+    save();
+    return true;
+  }
+  // Session-count packages
+  if (pkg.sessionsRemaining > 0) {
+    pkg.sessionsRemaining--;
+    // Log redemption
+    if (!state.packageRedemptions) state.packageRedemptions = [];
+    state.packageRedemptions.push({
+      id: genId(),
+      playerName,
+      packageType: pkg.type,
+      sessionsRemaining: pkg.sessionsRemaining,
+      redeemedAt: new Date().toISOString()
+    });
+    // Mark exhausted if 0
+    if (pkg.sessionsRemaining <= 0) {
+      pkg.status = 'exhausted';
+    }
+    save();
+    return true;
+  }
+  return false;
+}
+
+function purchasePackage(playerName, packageType, purchaseDate, startDate, paymentMethod, refNumber) {
+  const dir = state.playerDirectory || {};
+  let p = dir[playerName];
+  if (!p) {
+    // Create player if not exists
+    dir[playerName] = {
+      name: playerName,
+      rating: 3.5,
+      sessionsPlayed: 0,
+      wins: 0,
+      losses: 0,
+      lastPlayed: state.currentDate,
+      memberSince: state.currentDate,
+      memberType: 'guest'
+    };
+    p = dir[playerName];
+  }
+
+  const def = PACKAGE_DEFS[packageType];
+  if (!def) { showToast('Invalid package type', 'error'); return false; }
+
+  const start = new Date(startDate + 'T00:00:00');
+  let expiresAt;
+  if (packageType === 'day_pass') {
+    // End of today
+    expiresAt = new Date(start);
+    expiresAt.setHours(23, 59, 59, 999);
+  } else {
+    expiresAt = new Date(start);
+    expiresAt.setDate(expiresAt.getDate() + def.expiryDays);
+    expiresAt.setHours(23, 59, 59, 999);
+  }
+
+  p.activePackage = {
+    type: packageType,
+    sessionsRemaining: def.sessions,
+    purchasedAt: new Date().toISOString(),
+    expiresAt: expiresAt.toISOString(),
+    startDate: startDate,
+    status: 'active'
+  };
+
+  // Update member type based on package
+  if (packageType === 'monthly') {
+    p.memberType = 'monthly';
+    p.monthlyRenewalDate = expiresAt.toISOString().split('T')[0];
+  } else if (packageType === 'annual') {
+    p.memberType = 'annual';
+    p.annualRenewalDate = expiresAt.toISOString().split('T')[0];
+  } else if (packageType === 'day_pass') {
+    p.memberType = 'day_pass';
+  }
+  // ten_pack and twenty_pack don't change memberType
+
+  // Record transaction
+  const txn = {
+    id: genId(),
+    type: 'package_purchase',
+    packageType,
+    playerName,
+    amount: def.price,
+    tax: 0,
+    total: def.price,
+    method: paymentMethod,
+    refNumber: refNumber || '',
+    status: 'paid',
+    createdAt: new Date().toISOString(),
+    receiptId: 'PKG-' + genId().slice(0, 8).toUpperCase()
+  };
+  if (!state.transactions) state.transactions = [];
+  state.transactions.push(txn);
+
+  save();
+  showToast(`${def.label} purchased for ${playerName}!`, 'success');
+  return true;
+}
+
+function renderPackagesTab() {
+  const dir = state.playerDirectory || {};
+  const players = Object.values(dir);
+  const packagedPlayers = players.filter(p => {
+    const status = getPlayerPackageStatus(p.name);
+    return status.status === 'active';
+  });
+
+  // Expiring soon (within 7 days)
+  const expiringSoon = packagedPlayers.filter(p => {
+    const status = getPlayerPackageStatus(p.name);
+    return status.status === 'active' && status.daysLeft <= 7;
+  });
+
+  let html = `<div style="margin-bottom:16px;">
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:var(--teal);">${packagedPlayers.length}</div>
+        <div style="font-size:11px;color:var(--text-muted);">Active Packages</div>
+      </div>
+      <div style="flex:1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:var(--amber);">${expiringSoon.length}</div>
+        <div style="font-size:11px;color:var(--text-muted);">Expiring Soon</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Package catalog
+  html += `<div style="margin-bottom:16px;">
+    <div style="font-size:14px;font-weight:700;margin-bottom:8px;">📦 Available Packages</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">`;
+  Object.entries(PACKAGE_DEFS).forEach(([key, def]) => {
+    html += `<div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;cursor:pointer;" onclick="openPurchasePackageModal('', '${key}')">
+      <div style="font-size:14px;font-weight:700;">${def.label}</div>
+      <div style="font-size:18px;font-weight:800;color:var(--teal);margin:4px 0;">₱${def.price.toLocaleString()}</div>
+      <div style="font-size:11px;color:var(--text-muted);">${def.perSession}</div>
+      ${def.sessions > 0 ? `<div style="font-size:10px;color:var(--text-muted);">${def.sessions} sessions · ${def.expiryDays} days</div>` : `<div style="font-size:10px;color:var(--text-muted);">${def.expiryDays} days unlimited</div>`}
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  // Active packages list
+  if (packagedPlayers.length > 0) {
+    html += `<div style="font-size:14px;font-weight:700;margin-bottom:8px;">Active Packages</div>`;
+    packagedPlayers.forEach(p => {
+      const status = getPlayerPackageStatus(p.name);
+      const pkg = status.package;
+      const def = PACKAGE_DEFS[pkg.type];
+      const isExpiring = status.daysLeft <= 7;
+      html += `<div style="background:var(--bg-elevated);border:1px solid ${isExpiring ? 'var(--amber)' : 'var(--border)'};border-radius:var(--radius-md);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;" onclick="openPlayerProfile('${escHtml(p.name)}')">
+        <img src="${avatarUrl(p.name, 48)}" style="width:36px;height:36px;border-radius:50%;" alt="">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">${escHtml(p.name)}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${def?.label || pkg.type} ${pkg.sessionsRemaining >= 0 ? `· ${pkg.sessionsRemaining} sessions left` : '· Unlimited'}</div>
+        </div>
+        <div style="text-align:right;">
+          ${isExpiring ? `<div style="font-size:10px;color:var(--amber);font-weight:600;">⚠️ ${status.daysLeft}d left</div>` : `<div style="font-size:10px;color:var(--text-muted);">${status.daysLeft}d left</div>`}
+        </div>
+      </div>`;
+    });
+  } else {
+    html += `<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">No active packages</div>`;
+  }
+
+  return html;
+}
+
+function openPurchasePackageModal(playerName, preselectedType) {
+  const dir = state.playerDirectory || {};
+  const playerOptions = Object.keys(dir).sort().map(name =>
+    `<option value="${escHtml(name)}" ${name === playerName ? 'selected' : ''}>${escHtml(name)}</option>`
+  ).join('');
+
+  const today = state.currentDate;
+  const overlay = document.getElementById('modalOverlay');
+  let modal = overlay.querySelector('.session-detail-modal') || overlay.querySelector('.modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    overlay.appendChild(modal);
+  }
+  modal.className = 'modal';
+  modal.style.maxWidth = '480px';
+
+  const pkgOptions = Object.entries(PACKAGE_DEFS).map(([key, def]) =>
+    `<option value="${key}" ${key === preselectedType ? 'selected' : ''}>${def.label} — ₱${def.price.toLocaleString()} (${def.perSession})</option>`
+  ).join('');
+
+  modal.innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title">📦 Purchase Package</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Player</label>
+        ${playerName ? `<input type="text" id="pkgPlayerName" value="${escHtml(playerName)}" readonly style="background:var(--bg-input);">` :
+          `<select id="pkgPlayerName">${playerOptions}</select>`}
+      </div>
+      <div class="fg">
+        <label>Package Type</label>
+        <select id="pkgType" onchange="updatePackagePriceDisplay()">
+          ${pkgOptions}
+        </select>
+      </div>
+      <div id="pkgPriceDisplay" style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px;margin-bottom:12px;">
+        <div style="font-size:18px;font-weight:800;color:var(--teal);" id="pkgPriceValue">₱${(PACKAGE_DEFS[preselectedType || 'day_pass']?.price || 150).toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--text-muted);" id="pkgPriceDesc">${PACKAGE_DEFS[preselectedType || 'day_pass']?.perSession || ''}</div>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Purchase Date</label>
+          <input type="date" id="pkgPurchaseDate" value="${today}">
+        </div>
+        <div class="fg">
+          <label>Start Date</label>
+          <input type="date" id="pkgStartDate" value="${today}">
+        </div>
+      </div>
+      <div class="fg">
+        <label>Payment Method</label>
+        <div class="payment-methods" style="margin-bottom:8px;">
+          <div class="payment-method active" onclick="selectPkgPayMethod('gcash', this)">
+            <div class="payment-method-icon">📱</div>
+            <div class="payment-method-label">GCash</div>
+          </div>
+          <div class="payment-method" onclick="selectPkgPayMethod('maya', this)">
+            <div class="payment-method-icon">💎</div>
+            <div class="payment-method-label">Maya</div>
+          </div>
+          <div class="payment-method" onclick="selectPkgPayMethod('cash', this)">
+            <div class="payment-method-icon">💵</div>
+            <div class="payment-method-label">Cash</div>
+          </div>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Reference Number <span style="color:var(--text-muted);font-weight:400;">(optional for cash)</span></label>
+        <input type="text" id="pkgRefNum" placeholder="GCash/Maya Reference Number" maxlength="13">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="submitPurchasePackage()">📦 Process Purchase</button>
+    </div>
+  `;
+  overlay.classList.add('open');
+}
+
+let pkgPaymentMethod = 'gcash';
+
+function selectPkgPayMethod(method, el) {
+  pkgPaymentMethod = method;
+  document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function updatePackagePriceDisplay() {
+  const type = document.getElementById('pkgType')?.value;
+  const def = PACKAGE_DEFS[type];
+  if (!def) return;
+  const priceEl = document.getElementById('pkgPriceValue');
+  const descEl = document.getElementById('pkgPriceDesc');
+  if (priceEl) priceEl.textContent = '₱' + def.price.toLocaleString();
+  if (descEl) descEl.textContent = def.perSession;
+}
+
+function submitPurchasePackage() {
+  const playerName = document.getElementById('pkgPlayerName')?.value?.trim();
+  const packageType = document.getElementById('pkgType')?.value;
+  const purchaseDate = document.getElementById('pkgPurchaseDate')?.value;
+  const startDate = document.getElementById('pkgStartDate')?.value;
+  const refNumber = document.getElementById('pkgRefNum')?.value?.trim() || '';
+
+  if (!playerName) { showToast('Please select a player', 'error'); return; }
+  if (!packageType) { showToast('Please select a package', 'error'); return; }
+  if (!startDate) { showToast('Please select a start date', 'error'); return; }
+
+  const success = purchasePackage(playerName, packageType, purchaseDate, startDate, pkgPaymentMethod, refNumber);
+  if (success) {
+    closeModal();
+    // Refresh views
+    if (currentView === 'players') renderPlayersView();
+    else if (currentView === 'dashboard') renderDashboardView();
+  }
+}
+
+function getPackageExpiringPlayers() {
+  const dir = state.playerDirectory || {};
+  const now = new Date();
+  const sevenDays = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  return Object.values(dir).filter(p => {
+    const status = getPlayerPackageStatus(p.name);
+    return status.status === 'active' && new Date(status.package.expiresAt) <= sevenDays;
+  }).map(p => {
+    const status = getPlayerPackageStatus(p.name);
+    return { ...p, daysLeft: status.daysLeft, package: status.package };
+  }).sort((a, b) => a.daysLeft - b.daysLeft);
+}
+
+// ══════════════════════════════════════════════════════
+// END PACKAGE PASS SYSTEM
+// ══════════════════════════════════════════════════════
+
 function searchPlayers(query) {
   const dir = state.playerDirectory || {};
   const q = query.toLowerCase();
@@ -5850,6 +6276,33 @@ function renderPlayersView(searchTerm, tab) {
   if (typeof tab !== 'undefined') playersTab = tab;
   const container = document.getElementById('view-players');
   const dir = state.playerDirectory || {};
+
+  // Count package players
+  const packageCount = Object.values(dir).filter(p => {
+    const st = getPlayerPackageStatus(p.name);
+    return st.status === 'active';
+  }).length;
+
+  // If packages tab is selected, show packages view
+  if (playersTab === 'packages') {
+    let html = `<div class="players-view">
+      <h2 style="font-size:20px;font-weight:800;margin-bottom:16px;">👥 Players</h2>
+      <div class="players-toolbar">
+        <div class="player-tabs">
+          <button class="player-tab-btn" onclick="renderPlayersView(undefined,'all')">All (${Object.values(dir).length})</button>
+          <button class="player-tab-btn" onclick="renderPlayersView(undefined,'members')">Members (${Object.values(dir).filter(p => ['monthly', 'annual', 'package'].includes(p.memberType)).length})</button>
+          <button class="player-tab-btn" onclick="renderPlayersView(undefined,'guests')">Guests</button>
+          <button class="player-tab-btn" onclick="renderPlayersView(undefined,'strikes')">On Strike</button>
+          <button class="player-tab-btn active" onclick="renderPlayersView(undefined,'packages')">📦 Packages (${packageCount})</button>
+        </div>
+      </div>
+      ${renderPackagesTab()}
+      <button class="add-player-fab" onclick="openPurchasePackageModal()">📦 Sell Package</button>
+    </div>`;
+    container.innerHTML = html;
+    return;
+  }
+
   let players = Object.values(dir);
 
   // Filter by search
@@ -5884,6 +6337,7 @@ function renderPlayersView(searchTerm, tab) {
         <button class="player-tab-btn ${playersTab === 'members' ? 'active' : ''}" onclick="renderPlayersView(undefined,'members')">Members (${memberCount})</button>
         <button class="player-tab-btn ${playersTab === 'guests' ? 'active' : ''}" onclick="renderPlayersView(undefined,'guests')">Guests (${guestCount})</button>
         <button class="player-tab-btn ${playersTab === 'strikes' ? 'active' : ''}" onclick="renderPlayersView(undefined,'strikes')">On Strike (${strikeCount})</button>
+        <button class="player-tab-btn ${playersTab === 'packages' ? 'active' : ''}" onclick="renderPlayersView(undefined,'packages')">📦 Packages (${packageCount})</button>
       </div>
     </div>
     <div class="player-card-grid">`;
@@ -5896,6 +6350,18 @@ function renderPlayersView(searchTerm, tab) {
     const badge = getPlayerBadge(p.name);
     const strikes = p.strikes || 0;
     const lastPlayed = p.lastPlayed || 'N/A';
+    // Package badge
+    const pkgStatus = getPlayerPackageStatus(p.name);
+    let pkgBadge = '';
+    if (pkgStatus.status === 'active') {
+      const def = PACKAGE_DEFS[pkgStatus.package.type];
+      const isExpiring = pkgStatus.daysLeft <= 7;
+      const remaining = pkgStatus.package.sessionsRemaining >= 0
+        ? `${pkgStatus.package.sessionsRemaining} left` : '∞';
+      pkgBadge = `<span style="font-size:9px;background:${isExpiring ? 'rgba(245,158,11,0.2)' : 'var(--teal-subtle)'};color:${isExpiring ? 'var(--amber)' : 'var(--teal)'};padding:1px 6px;border-radius:4px;font-weight:600;">📦 ${def?.label || ''} · ${remaining}${isExpiring ? ' ⚠️' : ''}</span>`;
+    } else if (pkgStatus.status === 'expired') {
+      pkgBadge = `<span style="font-size:9px;background:var(--red-subtle);color:var(--red);padding:1px 6px;border-radius:4px;font-weight:600;">📦 Expired</span>`;
+    }
     html += `
     <div class="player-card" onclick="openPlayerProfile('${escHtml(p.name)}')">
       <img class="player-card-avatar" src="${avatarUrl(p.name, 96)}" alt="${escHtml(p.name)}">
@@ -5904,6 +6370,7 @@ function renderPlayersView(searchTerm, tab) {
         <div class="player-card-meta">
           ${duprDisplay(p.rating)}
           <span class="member-badge ${badge.type}">${badge.label}</span>
+          ${pkgBadge}
         </div>
         <div class="player-card-meta" style="margin-top:2px;">
           <span>📞 ${escHtml(p.phone || 'N/A')}</span>
@@ -6441,6 +6908,27 @@ function renderDashboardView() {
       <div class="dash-upcoming">${upcomingHTML}</div>
       ${courtsLink}
     </div>
+
+    ${(() => {
+      const expiringPlayers = getPackageExpiringPlayers();
+      if (expiringPlayers.length === 0) return '';
+      return `<div class="dash-section">
+        <div class="dash-section-title">⚠️ Packages Expiring Soon</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          ${expiringPlayers.map(ep => {
+            const def = PACKAGE_DEFS[ep.package.type];
+            return `<div style="display:flex;align-items:center;gap:10px;background:var(--bg-elevated);border:1px solid ${ep.daysLeft <= 3 ? 'var(--red)' : 'var(--amber)'};border-radius:var(--radius-md);padding:10px;">
+              <img src="${avatarUrl(ep.name, 48)}" style="width:28px;height:28px;border-radius:50%;" alt="">
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:600;">${escHtml(ep.name)}</div>
+                <div style="font-size:10px;color:var(--text-muted);">${def?.label || ep.package.type} · ${ep.package.sessionsRemaining >= 0 ? ep.package.sessionsRemaining + ' sessions' : 'Unlimited'}</div>
+              </div>
+              <span style="font-size:11px;font-weight:700;color:${ep.daysLeft <= 3 ? 'var(--red)' : 'var(--amber)'};">${ep.daysLeft}d left</span>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    })()}
   </div>`;
 }
 
@@ -7035,6 +7523,45 @@ function openPlayerProfile(playerName) {
       <div class="pp-stat"><div class="pp-stat-val">${winRate}%</div><div class="pp-stat-label">Win Rate</div></div>
       <div class="pp-stat"><div class="pp-stat-val">${avgRating}</div><div class="pp-stat-label">Avg Rating</div></div>
     </div>
+    ${(() => {
+      const pkgStatus = getPlayerPackageStatus(playerName);
+      if (pkgStatus.status === 'active') {
+        const pkg = pkgStatus.package;
+        const def = PACKAGE_DEFS[pkg.type];
+        const isExpiring = pkgStatus.daysLeft <= 7;
+        const remaining = pkg.sessionsRemaining >= 0 ? `${pkg.sessionsRemaining} sessions remaining` : 'Unlimited sessions';
+        return `<div class="pp-section" style="border:1px solid ${isExpiring ? 'var(--amber)' : 'var(--teal)'};border-radius:var(--radius-md);padding:12px;background:${isExpiring ? 'rgba(245,158,11,0.05)' : 'rgba(20,184,166,0.05)'};">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:14px;font-weight:700;">📦 ${def?.label || pkg.type}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${remaining}</div>
+              <div style="font-size:11px;color:${isExpiring ? 'var(--amber)' : 'var(--text-muted)'};margin-top:2px;">${isExpiring ? '⚠️ ' : ''}Expires in ${pkgStatus.daysLeft} day${pkgStatus.daysLeft !== 1 ? 's' : ''}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:18px;font-weight:800;color:var(--teal);">₱${(def?.price || 0).toLocaleString()}</div>
+              <div style="font-size:10px;color:var(--text-muted);">Purchased ${new Date(pkg.purchasedAt).toLocaleDateString()}</div>
+            </div>
+          </div>
+        </div>`;
+      } else if (pkgStatus.status === 'expired') {
+        const pkg = pkgStatus.package;
+        const def = PACKAGE_DEFS[pkg.type];
+        return `<div class="pp-section" style="border:1px solid var(--red);border-radius:var(--radius-md);padding:12px;background:rgba(239,68,68,0.05);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:14px;font-weight:700;">📦 ${def?.label || pkg.type} <span style="background:var(--red-subtle);color:var(--red);padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;">EXPIRED</span></div>
+              <div style="font-size:11px;color:var(--red);margin-top:2px;">Expired ${pkgStatus.daysSinceExpiry} day${pkgStatus.daysSinceExpiry !== 1 ? 's' : ''} ago</div>
+            </div>
+            <button class="sdm-btn" style="height:28px;font-size:11px;padding:0 12px;" onclick="closeModal();openPurchasePackageModal('${escHtml(playerName)}')">Renew</button>
+          </div>
+        </div>`;
+      } else {
+        return `<div class="pp-section" style="border:1px dashed var(--border);border-radius:var(--radius-md);padding:12px;text-align:center;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">No active package</div>
+          <button class="sdm-btn" style="height:28px;font-size:11px;padding:0 12px;" onclick="closeModal();openPurchasePackageModal('${escHtml(playerName)}')">📦 Purchase Package</button>
+        </div>`;
+      }
+    })()}
     <div class="pp-section">
       <div class="pp-section-title">Upcoming Bookings</div>
       ${upcomingHTML}
