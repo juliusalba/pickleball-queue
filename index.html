@@ -1593,6 +1593,126 @@ body {
 }
 .notify-waitlist-btn:hover { background: var(--amber); color: #000; }
 
+/* ─── SESSION DETAIL ACTIONS ─── */
+.sdm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: var(--space-4) var(--space-5);
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+
+.sdm-btn {
+  flex: 1 1 calc(50% - 4px);
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sdm-btn:hover { border-color: var(--border-hover); background: var(--bg-elevated); }
+.sdm-btn:active { transform: scale(0.97); }
+
+.sdm-btn.primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+  font-weight: 700;
+}
+.sdm-btn.primary:hover { background: var(--teal-hover); border-color: var(--teal-hover); }
+
+.sdm-btn.danger {
+  color: var(--red);
+  border-color: rgba(239,68,68,0.3);
+  background: rgba(239,68,68,0.08);
+}
+.sdm-btn.danger:hover { background: rgba(239,68,68,0.15); border-color: var(--red); }
+
+/* ─── MOBILE: session-detail-modal ─── */
+@media (max-width: 768px) {
+  .session-detail-modal {
+    max-height: 95vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .sdm-body {
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .sdm-actions {
+    padding: var(--space-3) var(--space-4);
+    padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+    gap: 6px;
+  }
+
+  .sdm-btn {
+    flex: 1 1 calc(50% - 3px);
+    font-size: 12px;
+    padding: 9px 8px;
+  }
+
+  /* Scoreboard mobile: stack vertically */
+  .scoreboard {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .team-score-side {
+    width: 100%;
+    flex-direction: row;
+    min-width: 0;
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .team-score-side.team-a { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .team-score-side.team-b { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+
+  .score-divider {
+    flex-direction: row;
+    padding: var(--space-2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    min-width: 0;
+    width: 100%;
+  }
+
+  .score-number { font-size: 36px; }
+
+  /* Court diagram mobile: smaller */
+  .court-svg { width: 180px; }
+
+  /* Matchup section mobile */
+  .matchup-section {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .score-divider { display: none; }
+}
+
+@media (max-width: 480px) {
+  .sdm-btn {
+    font-size: 11px;
+    padding: 8px 6px;
+  }
+}
+
 .qe-status-pill {
   padding: 2px 6px;
   border-radius: 4px;
