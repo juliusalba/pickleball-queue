@@ -2129,9 +2129,26 @@ body {
   cursor: pointer;
   transition: color 0.2s;
   -webkit-tap-highlight-color: transparent;
+  min-width: 0;
 }
 .tab-item.active { color: var(--teal); }
-.tab-item .tab-icon { font-size: 20px; line-height: 1; }
+.tab-icon { font-size: 20px; line-height: 1; }
+.tab-label { font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.more-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+.more-menu-item:hover { background: var(--bg-base); }
 .tab-item:hover { color: var(--text-secondary); }
 .tab-item.active:hover { color: var(--teal); }
 
@@ -3040,6 +3057,9 @@ body {
 <!-- ANALYTICS VIEW -->
 <div class="view-container" id="view-analytics"></div>
 
+<!-- LEAGUE VIEW -->
+<div class="view-container" id="view-league"></div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
@@ -3062,29 +3082,32 @@ body {
 <nav class="tab-bar" id="tabBar">
   <button class="tab-item active" data-view="schedule" onclick="switchView('schedule')">
     <span class="tab-icon">📅</span>
-    <span>Schedule</span>
+    <span class="tab-label">Schedule</span>
   </button>
   <button class="tab-item" data-view="dashboard" onclick="switchView('dashboard')">
     <span class="tab-icon">📊</span>
-    <span>Dashboard</span>
-  </button>
-  <button class="tab-item" data-view="analytics" onclick="switchView('analytics')">
-    <span class="tab-icon">📈</span>
-    <span>Analytics</span>
+    <span class="tab-label">Dashboard</span>
   </button>
   <button class="tab-item" data-view="bookings" onclick="switchView('bookings')">
     <span class="tab-icon">📋</span>
-    <span>Bookings</span>
+    <span class="tab-label">Bookings</span>
   </button>
   <button class="tab-item" data-view="players" onclick="switchView('players')">
     <span class="tab-icon">👥</span>
-    <span>Players</span>
+    <span class="tab-label">Players</span>
   </button>
-  <button class="tab-item" data-view="settings" onclick="switchView('settings')">
-    <span class="tab-icon">⚙️</span>
-    <span>Settings</span>
+  <button class="tab-item" id="moreTabBtn" onclick="toggleMoreMenu()">
+    <span class="tab-icon">☰</span>
+    <span class="tab-label">More</span>
   </button>
 </nav>
+<!-- More overflow menu -->
+<div id="moreMenu" style="display:none;position:fixed;bottom:calc(60px + env(safe-area-inset-bottom));right:12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:6px;z-index:200;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+  <button class="more-menu-item" onclick="switchView('analytics');toggleMoreMenu()">📈 Analytics</button>
+  <button class="more-menu-item" onclick="switchView('league');toggleMoreMenu()">🏆 Leagues</button>
+  <button class="more-menu-item" onclick="switchView('courts');toggleMoreMenu()">🏸 Courts</button>
+  <button class="more-menu-item" onclick="switchView('settings');toggleMoreMenu()">⚙️ Settings</button>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -3196,12 +3219,29 @@ function buildPlayerDirectory() {
 // ══════════════════════════════════════════════════════
 let currentView = 'schedule';
 
+function toggleMoreMenu() {
+  const menu = document.getElementById('moreMenu');
+  if (!menu) return;
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+// Close more menu when clicking elsewhere
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('moreMenu');
+  const moreBtn = document.getElementById('moreTabBtn');
+  if (menu && menu.style.display !== 'none' && !menu.contains(e.target) && !moreBtn.contains(e.target)) {
+    menu.style.display = 'none';
+  }
+});
+
 function switchView(viewName) {
   currentView = viewName;
-  // Update tab bar
+  // Update tab bar — deactive "More" unless it's selected
   document.querySelectorAll('.tab-item').forEach(tab => {
     tab.classList.toggle('active', tab.dataset.view === viewName);
   });
+  // Close more menu on view change
+  const moreMenu = document.getElementById('moreMenu');
+  if (moreMenu) moreMenu.style.display = 'none';
   // Update view containers
   document.querySelectorAll('.view-container').forEach(vc => {
     vc.classList.toggle('active', vc.id === 'view-' + viewName);
